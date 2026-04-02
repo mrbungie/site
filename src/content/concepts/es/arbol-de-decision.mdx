@@ -1,0 +1,35 @@
+---
+title: "Árbol de Decisión"
+summary: "Un modelo que toma decisiones por ramas, aplicando reglas simples y altamente interpretables."
+tags: ["machine-learning", "clasificación", "interpretabilidad"]
+area: "statistics"
+level: "beginner"
+prerequisites: ["regresion-logistica"]
+related: ["random-forest", "svm", "regresion-logistica"]
+featured: false
+draft: false
+---
+
+import DecisionTreeVisualizer from '../../../components/visuals/DecisionTreeVisualizer';
+
+Un **árbol de decisión** divide el espacio de datos en ramas mediante preguntas del tipo “si-entonces”. Cada nodo evalúa una condición y cada hoja produce una decisión final.
+
+## Recorre una ruta de decisión
+
+<div class="my-10 not-prose">
+  <DecisionTreeVisualizer client:load />
+</div>
+
+## Cómo piensa un árbol
+
+El árbol busca cortes que hagan a las hojas lo más “puras” posible. Por eso prueba umbrales como ingreso, deuda o score hasta encontrar divisiones que separen mejor las clases.
+
+## Qué observar
+
+- Una sola variable puede redirigir el caso a otra rama.
+- La gran ventaja del árbol es que se puede **explicar** fácilmente.
+- Si crece demasiado, puede memorizar el entrenamiento y sobreajustar.
+
+## Aplicaciones
+
+Se usa en scoring crediticio, reglas médicas, segmentación comercial y situaciones donde la explicación de la decisión es casi tan importante como la precisión.

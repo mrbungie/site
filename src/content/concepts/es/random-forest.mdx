@@ -1,0 +1,35 @@
+---
+title: "Random Forest"
+summary: "Un ensamble de árboles que votan juntos para ganar robustez y reducir la varianza."
+tags: ["machine-learning", "ensamble", "clasificación"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["arbol-de-decision"]
+related: ["arbol-de-decision", "svm", "knn"]
+featured: false
+draft: false
+---
+
+import RandomForestVisualizer from '../../../components/visuals/RandomForestVisualizer';
+
+**Random Forest** combina muchos árboles de decisión entrenados sobre muestras y subconjuntos de variables distintos. En lugar de confiar en una sola rama, agrega muchas voces pequeñas y decide por mayoría.
+
+## Mira cómo vota el bosque
+
+<div class="my-10 not-prose">
+  <RandomForestVisualizer client:load />
+</div>
+
+## Intuición clave
+
+Un árbol individual puede ser inestable: un pequeño cambio en los datos puede alterar mucho su estructura. El bosque reduce ese problema porque promedia decisiones diversas.
+
+## Qué observar
+
+- Cada árbol usa reglas parecidas, pero no idénticas.
+- La decisión final depende de la **agregación**, no de un solo árbol.
+- Se gana robustez a costa de perder una explicación global simple.
+
+## Aplicaciones
+
+Es un baseline fuerte para clasificación tabular, detección de fraude, riesgo crediticio y diagnóstico cuando se busca buen desempeño sin demasiado ajuste fino.

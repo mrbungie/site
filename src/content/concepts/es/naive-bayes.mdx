@@ -1,0 +1,38 @@
+---
+title: "Naive Bayes"
+summary: "Un clasificador probabilístico rápido que asume independencia condicional entre las variables."
+tags: ["machine-learning", "probabilidad", "clasificación"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["regresion-logistica"]
+related: ["regresion-logistica", "svm", "knn"]
+featured: false
+draft: false
+---
+
+import NaiveBayesVisualizer from '../../../components/visuals/NaiveBayesVisualizer';
+import Math from '../../../components/Math';
+
+**Naive Bayes** usa el teorema de Bayes para estimar qué clase es más probable dada la evidencia observada. Su supuesto “naive” es que las variables son condicionalmente independientes dentro de cada clase.
+
+## Combina evidencia paso a paso
+
+<div class="my-10 not-prose">
+  <NaiveBayesVisualizer client:load />
+</div>
+
+## La regla de decisión
+
+<Math formula={"P(C|X) = \\frac{P(X|C)P(C)}{P(X)}"} block />
+
+En la práctica se comparan las probabilidades posteriores de cada clase y se elige la mayor.
+
+## Qué observar
+
+- Con pocas cuentas ya se obtiene una probabilidad posterior útil.
+- El supuesto de independencia es fuerte, pero muchas veces funciona sorprendentemente bien.
+- Es especialmente competitivo en texto y problemas de alta dimensionalidad.
+
+## Aplicaciones
+
+Filtrado de spam, análisis de sentimiento, clasificación documental y tareas donde importa mucho la velocidad de entrenamiento y predicción.

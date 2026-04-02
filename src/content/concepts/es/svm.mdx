@@ -1,0 +1,40 @@
+---
+title: "Máquina de Vectores de Soporte (SVM)"
+summary: "Un clasificador que busca la frontera que separa las clases con el mayor margen posible."
+tags: ["machine-learning", "clasificación", "margen"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["regresion-logistica", "correlacion"]
+related: ["regresion-logistica", "knn", "arbol-de-decision"]
+featured: false
+draft: false
+---
+
+import SVMVisualizer from '../../../components/visuals/SVMVisualizer';
+import Math from '../../../components/Math';
+
+La **Máquina de Vectores de Soporte** busca una frontera de decisión que no solo separe las clases, sino que lo haga dejando el **margen** más amplio posible entre ellas.
+
+## Experimenta con el margen
+
+<div class="my-10 not-prose">
+  <SVMVisualizer client:load />
+</div>
+
+## La idea matemática
+
+En su versión lineal, SVM define un hiperplano:
+
+<Math formula={"w^T x + b = 0"} block />
+
+La clasificación depende del signo de esa expresión, y el entrenamiento busca maximizar la distancia entre el hiperplano y los puntos más cercanos de cada clase.
+
+## Qué observar
+
+- Los **vectores de soporte** son los puntos más críticos: si se mueven, cambian la frontera.
+- Un kernel como **RBF** permite fronteras curvas cuando una recta no alcanza.
+- El margen protege al modelo frente a pequeñas perturbaciones.
+
+## Aplicaciones
+
+SVM se usa en clasificación de textos, bioinformática, visión por computador y problemas donde una buena separación geométrica importa más que una probabilidad calibrada.
