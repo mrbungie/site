@@ -4,19 +4,100 @@ import { getTranslations, getLangFromUrl } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = getTranslations(lang);
+
+const content = {
+	es: {
+		title: "Hola, soy Mr. Bungie",
+		subtitle: "Ciencia de datos y desarrollo interactivo",
+		intro: "Me gusta explorar cómo la tecnología puede ayudarnos a entender mejor el mundo a través de los datos. Este sitio es un pequeño espacio para compartir mis experimentos y lo que voy aprendiendo.",
+		focus: "Trato de crear herramientas donde los conceptos estadísticos se sientan reales y fáciles de explorar.",
+		stack: "Cosas que uso",
+		philosophy: "Sobre este sitio",
+		philosophyText: "He construido este espacio para que funcione como mi laboratorio personal. Aquí publico desde pequeñas visualizaciones hasta conceptos que me parecen interesantes.",
+	},
+	en: {
+		title: "Hi, I'm Mr. Bungie",
+		subtitle: "Data science and interactive development",
+		intro: "I enjoy exploring how technology can help us better understand the world through data. This site is a small space to share my experiments and what I'm learning.",
+		focus: "I try to create tools where statistical concepts feel real and easy to explore.",
+		stack: "Things I use",
+		philosophy: "About this site",
+		philosophyText: "I built this space to work as my personal lab. Here I publish everything from small visualizations to concepts I find interesting.",
+	}
+}[lang];
 ---
 
-<BaseLayout title={t('nav.about')} description={t('site.description')} lang={lang}>
-	<article class="prose max-w-3xl mx-auto py-12">
-		<h1 class="text-4xl font-bold mb-8">{t('nav.about')}</h1>
-		<p>
-			Esta es la página de acerca de. Aquí puedes explicar quién eres y qué haces. 
-			Este sitio fue construido con Astro, Tailwind v4 y mucho amor por los datos.
-		</p>
-		<p>
-			Loreum ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-			labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-			viverra. Adipiscing enim eu turpis egestas pretium.
-		</p>
-	</article>
+<BaseLayout title={content.title} description={content.intro} lang={lang}>
+	<div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+		<div class="flex flex-col gap-12 sm:flex-row sm:items-start">
+			{/* Modest Visual */}
+			<div class="w-full shrink-0 sm:w-1/3">
+				<div class="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm">
+					<img 
+						src="/images/about_modest.png" 
+						alt="Visual representation" 
+						class="aspect-[4/3] w-full object-cover sm:aspect-auto"
+					/>
+				</div>
+			</div>
+
+			{/* Narrative Content */}
+			<div class="flex-1">
+				<header class="mb-8">
+					<h1 class="mb-2 text-3xl font-black tracking-tight text-slate-900">
+						{content.title}
+					</h1>
+					<p class="text-lg font-medium text-teal-600">
+						{content.subtitle}
+					</p>
+				</header>
+
+				<section class="space-y-6 text-slate-600 leading-relaxed">
+					<p>
+						{content.intro}
+					</p>
+					<p>
+						{content.focus}
+					</p>
+				</section>
+
+				<div class="mt-12 grid gap-8 border-t border-slate-100 pt-12 sm:grid-cols-2">
+					<div>
+						<h3 class="mb-4 text-xs font-black uppercase tracking-widest text-slate-400">
+							{content.stack}
+						</h3>
+						<ul class="space-y-1.5 text-sm font-bold text-slate-700">
+							<li class="flex items-center gap-2">
+								<span class="h-1 w-1 rounded-full bg-teal-500"></span> Python & PyTorch
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="h-1 w-1 rounded-full bg-teal-500"></span> React & Astro
+							</li>
+							<li class="flex items-center gap-2">
+								<span class="h-1 w-1 rounded-full bg-teal-500"></span> Three.js / WebGL
+							</li>
+						</ul>
+					</div>
+
+					<div>
+						<h3 class="mb-4 text-xs font-black uppercase tracking-widest text-slate-400">
+							{content.philosophy}
+						</h3>
+						<p class="text-xs leading-relaxed text-slate-500">
+							{content.philosophyText}
+						</p>
+					</div>
+				</div>
+
+				<footer class="mt-12 flex gap-4">
+					<a href="/blog" class="rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-teal-600 active:scale-95">
+						Ver blog
+					</a>
+					<a href="https://github.com" target="_blank" class="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 active:scale-95">
+						GitHub
+					</a>
+				</footer>
+			</div>
+		</div>
+	</div>
 </BaseLayout>

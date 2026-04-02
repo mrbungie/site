@@ -1,0 +1,55 @@
+---
+title: "Regresión Logística"
+summary: "El modelo clásico para estimar probabilidades y tomar decisiones binarias a partir de una combinación lineal."
+tags: ["machine-learning", "estadística", "clasificación"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["regresion-lineal", "correlacion"]
+related: ["regresion-lineal", "correlacion", "pca"]
+featured: true
+draft: false
+---
+
+import LogisticRegressionVisualizer from '../../../components/visuals/LogisticRegressionVisualizer';
+import Math from '../../../components/Math';
+
+La **Regresión Logística** modela la probabilidad de que ocurra una clase positiva. Aunque parte de una combinación lineal de las variables de entrada, la salida final se comprime entre **0 y 1** mediante una función sigmoide.
+
+## Experimenta con la frontera de decisión
+
+Mueve la pendiente, el intercepto y el umbral para ver cómo cambia la curva logística, la frontera de decisión y la matriz de confusión sobre una muestra binaria simulada. Aquí los controles redefinen el proceso que genera los datos, así que no estás reentrenando un modelo sobre una muestra fija: estás explorando distintos escenarios.
+
+<div class="my-10 not-prose">
+  <LogisticRegressionVisualizer client:load />
+</div>
+
+## La ecuación fundamental
+
+La probabilidad estimada de pertenecer a la clase positiva viene dada por:
+
+<Math formula={"P(y=1|x) = \\sigma(\\beta_0 + \\beta_1 x) = \\frac{1}{1 + e^{-(\\beta_0 + \\beta_1 x)}}"} block />
+
+En vez de predecir una recta sin límite, el modelo transforma la combinación lineal en una curva en forma de **S**.
+
+## Del logit a la clasificación
+
+Otra forma de escribirlo es mediante el **logit**:
+
+<Math formula={"\\log\\left(\\frac{p}{1-p}\\right) = \\beta_0 + \\beta_1 x"} block />
+
+Eso significa que:
+
+- <Math formula={"\\beta_0"} /> desplaza la curva hacia la izquierda o la derecha.
+- <Math formula={"\\beta_1"} /> controla qué tan abrupta es la transición entre las clases.
+- El **umbral** convierte la probabilidad en una decisión final: si <Math formula={"p \\ge t"} />, el modelo predice clase 1.
+
+## Qué observar en la simulación
+
+- Si subes el umbral, el modelo se vuelve más conservador para etiquetar positivos.
+- Si aumentas la pendiente, la frontera de decisión se vuelve más nítida.
+- La **accuracy** puede mejorar o empeorar según el equilibrio entre falsos positivos y falsos negativos.
+- La **log loss** penaliza con más fuerza las probabilidades muy seguras pero equivocadas.
+
+## Aplicaciones
+
+Se usa para detectar fraude, predecir abandono de clientes, estimar la probabilidad de una enfermedad y, en general, para cualquier problema donde la salida sea **sí/no**, **éxito/fracaso** o **compra/no compra**.

@@ -23,11 +23,11 @@ const t = getTranslations(lang);
 				<HeaderLink href={lang === 'es' ? '/' : `/${lang}/`} class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
 					{t('nav.home')}
 				</HeaderLink>
-				<HeaderLink href={routePath(lang, 'concepts')} class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
-					{t('nav.concepts')}
-				</HeaderLink>
 				<HeaderLink href={routePath(lang, 'blog')} class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
 					{t('nav.blog')}
+				</HeaderLink>
+				<HeaderLink href={routePath(lang, 'concepts')} class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
+					{t('nav.concepts')}
 				</HeaderLink>
 				<HeaderLink href={routePath(lang, 'about')} class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
 					{t('nav.about')}
