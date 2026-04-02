@@ -1,0 +1,53 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Badge from '../components/ui/Badge.astro';
+import TagList from '../components/ui/TagList.astro';
+import ConceptMeta from '../components/concept/ConceptMeta.astro';
+import { useTranslations, getLangFromUrl } from '../i18n/utils';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	concept: CollectionEntry<'concepts'>;
+}
+
+const { concept } = Astro.props;
+const { title, summary, tags, area, level, prerequisites, related } = concept.data;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={title} description={summary} lang={lang}>
+	<article class="flex flex-col gap-12">
+		<header class="flex flex-col gap-6 border-b border-slate-200 pb-12">
+			<div class="flex flex-wrap items-center gap-3">
+				<Badge variant="secondary" class="uppercase tracking-wider">{area}</Badge>
+				<Badge variant="accent">{t(`level.${level}` as any)}</Badge>
+			</div>
+			<div class="flex flex-col gap-4">
+				<h1 class="text-4xl font-extrabold tracking-tight text-slate-950 sm:text-6xl">
+					{title}
+				</h1>
+				<p class="text-xl text-slate-600 leading-relaxed max-w-3xl">
+					{summary}
+				</p>
+			</div>
+			{tags.length > 0 && <TagList tags={tags} />}
+		</header>
+
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+			<div class="lg:col-span-9 prose prose-slate prose-lg max-w-none">
+				<slot />
+			</div>
+			<aside class="lg:col-span-3 flex flex-col gap-8">
+				<ConceptMeta 
+					level={level} 
+					area={area} 
+					prerequisites={prerequisites} 
+					related={related} 
+					lang={lang} 
+				/>
+			</aside>
+		</div>
+	</article>
+</BaseLayout>

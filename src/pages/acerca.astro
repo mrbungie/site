@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations, getLangFromUrl } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={t('nav.about')} description={t('site.description')} lang={lang}>
+	<article class="prose max-w-3xl mx-auto py-12">
+		<h1 class="text-4xl font-bold mb-8">{t('nav.about')}</h1>
+		<p>
+			Esta es la página de acerca de. Aquí puedes explicar quién eres y qué haces. 
+			Este sitio fue construido con Astro, Tailwind v4 y mucho amor por los datos.
+		</p>
+		<p>
+			Loreum ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+			labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
+			viverra. Adipiscing enim eu turpis egestas pretium.
+		</p>
+	</article>
+</BaseLayout>

@@ -1,0 +1,260 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Astro Blog" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e6]:
+          - link "Inicio" [ref=e7] [cursor=pointer]:
+            - /url: /
+          - link "Conceptos" [ref=e8] [cursor=pointer]:
+            - /url: /conceptos
+          - link "Blog" [ref=e9] [cursor=pointer]:
+            - /url: /blog
+          - link "Acerca" [ref=e10] [cursor=pointer]:
+            - /url: /acerca
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - link "ES" [ref=e13] [cursor=pointer]:
+            - /url: /
+          - link "EN" [ref=e14] [cursor=pointer]:
+            - /url: /en/
+        - link "GitHub" [ref=e15] [cursor=pointer]:
+          - /url: https://github.com/withastro/astro
+          - generic [ref=e16]: GitHub
+          - img [ref=e17]
+  - main [ref=e19]:
+    - article [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]: statistics
+          - generic [ref=e24]: Intermedio
+        - generic [ref=e25]:
+          - heading "PCA (Análisis de Componentes Principales)" [level=1] [ref=e26]
+          - paragraph [ref=e27]: Una técnica de reducción de dimensionalidad para simplificar datos complejos sin perder información esencial.
+        - generic [ref=e28]:
+          - generic [ref=e29]: machine-learning
+          - generic [ref=e30]: estadística
+          - generic [ref=e31]: visualización
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - paragraph [ref=e34]:
+            - text: El
+            - strong [ref=e35]: PCA (Principal Component Analysis)
+            - text: es una técnica matemática que transforma un conjunto de variables correlacionadas en un número menor de variables no correlacionadas llamadas “componentes principales”.
+          - heading "Visualiza la Reducción de Dimensiones" [level=2] [ref=e36]
+          - paragraph [ref=e37]: En este simulador 3D, puedes ver cómo una nube de puntos compleja se proyecta sobre un plano de 2 dimensiones (PC1 y PC2) perdiendo la mínima información posible.
+          - generic [ref=e277]:
+            - generic [ref=e279]:
+              - heading "VISUALIZADOR PCA" [level=3] [ref=e280]:
+                - img [ref=e281]
+                - text: VISUALIZADOR
+                - generic [ref=e285]: PCA
+              - paragraph [ref=e286]: Concepto tridimensional
+            - generic [ref=e293]:
+              - generic [ref=e294]: Dimensión completa
+              - paragraph [ref=e295]: Los componentes se calculan desde la nube actual. PC1 y PC2 se alinean con la máxima varianza, mientras PC3 recoge la dimensión residual.
+            - generic [ref=e296]:
+              - generic [ref=e297]:
+                - button "Proyectar a 2D" [ref=e298]:
+                  - img [ref=e299]
+                  - text: Proyectar a 2D
+                - button "Desactivar giro automático" [ref=e301]:
+                  - img [ref=e302]
+              - generic [ref=e306]:
+                - generic [ref=e307]:
+                  - img [ref=e308]
+                  - text: Varianza retenida
+                - code [ref=e311]: PC1 + PC2 = 98.7%
+          - blockquote [ref=e38]:
+            - paragraph [ref=e39]:
+              - text: "[!TIP]"
+              - strong [ref=e40]: PC1
+              - text: es la línea amarilla. Observa cómo atraviesa la parte más larga de la elipse. Representa la dirección de
+              - strong [ref=e41]: máxima varianza
+              - text: .
+          - heading "¿Para qué sirve?" [level=2] [ref=e42]
+          - list [ref=e43]:
+            - listitem [ref=e44]:
+              - strong [ref=e45]: Reducción de ruido
+              - text: ": Al quedarnos solo con los componentes que explican la mayor parte de la varianza, eliminamos el ruido aleatorio (como el eje rojo PC3)."
+            - listitem [ref=e46]:
+              - strong [ref=e47]: Visualización
+              - text: ": Permite proyectar datos de muchas dimensiones a solo 2 o 3 para poder verlos en un gráfico."
+            - listitem [ref=e48]:
+              - strong [ref=e49]: Eficiencia
+              - text: ": Los modelos de ML entrenan mucho más rápido con menos variables."
+          - heading "Intuición geométrica" [level=2] [ref=e50]
+          - paragraph [ref=e51]: La idea es “rotar” el espacio de tus datos hasta que estemos mirando desde el ángulo más informativo. Ese ángulo es el que maximiza la dispersión de los puntos.
+          - heading "El Proceso Matemático" [level=2] [ref=e52]
+          - list [ref=e53]:
+            - listitem [ref=e54]:
+              - strong [ref=e55]: Estandarización
+              - text: ": Transformar las variables para tener media"
+              - generic [ref=e57]:
+                - generic [ref=e58]:
+                  - generic [ref=e60]: μ
+                  - generic [ref=e62]: =
+                  - generic [ref=e64]: "0"
+                - math [ref=e66]:
+                  - generic [ref=e67]: μ
+                  - generic [ref=e68]: =
+                  - generic [ref=e69]: "0"
+              - text: y varianza
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - generic [ref=e73]:
+                    - generic [ref=e75]: σ
+                    - generic [ref=e78]: "2"
+                  - generic [ref=e80]: =
+                  - generic [ref=e82]: "1"
+                - math [ref=e84]:
+                  - generic [ref=e85]:
+                    - generic [ref=e86]: σ
+                    - generic [ref=e87]: "2"
+                  - generic [ref=e88]: =
+                  - generic [ref=e89]: "1"
+              - text: .
+            - listitem [ref=e90]:
+              - strong [ref=e91]: Matriz de Covarianza
+              - text: ": Calcular la matriz"
+              - generic [ref=e93]:
+                - generic [ref=e96]: C
+                - math [ref=e98]:
+                  - generic [ref=e99]: C
+              - text: que describe las relaciones entre las variables.
+            - listitem [ref=e100]:
+              - strong [ref=e101]: Autovectores y Autovalores
+              - text: ": Resolver la ecuación característica"
+              - generic [ref=e103]:
+                - generic [ref=e104]:
+                  - generic [ref=e105]:
+                    - generic [ref=e106]: d
+                    - generic [ref=e107]: e
+                    - generic [ref=e108]: t
+                  - generic [ref=e110]: (
+                  - generic [ref=e112]: C
+                  - generic [ref=e114]: −
+                  - generic [ref=e116]: λ
+                  - generic [ref=e118]: I
+                  - generic [ref=e120]: )
+                  - generic [ref=e122]: =
+                  - generic [ref=e124]: "0"
+                - math [ref=e126]:
+                  - generic [ref=e127]: det
+                  - generic [ref=e128]: (
+                  - generic [ref=e129]: C
+                  - generic [ref=e130]: −
+                  - generic [ref=e131]: λ
+                  - generic [ref=e132]: I
+                  - generic [ref=e133]: )
+                  - generic [ref=e134]: =
+                  - generic [ref=e135]: "0"
+              - text: para encontrar los componentes que maximizan la varianza.
+          - paragraph [ref=e136]: "La fórmula de proyección reducida es:"
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e141]: T
+              - generic [ref=e143]: =
+              - generic [ref=e145]: X
+              - generic [ref=e146]:
+                - generic [ref=e148]: W
+                - generic [ref=e151]: k
+            - math [ref=e153]:
+              - generic [ref=e154]: T
+              - generic [ref=e155]: =
+              - generic [ref=e156]: X
+              - generic [ref=e157]:
+                - generic [ref=e158]: W
+                - generic [ref=e159]: k
+          - paragraph [ref=e160]: "Donde:"
+          - list [ref=e161]:
+            - listitem [ref=e162]:
+              - generic [ref=e164]:
+                - generic [ref=e167]: X
+                - math [ref=e169]:
+                  - generic [ref=e170]: X
+              - text: ": Matriz de datos originales de"
+              - generic [ref=e172]:
+                - generic [ref=e173]:
+                  - generic [ref=e175]: "n"
+                  - generic [ref=e177]: ×
+                  - generic [ref=e179]: p
+                - math [ref=e181]:
+                  - generic [ref=e182]: "n"
+                  - generic [ref=e183]: ×
+                  - generic [ref=e184]: p
+              - text: .
+            - listitem [ref=e185]:
+              - generic [ref=e187]:
+                - generic [ref=e189]:
+                  - generic [ref=e191]: W
+                  - generic [ref=e194]: k
+                - math [ref=e196]:
+                  - generic [ref=e197]:
+                    - generic [ref=e198]: W
+                    - generic [ref=e199]: k
+              - text: ": Matriz de los"
+              - generic [ref=e201]:
+                - generic [ref=e204]: k
+                - math [ref=e206]:
+                  - generic [ref=e207]: k
+              - text: autovectores seleccionados.
+            - listitem [ref=e208]:
+              - generic [ref=e210]:
+                - generic [ref=e213]: T
+                - math [ref=e215]:
+                  - generic [ref=e216]: T
+              - text: ": Datos proyectados en el nuevo espacio de menor dimensión."
+        - complementary [ref=e217]:
+          - generic [ref=e218]:
+            - generic [ref=e219]:
+              - heading "Nivel" [level=4] [ref=e220]
+              - generic [ref=e221]: Intermedio
+            - generic [ref=e222]:
+              - heading "Área" [level=4] [ref=e223]
+              - generic [ref=e224]: statistics
+            - generic [ref=e225]:
+              - heading "Prerequisitos" [level=4] [ref=e226]
+              - list [ref=e227]:
+                - listitem [ref=e228]:
+                  - link "Covarianza" [ref=e229] [cursor=pointer]:
+                    - /url: /conceptos/covarianza
+                - listitem [ref=e230]:
+                  - link "Correlacion" [ref=e231] [cursor=pointer]:
+                    - /url: /conceptos/correlacion
+            - generic [ref=e232]:
+              - heading "Relacionados" [level=4] [ref=e233]
+              - list [ref=e234]:
+                - listitem [ref=e235]:
+                  - link "Regresion Lineal" [ref=e236] [cursor=pointer]:
+                    - /url: /conceptos/regresion-lineal
+  - contentinfo [ref=e237]:
+    - generic [ref=e239]:
+      - generic [ref=e240]:
+        - paragraph [ref=e241]: © 2026 Mi Sitio
+        - paragraph [ref=e242]: Todos los derechos reservados.
+      - generic [ref=e243]:
+        - link "Twitter" [ref=e244] [cursor=pointer]:
+          - /url: https://twitter.com/astrodotbuild
+          - generic [ref=e245]: Twitter
+          - img [ref=e246]
+        - link "GitHub" [ref=e248] [cursor=pointer]:
+          - /url: https://github.com/withastro/astro
+          - generic [ref=e249]: GitHub
+          - img [ref=e250]
+  - generic [ref=e254]:
+    - button "Menu" [ref=e255]:
+      - img [ref=e257]
+      - generic: Menu
+    - button "Inspect" [ref=e261]:
+      - img [ref=e263]
+      - generic: Inspect
+    - button "Audit" [ref=e265]:
+      - generic [ref=e266]:
+        - img [ref=e267]
+        - img [ref=e313]
+      - generic: Audit
+    - button "Settings" [ref=e270]:
+      - img [ref=e272]
+      - generic: Settings

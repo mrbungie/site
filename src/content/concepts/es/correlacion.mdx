@@ -1,0 +1,53 @@
+---
+title: "Correlación"
+summary: "La versión normalizada de la covarianza que nos permite medir la fuerza de una relación lineal."
+tags: ["estadística", "datos", "análisis"]
+area: "statistics"
+level: "beginner"
+prerequisites: ["covarianza"]
+related: ["regresion-lineal", "covarianza"]
+featured: true
+draft: false
+---
+
+import CorrelationVisualizer from '../../../components/visuals/CorrelationVisualizer';
+import Math from '../../../components/Math';
+
+La **correlación de Pearson** es probablemente la métrica más utilizada para entender la relación entre dos variables. A diferencia de la covarianza, la correlación está normalizada y siempre oscila entre **-1 y 1**.
+
+## La normalización definitiva
+
+A diferencia de la covarianza, la correlación de Pearson (<Math formula="\rho" />) normaliza los datos dividiendo por el producto de sus desviaciones estándar:
+
+<Math formula="\rho_{x,y} = \frac{cov(X,Y)}{\sigma_x \sigma_y}" block />
+
+Donde:
+- <Math formula="cov(X,Y)" />: Covarianza entre $X$ e $Y$.
+- <Math formula="\sigma_x" />: Desviación estándar de $X$.
+- <Math formula="\sigma_y" />: Desviación estándar de $Y$.
+
+## Interpretación de los valores
+- **1**: Correlación positiva perfecta.
+- **0**: Ninguna relación lineal.
+- **-1**: Correlación negativa perfecta.
+
+## Juega con una muestra real
+
+Mueve los controles para cambiar la correlación objetivo y el tamaño de la muestra. Verás cómo el coeficiente observado cambia por el ruido muestral, incluso cuando la relación subyacente es la misma.
+
+<div class="my-10 not-prose">
+  <CorrelationVisualizer client:only="react" />
+</div>
+
+> [!TIP]
+> Si trabajas con pocas observaciones, el valor de <Math formula="r" /> puede apartarse bastante del objetivo. Más datos suelen estabilizar la estimación.
+
+## ¿Por qué es mejor que la covarianza?
+
+Al estar limitada a un rango fijo, podemos comparar la relación entre "Altura y Peso" con la relación entre "Temperatura y Consumo Eléctrico" de forma directa, sin importar las unidades de medida.
+
+## ¡Cuidado!
+
+> "Correlación no implica causalidad."
+
+Este es el mantra sagrado de la estadística. Que dos variables se muevan juntas no significa que una cause la otra. Podría haber una tercera variable oculta (confounding variable) o ser simple coincidencia.

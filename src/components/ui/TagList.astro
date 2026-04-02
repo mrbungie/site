@@ -1,0 +1,19 @@
+---
+import Badge from './Badge.astro';
+
+interface Props {
+	tags: string[];
+	variant?: 'default' | 'outline' | 'secondary' | 'accent';
+	class?: string;
+}
+
+const { tags, variant = 'outline', class: className } = Astro.props;
+---
+
+<div class:list={['flex flex-wrap gap-2', className]}>
+	{tags.map((tag) => (
+		<Badge variant={variant}>
+			{tag}
+		</Badge>
+	))}
+</div>

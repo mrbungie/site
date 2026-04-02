@@ -1,0 +1,36 @@
+---
+interface Props {
+	title: string;
+	subtitle?: string;
+	href?: string;
+	linkText?: string;
+	class?: string;
+}
+
+const { title, subtitle, href, linkText, class: className } = Astro.props;
+---
+
+<div class:list={['flex flex-col gap-4 mb-10 md:flex-row md:items-end md:justify-between', className]}>
+	<div class="flex flex-col gap-2">
+		<h2 class="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+			{title}
+		</h2>
+		{subtitle && (
+			<p class="text-xl text-slate-600 max-w-2xl">
+				{subtitle}
+			</p>
+		)}
+	</div>
+	{href && (
+		<a 
+			href={href} 
+			class="inline-flex items-center gap-2 font-semibold text-teal-700 hover:text-teal-800 transition-colors"
+		>
+			{linkText || 'Ver todo'}
+			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M5 12h14"></path>
+				<path d="m12 5 7 7-7 7"></path>
+			</svg>
+		</a>
+	)}
+</div>

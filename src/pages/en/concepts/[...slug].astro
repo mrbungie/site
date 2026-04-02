@@ -1,0 +1,21 @@
+---
+import { getCollection, render } from 'astro:content';
+import ConceptLayout from '../../../layouts/ConceptLayout.astro';
+
+export async function getStaticPaths() {
+	const concepts = await getCollection('concepts');
+	const enConcepts = concepts.filter(c => c.id.startsWith('en/'));
+	
+	return enConcepts.map((concept) => ({
+		params: { slug: concept.id.replace('en/', '').replace(/\.(mdx|md)$/, '') },
+		props: { concept },
+	}));
+}
+
+const { concept } = Astro.props;
+const { Content } = await render(concept);
+---
+
+<ConceptLayout concept={concept}>
+	<Content />
+</ConceptLayout>

@@ -1,0 +1,40 @@
+---
+title: "Covarianza"
+summary: "Una medida técnica fundamental para entender cómo dos variables se mueven en conjunto."
+tags: ["estadística", "probabilidad", "datos"]
+area: "statistics"
+level: "beginner"
+prerequisites: []
+related: ["correlacion"]
+featured: true
+draft: false
+---
+
+import Math from '../../../components/Math';
+
+La **covarianza** es un valor que indica el grado de variación conjunta de dos variables aleatorias respecto a sus medias. Es el dato básico para entender la relación lineal entre dos métricas.
+
+## ¿Qué nos dice el signo?
+
+El valor de la covarianza puede ser difícil de interpretar por sí solo (ya que depende de las unidades de las variables), pero su signo es clave:
+
+- **Positiva**: Cuando una variable aumenta, la otra también tiende a aumentar.
+- **Negativa**: Cuando una variable aumenta, la otra tiende a disminuir.
+- **Cero**: No hay una relación lineal aparente entre las variables.
+
+## Definición Matemática
+
+La covarianza entre dos variables <Math formula={"X"} /> e <Math formula={"Y"} /> se calcula como:
+
+<Math formula={"cov(X, Y) = \\frac{\\sum_{i=1}^{n} (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}"} block />
+
+Donde <Math formula={"\\bar{x}"} /> e <Math formula={"\\bar{y}"} /> son los promedios de las variables.
+
+### Relación con la Varianza
+Si calculas la covarianza de una variable consigo misma, obtienes la **Varianza**:
+
+<Math formula={"cov(X, X) = var(X) = \\sigma_x^2"} block />
+
+## Ejemplo práctico
+
+Imagina que analizas el gasto en publicidad (<Math formula={"x"} />) y las ventas (<Math formula={"y"} />). Si ambos suben juntos, tendrás una covarianza positiva. Si gastas más y las ventas bajan, será negativa.

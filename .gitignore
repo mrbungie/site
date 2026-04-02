@@ -5,6 +5,7 @@ dist/
 
 # dependencies
 node_modules/
+node-compile-cache/
 
 # logs
 npm-debug.log*
@@ -22,3 +23,5 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+instructions

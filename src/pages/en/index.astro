@@ -1,21 +1,21 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/ui/SectionHeader.astro';
-import ConceptCard from '../components/concept/ConceptCard.astro';
-import Card from '../components/ui/Card.astro';
-import { useTranslations, getLangFromUrl } from '../i18n/utils';
-import { routePath } from '../i18n/routes';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import ConceptCard from '../../components/concept/ConceptCard.astro';
+import Card from '../../components/ui/Card.astro';
+import { useTranslations } from '../../i18n/utils';
+import { routePath } from '../../i18n/routes';
 
-const lang = getLangFromUrl(Astro.url);
+const lang = 'en'; // Force English
 const t = useTranslations(lang);
 
 const featuredConcepts = (await getCollection('concepts'))
 	.filter(c => c.id.startsWith(`${lang}/`) && c.data.featured && !c.data.draft)
 	.slice(0, 3);
 
+// Blog posts are usually common but we can filter by language if needed
 const latestPosts = (await getCollection('blog'))
-  .filter(p => p.id.startsWith(`${lang}/`))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 ---
@@ -33,13 +33,13 @@ const latestPosts = (await getCollection('blog'))
 		</section>
 
 		<!-- Featured Concepts -->
-		{featuredConcepts.length > 0 && (
-			<section class="flex flex-col">
-				<SectionHeader 
-					title={t('home.featured')} 
-					href={routePath(lang, 'concepts')} 
-					linkText="Explorar conceptos"
-				/>
+		<section class="flex flex-col">
+			<SectionHeader 
+				title={t('home.featured')} 
+				href={routePath(lang, 'concepts')} 
+				linkText="Explore concepts"
+			/>
+			{featuredConcepts.length > 0 ? (
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{featuredConcepts.map((concept) => (
 						<ConceptCard 
@@ -52,13 +52,17 @@ const latestPosts = (await getCollection('blog'))
 						/>
 					))}
 				</div>
-			</section>
-		)}
+			) : (
+				<div class="p-12 rounded-2xl border-2 border-dashed border-slate-200 text-center">
+					<p class="text-slate-500 font-medium italic">English concepts coming soon...</p>
+				</div>
+			)}
+		</section>
 
 		<!-- Latest Blog Posts -->
 		<section class="flex flex-col">
 			<SectionHeader 
-				title="Últimos posts" 
+				title="Latest posts" 
 				href={routePath(lang, 'blog')} 
 			/>
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

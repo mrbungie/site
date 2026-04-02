@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import ConceptCard from '../../components/concept/ConceptCard.astro';
+import { useTranslations, getLangFromUrl } from '../../i18n/utils';
+import { routePath } from '../../i18n/routes';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const concepts = (await getCollection('concepts'))
+	.filter(c => c.id.startsWith(`${lang}/`) && !c.data.draft)
+	.sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<BaseLayout title={t('concepts.title')} description={t('concepts.subtitle')} lang={lang}>
+	<div class="flex flex-col gap-12 py-12">
+		<SectionHeader 
+			title={t('concepts.title')} 
+			subtitle={t('concepts.subtitle')}
+		/>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{concepts.map((concept) => (
+				<ConceptCard 
+					title={concept.data.title}
+					summary={concept.data.summary}
+					href={routePath(lang, 'concepts', concept.id.split('/')[1].replace(/\.(mdx|md)$/, ''))}
+					level={concept.data.level}
+					area={concept.data.area}
+					lang={lang}
+				/>
+			))}
+		</div>
+	</div>
+</BaseLayout>

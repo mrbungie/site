@@ -1,0 +1,45 @@
+---
+import Badge from '../ui/Badge.astro';
+import { useTranslations as getTranslations, type Locale } from '../../i18n/utils';
+
+interface Props {
+	title: string;
+	summary: string;
+	href: string;
+	level: 'beginner' | 'intermediate' | 'advanced';
+	area: string;
+	lang: Locale;
+}
+
+const { title, summary, href, level, area, lang } = Astro.props;
+const t = getTranslations(lang);
+---
+
+<a 
+	href={href} 
+	class="group flex flex-col gap-5 p-7 rounded-3xl border border-slate-200/80 bg-white/95 transition-all hover:-translate-y-1.5 hover:border-teal-300 hover:shadow-2xl hover:shadow-teal-500/10"
+>
+	<div class="flex items-center gap-3">
+		<Badge variant="secondary" class="uppercase tracking-widest text-[10px]">{area}</Badge>
+		<Badge variant="accent" class="text-[10px]">{t(`level.${level}` as any)}</Badge>
+	</div>
+	
+	<div class="flex flex-col gap-3">
+		<h3 class="text-2xl font-bold text-slate-900 group-hover:text-teal-700 transition-colors tracking-tight">
+			{title}
+		</h3>
+		<p class="text-slate-600 line-clamp-3 leading-relaxed text-base">
+			{summary}
+		</p>
+	</div>
+	
+	<div class="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between">
+		<span class="text-sm font-bold text-teal-700 group-hover:text-teal-800 transition-colors uppercase tracking-wider">
+			Ver concepto
+		</span>
+		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-teal-700 group-hover:translate-x-1 transition-transform">
+			<path d="M5 12h14"></path>
+			<path d="m12 5 7 7-7 7"></path>
+		</svg>
+	</div>
+</a>

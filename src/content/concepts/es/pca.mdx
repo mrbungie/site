@@ -1,0 +1,51 @@
+---
+title: "PCA (Análisis de Componentes Principales)"
+summary: "Una técnica de reducción de dimensionalidad para simplificar datos complejos sin perder información esencial."
+tags: ["machine-learning", "estadística", "visualización"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["covarianza", "correlacion"]
+related: ["regresion-lineal"]
+featured: true
+draft: false
+---
+import PCA3DVisualizer from '../../../components/visuals/PCA3DVisualizer';
+import Math from '../../../components/Math';
+
+El **PCA (Principal Component Analysis)** es una técnica matemática que transforma un conjunto de variables correlacionadas en un número menor de variables no correlacionadas llamadas "componentes principales".
+
+## Visualiza la Reducción de Dimensiones
+
+En este simulador 3D, puedes ver cómo una nube de puntos compleja se proyecta sobre un plano de 2 dimensiones (PC1 y PC2) perdiendo la mínima información posible.
+
+<div class="my-10 not-prose">
+  <PCA3DVisualizer client:only="react" />
+</div>
+
+> [!TIP]
+> **PC1** es la línea amarilla. Observa cómo atraviesa la parte más larga de la elipse. Representa la dirección de **máxima varianza**.
+
+## ¿Para qué sirve?
+
+1. **Reducción de ruido**: Al quedarnos solo con los componentes que explican la mayor parte de la varianza, eliminamos el ruido aleatorio (como el eje rojo PC3).
+2. **Visualización**: Permite proyectar datos de muchas dimensiones a solo 2 o 3 para poder verlos en un gráfico.
+3. **Eficiencia**: Los modelos de ML entrenan mucho más rápido con menos variables.
+
+## Intuición geométrica
+
+La idea es "rotar" el espacio de tus datos hasta que estemos mirando desde el ángulo más informativo. Ese ángulo es el que maximiza la dispersión de los puntos.
+
+## El Proceso Matemático
+
+1. **Estandarización**: Transformar las variables para tener media <Math formula={"\\mu = 0"} /> y varianza <Math formula={"\\sigma^2 = 1"} />.
+2. **Matriz de Covarianza**: Calcular la matriz <Math formula={"C"} /> que describe las relaciones entre las variables.
+3. **Autovectores y Autovalores**: Resolver la ecuación característica <Math formula={"\\det(C - \\lambda I) = 0"} /> para encontrar los componentes que maximizan la varianza.
+
+La fórmula de proyección reducida es:
+
+<Math formula={"T = XW_k"} block />
+
+Donde:
+- <Math formula={"X"} />: Matriz de datos originales de <Math formula={"n \\times p"} />.
+- <Math formula={"W_k"} />: Matriz de los <Math formula={"k"} /> autovectores seleccionados.
+- <Math formula={"T"} />: Datos proyectados en el nuevo espacio de menor dimensión.

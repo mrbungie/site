@@ -1,0 +1,46 @@
+---
+title: "Regresión Lineal"
+summary: "El modelo predictivo más simple y potente para entender relaciones entre variables continuas."
+tags: ["machine-learning", "estadística", "predicción"]
+area: "statistics"
+level: "intermediate"
+prerequisites: ["correlacion"]
+related: ["correlacion", "pca"]
+featured: true
+draft: false
+---
+import RegressionVisualizer from '../../../components/visuals/RegressionVisualizer';
+import Math from '../../../components/Math';
+
+La **Regresión Lineal** busca encontrar la "mejor línea" que se ajuste a un conjunto de puntos. Es la base de gran parte del Machine Learning moderno y la herramienta principal para la predicción de valores numéricos.
+
+## Experimenta con la Recta OLS
+
+Usa el laboratorio interactivo para dibujar puntos y ver cómo la línea se ajusta automáticamente mediante **Mínimos Cuadrados Ordinarios (OLS)**.
+
+<div class="my-10 not-prose">
+  <RegressionVisualizer client:load />
+</div>
+
+## La ecuación fundamental
+
+La regresión lineal busca modelar la relación entre una variable dependiente <Math formula={"y"} /> y una variable independiente <Math formula={"x"} /> mediante la siguiente forma:
+
+<Math formula={"y = \\beta_0 + \\beta_1x + \\epsilon"} block />
+
+Donde:
+- <Math formula={"\\beta_0"} />: Intercepto (valor de $y$ cuando $x=0$).
+- <Math formula={"\\beta_1"} />: Pendiente.
+- <Math formula={"\\epsilon"} />: Término de error aleatorio.
+
+El algoritmo OLS minimiza el **Error Residual (SSE)**:
+
+<Math formula={"SSE = \\sum_{i=1}^{n} (y_{i} - \\hat{y}_{i})^2"} block />
+
+Y el coeficiente de determinación <Math formula={"R^2"} /> se define como:
+
+<Math formula={"R^2 = 1 - \\frac{SSE}{SSTotal}"} block />
+
+## Aplicaciones
+
+Desde predecir el precio de una casa basándose en sus metros cuadrados hasta estimar el impacto de una campaña de marketing en el ROI.
