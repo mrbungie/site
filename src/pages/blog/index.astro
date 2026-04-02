@@ -10,105 +10,126 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const featuredPost = posts[0];
+const otherPosts = posts.slice(1);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
+		<BaseHead title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
-	<body>
+	<body class="bg-slate-50 antialiased">
 		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
+		
+		<main class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+			{/* Hero Section */}
+			<header class="mb-20 text-center">
+				<h1 class="bg-gradient-to-br from-slate-900 to-slate-600 bg-clip-text text-5xl font-black tracking-tight text-transparent sm:text-7xl">
+					BITÁCORA <span class="text-teal-500">DIGITAL</span>
+				</h1>
+				<p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+					Exploraciones sobre ciencia de datos, estadística y visualización interactiva. Informes detallados sobre el progreso de los proyectos.
+				</p>
+			</header>
+
+			<section class="space-y-24">
+				{/* Featured Post */}
+				{featuredPost && (
+					<article class="group relative">
+						<div class="relative overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-2xl transition-all duration-500 hover:shadow-teal-500/10">
+							<div class="flex flex-col lg:flex-row">
+								<div class="relative h-64 w-full overflow-hidden lg:h-auto lg:w-3/5">
+									{featuredPost.data.heroImage && (
+										<Image 
+											width={1200} 
+											height={600} 
+											src={featuredPost.data.heroImage} 
+											alt="" 
+											class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+										/>
 									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
+									<div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent lg:hidden"></div>
+								</div>
+								
+								<div class="flex flex-col justify-center p-8 lg:w-2/5 lg:p-12">
+									<div class="mb-4 flex items-center gap-3">
+										<span class="rounded-full bg-teal-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-teal-700">DESTACADO</span>
+										<span class="text-xs font-medium text-slate-400">
+											<FormattedDate date={featuredPost.data.pubDate} />
+										</span>
+									</div>
+									
+									<h2 class="mb-6 text-3xl font-black leading-tight text-slate-900 sm:text-4xl">
+										<a href={`/blog/${featuredPost.id}/`} class="hover:text-teal-600 transition-colors">
+											{featuredPost.data.title}
+										</a>
+									</h2>
+									
+									<p class="mb-8 line-clamp-3 text-slate-600 leading-relaxed">
+										{featuredPost.data.description}
 									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
+									
+									<a 
+										href={`/blog/${featuredPost.id}/`} 
+										class="inline-flex w-fit items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-teal-600 active:scale-95"
+									>
+										Leer artículo completo
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+											<path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+										</svg>
+									</a>
+								</div>
+							</div>
+						</div>
+					</article>
+				)}
+
+				{/* Other Posts Grid */}
+				<div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+					{otherPosts.map((post) => (
+						<article class="group flex flex-col">
+							<a href={`/blog/${post.id}/`} class="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-teal-500/5">
+								<div class="relative aspect-video w-full overflow-hidden">
+									{post.data.heroImage && (
+										<Image 
+											width={720} 
+											height={360} 
+											src={post.data.heroImage} 
+											alt="" 
+											class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+										/>
+									)}
+								</div>
+								
+								<div class="flex flex-1 flex-col p-6">
+									<div class="mb-4 text-xs font-semibold text-slate-400">
+										<FormattedDate date={post.data.pubDate} />
+									</div>
+									
+									<h3 class="mb-4 line-clamp-2 text-xl font-black leading-tight text-slate-900 group-hover:text-teal-600 transition-colors">
+										{post.data.title}
+									</h3>
+									
+									<p class="mb-6 line-clamp-3 flex-1 text-sm leading-relaxed text-slate-500">
+										{post.data.description}
+									</p>
+									
+									<div class="flex items-center gap-2 text-xs font-bold text-teal-600">
+										CONTINUAR LEYENDO
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
+											<path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+										</svg>
+									</div>
+								</div>
+							</a>
+						</article>
+					))}
+				</div>
 			</section>
 		</main>
+
 		<Footer />
 	</body>
 </html>

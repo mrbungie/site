@@ -11,73 +11,52 @@ type Props = CollectionEntry<'blog'>['data'];
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="es">
 	<head>
 		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
 	</head>
 
-	<body>
+	<body class="bg-slate-50 antialiased">
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+		<main class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+			<article class="overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-xl">
+				{/* Hero Image */}
+				<div class="relative aspect-[21/9] w-full overflow-hidden bg-slate-100">
+					{heroImage && (
+						<Image 
+							width={1200} 
+							height={600} 
+							src={heroImage} 
+							alt="" 
+							class="h-full w-full object-cover"
+						/>
+					)}
+					<div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
 				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
+
+				{/* Content Container */}
+				<div class="px-6 py-12 sm:px-12 lg:px-16">
+					{/* Header Metadata */}
+					<header class="mb-12 border-b border-slate-100 pb-12 text-center">
+						<div class="mb-6 flex flex-wrap items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-400">
 							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+							{updatedDate && (
+								<span class="flex items-center gap-2 italic text-teal-600">
+									<span class="h-1 w-1 rounded-full bg-slate-300"></span>
+									Actualizado el <FormattedDate date={updatedDate} />
+								</span>
+							)}
 						</div>
-						<h1>{title}</h1>
-						<hr />
+						
+						<h1 class="mx-auto max-w-2xl text-4xl font-black leading-tight text-slate-900 sm:text-5xl">
+							{title}
+						</h1>
+					</header>
+
+					{/* Article Body */}
+					<div class="prose prose-slate prose-lg max-w-none">
+						<slot />
 					</div>
-					<slot />
 				</div>
 			</article>
 		</main>
