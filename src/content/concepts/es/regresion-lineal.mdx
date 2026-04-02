@@ -11,8 +11,20 @@ draft: false
 ---
 import RegressionVisualizer from '../../../components/visuals/RegressionVisualizer';
 import Math from '../../../components/Math';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 La **Regresión Lineal** busca encontrar la "mejor línea" que se ajuste a un conjunto de puntos. Es la base de gran parte del Machine Learning moderno y la herramienta principal para la predicción de valores numéricos.
+
+<TaxonomyBox
+  modelType="Una función lineal paramétrica que predice un valor continuo a partir de una combinación lineal de variables de entrada."
+  optimizationMethods={[
+    "Ecuaciones normales o descomposición QR/SVD para la solución cerrada",
+    "Descenso por gradiente, mini-batch o SGD cuando el problema escala",
+    "Versiones regularizadas como Ridge o Lasso con optimizadores iterativos",
+  ]}
+  typicalOptimization="OLS por solución cerrada (normal equations / QR)"
+  typicalLoss="Error cuadrático medio o suma de errores cuadrados (MSE / SSE)"
+/>
 
 ## Experimenta con la Recta OLS
 

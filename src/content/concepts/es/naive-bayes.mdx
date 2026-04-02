@@ -12,8 +12,20 @@ draft: false
 
 import NaiveBayesVisualizer from '../../../components/visuals/NaiveBayesVisualizer';
 import Math from '../../../components/Math';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 **Naive Bayes** usa el teorema de Bayes para estimar qué clase es más probable dada la evidencia observada. Su supuesto “naive” es que las variables son condicionalmente independientes dentro de cada clase.
+
+<TaxonomyBox
+  modelType="Un modelo probabilístico generativo que estima distribuciones por clase y combina evidencia bajo independencia condicional."
+  optimizationMethods={[
+    "Estimación por máxima verosimilitud de probabilidades o parámetros de distribución",
+    "Estimación MAP con suavizado de Laplace o priors conjugados",
+    "Cálculo cerrado de conteos, medias y varianzas por clase según la variante elegida",
+  ]}
+  typicalOptimization="Estimación cerrada por máxima verosimilitud con suavizado"
+  typicalLoss="Negative log-likelihood o log loss generativa"
+/>
 
 ## Combina evidencia paso a paso
 

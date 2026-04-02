@@ -12,8 +12,20 @@ draft: false
 
 import LogisticRegressionVisualizer from '../../../components/visuals/LogisticRegressionVisualizer';
 import Math from '../../../components/Math';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 La **Regresión Logística** modela la probabilidad de que ocurra una clase positiva. Aunque parte de una combinación lineal de las variables de entrada, la salida final se comprime entre **0 y 1** mediante una función sigmoide.
+
+<TaxonomyBox
+  modelType="Una función lineal seguida de una sigmoide para producir probabilidades de clase en clasificación binaria."
+  optimizationMethods={[
+    "Descenso por gradiente, mini-batch o SGD",
+    "Métodos de segundo orden como Newton-Raphson o IRLS",
+    "Optimizadores cuasi-Newton como LBFGS o variantes regularizadas tipo saga/liblinear",
+  ]}
+  typicalOptimization="Máxima verosimilitud con gradiente o LBFGS"
+  typicalLoss="Log loss o entropía cruzada binaria"
+/>
 
 ## Experimenta con la frontera de decisión
 

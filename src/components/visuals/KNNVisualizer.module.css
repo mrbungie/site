@@ -1,0 +1,236 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  border: 1px solid #1e293b;
+  background-color: #020617;
+  box-shadow: 0 32px 64px -12px rgba(15, 23, 42, 0.75);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 1.5rem 2rem;
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.titleIcon {
+  color: #38bdf8;
+}
+
+.subtitle {
+  margin-top: 0.125rem;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+.regenerateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  padding: 0.5rem 1rem;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7dd3fc;
+  transition: background-color 0.2s;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.regenerateButton:hover {
+  background-color: rgba(14, 165, 233, 0.1);
+}
+
+.regenerateButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #020617, 0 0 0 4px #7dd3fc;
+}
+
+.layout {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+.chartContainer {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1rem;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+.svgChart {
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+.controlsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+}
+
+.panelHeader {
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.controlItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.controlItemWithMargin {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.controlMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.controlValueSky {
+  font-family: monospace;
+  color: #7dd3fc;
+}
+
+.controlValueCyan {
+  font-family: monospace;
+  color: #67e8f9;
+}
+
+.controlValueRose {
+  font-family: monospace;
+  color: #fda4af;
+}
+
+.sliderSky, .sliderCyan, .sliderRose {
+  height: 0.375rem;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  border-radius: 0.5rem;
+  background-color: #1e293b;
+}
+
+.sliderSky {
+  accent-color: #38bdf8;
+}
+.sliderSky:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #7dd3fc;
+}
+
+.sliderCyan {
+  accent-color: #22d3ee;
+}
+.sliderCyan:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #67e8f9;
+}
+
+.sliderRose {
+  accent-color: #fb7185;
+}
+.sliderRose:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #fda4af;
+}
+
+.notesPanel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.625;
+  color: #cbd5e1;
+}
+
+.notesHeader {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.notesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1rem;
+  list-style-type: disc;
+  margin: 0;
+}
+
+.notesList::marker {
+  color: #7dd3fc;
+}

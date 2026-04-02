@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import styles from './RegressionVisualizer.module.css';
 import { RefreshCcw, Activity, SlidersHorizontal, MousePointer2, Info } from 'lucide-react';
 
 interface Point {
@@ -70,41 +71,41 @@ const RegressionVisualizer = () => {
   const currentSSRes = manualMode ? stats?.ssResManual ?? 0 : stats?.ssRes ?? 0;
 
   return (
-    <div className="flex flex-col bg-slate-950 rounded-[2.5rem] border border-slate-800 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.6)] overflow-hidden">
+    <div className="rf-visualizer">
       {/* Header Bar */}
-      <div className="flex items-center justify-between px-8 py-6 bg-slate-900/50 border-b border-white/5">
-        <div className="flex flex-col">
-          <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2 uppercase">
-            <Activity className="text-teal-400" size={20} />
+      <div className={`rf-visualizer__header ${styles.header}`}>
+        <div className={styles.headerLeft}>
+          <h3 className="rf-visualizer__title">
+            <Activity className={styles.titleIcon} size={20} />
             Laboratorio de Regresión
           </h3>
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">Mínimos Cuadrados Ordinarios</p>
+          <p className="rf-visualizer__subtitle">Mínimos Cuadrados Ordinarios</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className={styles.toggleIconWrapper}>
           <button 
             type="button"
             onClick={clear}
-            className="flex items-center gap-2 px-4 py-2 text-[10px] font-bold text-red-400 uppercase tracking-widest hover:bg-red-500/10 rounded-full transition-colors border border-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className={styles.clearButton}
           >
             <RefreshCcw size={12} /> Limpiar
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row p-8 lg:gap-10 items-start justify-center">
+      <div className={styles.layout}>
         {/* Left: The Square Plot */}
-        <div className="flex-1 w-full flex justify-center">
-            <div className="aspect-square w-full max-w-[650px] relative bg-slate-900 rounded-[2.5rem] border border-white/5 shadow-inner p-4 group">
-                <div className="absolute top-6 left-8 flex items-center gap-4 z-10 bg-slate-950/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/5">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full bg-teal-400 shadow-[0_0_8px_#2dd4bf]" />
-                        <span className="text-[10px] font-mono font-bold text-slate-300">y = {currentSlope.toFixed(2)}x + {currentIntercept.toFixed(1)}</span>
+        <div className={styles.plotAreaContainer}>
+            <div className={styles.plotArea}>
+                <div className={styles.equationBadge}>
+                    <div className={styles.equationBadgeInner}>
+                        <div className={styles.equationDot} />
+                        <span className={styles.equationText}>y = {currentSlope.toFixed(2)}x + {currentIntercept.toFixed(1)}</span>
                     </div>
                 </div>
                 
                 <svg 
-                    className="w-full h-full cursor-crosshair overflow-visible" 
+                    className={styles.svgPlot} 
                     viewBox="0 0 100 100" 
                     role="img"
                     aria-label="Plano cartesiano interactivo de regresión"
@@ -158,7 +159,7 @@ const RegressionVisualizer = () => {
                         x1="-10" y1={100 - (currentIntercept + currentSlope * -10)} x2="110" y2={100 - (currentIntercept + currentSlope * 110)}
                         stroke={manualMode ? '#f59e0b' : '#14b8a6'} 
                         strokeWidth="0.8"
-                        className="drop-shadow-[0_0_12px_rgba(99,102,241,0.5)]"
+                        className={styles.regressionLine}
                         />
                     </>
                     )}
@@ -171,123 +172,123 @@ const RegressionVisualizer = () => {
                         animate={{ scale: 1 }} 
                         exit={{ scale: 0 }}
                         onPointerUp={(e) => { e.stopPropagation(); removePoint(p.id); }}
-                        className="cursor-pointer"
+                        className={styles.dataPoint}
                         >
-                        <circle cx={p.x} cy={100 - p.y} r="1.2" fill="#fff" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-                        <circle cx={p.x} cy={100 - p.y} r="3" fill="transparent" stroke="rgba(255,255,255,0.2)" strokeWidth="0.2" className="hover:stroke-red-500 transition-colors" />
+                        <circle cx={p.x} cy={100 - p.y} r="1.2" fill="#fff" className={styles.dataPointCircle} />
+                        <circle cx={p.x} cy={100 - p.y} r="3" fill="transparent" stroke="rgba(255,255,255,0.2)" strokeWidth="0.2" className={styles.dataPointHover} />
                         </motion.g>
                     ))}
                     </AnimatePresence>
                 </svg>
 
                 {points.length === 0 && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-20">
-                    <MousePointer2 className="w-12 h-12 text-white mb-4 animate-bounce" />
-                    <p className="text-white text-[10px] font-black uppercase tracking-[0.3em]">Clica para dibujar datos</p>
+                    <div className={styles.emptyState}>
+                    <MousePointer2 className={styles.emptyStateIcon} />
+                    <p className={styles.emptyStateText}>Clica para dibujar datos</p>
                     </div>
                 )}
             </div>
         </div>
 
         {/* Right Column: Console */}
-        <div className="flex flex-col gap-6 lg:w-[320px] w-full shrink-0">
+        <div className={styles.controlsCol}>
           {/* Controls Card */}
-          <div className="p-6 bg-slate-900 rounded-[2rem] border border-white/5 flex flex-col gap-6">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Controles e Indicadores</span>
+          <div className="rf-panel">
+            <span className="rf-panel__header">Controles e Indicadores</span>
             
             <button 
               type="button"
               onClick={() => setManualMode(!manualMode)}
-              className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${manualMode ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/30' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+              className={`${styles.toggleBtn} ${manualMode ? styles.toggleBtnActive : styles.toggleBtnInactive}`}
             >
-              <div className="flex items-center gap-3">
+              <div className={styles.toggleIconWrapper}>
                 <SlidersHorizontal size={16} />
                 {manualMode ? 'Modo Manual' : 'Modelo Automático'}
               </div>
-              <div className={`w-2 h-2 rounded-full ${manualMode ? 'bg-white animate-pulse' : 'bg-slate-600'}`} />
+              <div className={manualMode ? styles.toggleDotActive : styles.toggleDotInactive} />
             </button>
 
-            <div className="flex flex-col gap-3">
+            <div className={styles.optionsGroup}>
               <button 
                 type="button"
                 onClick={() => setShowSquares(showSquares === 'ols' ? 'none' : 'ols')}
-                className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${showSquares === 'ols' ? 'bg-slate-800 text-teal-300 border border-teal-500/30' : 'bg-slate-800/50 text-slate-500 border border-transparent hover:border-white/10'}`}
+                className={`${styles.optionBtn} ${showSquares === 'ols' ? styles.optionBtnActiveTeal : styles.optionBtnInactive}`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${showSquares === 'ols' ? 'border-teal-300 bg-teal-300/20' : 'border-slate-600'}`}>
-                  {showSquares === 'ols' && <div className="w-1.5 h-1.5 bg-teal-300 rounded-sm" />}
+                <div className={showSquares === 'ols' ? styles.optionCheckboxActiveTeal : styles.optionCheckboxInactive}>
+                  {showSquares === 'ols' && <div className={styles.optionCheckTeal} />}
                 </div>
                 Residuales (SSE)
               </button>
               <button 
                 type="button"
                 onClick={() => setShowSquares(showSquares === 'mean' ? 'none' : 'mean')}
-                className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${showSquares === 'mean' ? 'bg-slate-800 text-sky-300 border border-sky-500/30' : 'bg-slate-800/50 text-slate-500 border border-transparent hover:border-white/10'}`}
+                className={`${styles.optionBtn} ${showSquares === 'mean' ? styles.optionBtnActiveSky : styles.optionBtnInactive}`}
               >
-                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${showSquares === 'mean' ? 'border-sky-300 bg-sky-300/20' : 'border-slate-600'}`}>
-                  {showSquares === 'mean' && <div className="w-1.5 h-1.5 bg-sky-300 rounded-sm" />}
+                <div className={showSquares === 'mean' ? styles.optionCheckboxActiveSky : styles.optionCheckboxInactive}>
+                  {showSquares === 'mean' && <div className={styles.optionCheckSky} />}
                 </div>
                 Total (Media)
               </button>
             </div>
             
             {manualMode && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="flex flex-col gap-4 p-5 bg-teal-500/5 border border-teal-500/20 rounded-2xl">
-                    <div className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center"><label htmlFor="manual-slope" className="text-[9px] font-bold text-teal-300/80 uppercase">Slope</label><span className="text-xs font-mono font-bold text-teal-300">{manualSlope.toFixed(2)}</span></div>
-                        <input id="manual-slope" type="range" min="-2" max="2" step="0.01" value={manualSlope} onChange={(e) => setManualSlope(parseFloat(e.target.value))} className="w-full accent-teal-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900" />
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className={styles.manualControls}>
+                    <div className={styles.manualInputGroup}>
+                        <div className={styles.manualInputHeader}><label htmlFor="manual-slope" className={styles.manualInputLabel}>Slope</label><span className={styles.manualInputValue}>{manualSlope.toFixed(2)}</span></div>
+                        <input id="manual-slope" type="range" min="-2" max="2" step="0.01" value={manualSlope} onChange={(e) => setManualSlope(parseFloat(e.target.value))} className={styles.sliderTeal} />
                     </div>
-                    <div className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center"><label htmlFor="manual-intercept" className="text-[9px] font-bold text-teal-300/80 uppercase">Intercept</label><span className="text-xs font-mono font-bold text-teal-300">{manualIntercept.toFixed(1)}</span></div>
-                        <input id="manual-intercept" type="range" min="-50" max="150" step="0.5" value={manualIntercept} onChange={(e) => setManualIntercept(parseFloat(e.target.value))} className="w-full accent-teal-400 bg-slate-800 h-1.5 rounded-lg appearance-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900" />
+                    <div className={styles.manualInputGroup}>
+                        <div className={styles.manualInputHeader}><label htmlFor="manual-intercept" className={styles.manualInputLabel}>Intercept</label><span className={styles.manualInputValue}>{manualIntercept.toFixed(1)}</span></div>
+                        <input id="manual-intercept" type="range" min="-50" max="150" step="0.5" value={manualIntercept} onChange={(e) => setManualIntercept(parseFloat(e.target.value))} className={styles.sliderTeal} />
                     </div>
                 </motion.div>
             )}
           </div>
 
           {/* Metrics Card */}
-          <div className="p-6 bg-slate-900 rounded-[2rem] border border-white/5 flex flex-col gap-6 shadow-xl relative overflow-hidden group">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">Magnitud de la Varianza</span>
+          <div className={styles.metricsContainer}>
+            <span className={styles.panelTitle}>Magnitud de la Varianza</span>
             
-            <div className="flex gap-6 justify-center items-end bg-slate-950/40 rounded-[2rem] p-6 border border-white/5 min-h-[220px] relative">
+            <div className={styles.metricsBars}>
               {/* SSE Column */}
-              <div className="flex flex-col items-center gap-2 flex-1 justify-end">
-                <div className="text-[10px] font-mono font-black text-teal-300 mb-1">{currentSSRes.toFixed(0)}</div>
-                <div className="relative w-8 bg-slate-800 rounded-full flex flex-col justify-end overflow-hidden border border-white/5 h-32 shadow-inner">
-                  <motion.div animate={{ height: stats ? `${Math.max(4, (currentSSRes / (stats.ssTotal * 5 || 1)) * 100)}%` : '0%' }} className="w-full bg-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.45)]" />
+              <div className={styles.metricCol}>
+                <div className={styles.metricValTeal}>{currentSSRes.toFixed(0)}</div>
+                <div className={styles.barTrack}>
+                  <motion.div animate={{ height: stats ? `${Math.max(4, (currentSSRes / (stats.ssTotal * 5 || 1)) * 100)}%` : '0%' }} className={styles.barFillTeal} />
                 </div>
-                <span className="text-[9px] font-black text-teal-300/70 uppercase tracking-tighter">SSE</span>
+                <span className={styles.metricNameTeal}>SSE</span>
               </div>
 
               {/* SSTotal Column */}
-              <div className="flex flex-col items-center gap-2 flex-1 justify-end">
-                <div className="text-[10px] font-mono font-black text-sky-300 mb-1">{stats?.ssTotal.toFixed(0) ?? 0}</div>
-                <div className="relative w-8 bg-slate-800 rounded-full flex flex-col justify-end overflow-hidden border border-white/5 h-32 shadow-inner">
-                  <motion.div animate={{ height: stats ? '100%' : '0%' }} className="w-full bg-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.4)]" />
+              <div className={styles.metricCol}>
+                <div className={styles.metricValSky}>{stats?.ssTotal.toFixed(0) ?? 0}</div>
+                <div className={styles.barTrack}>
+                  <motion.div animate={{ height: stats ? '100%' : '0%' }} className={styles.barFillSky} />
                 </div>
-                <span className="text-[9px] font-black text-sky-300/70 uppercase tracking-tighter whitespace-nowrap">"Media"</span>
+                <span className={styles.metricNameSky}>"Media"</span>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-teal-500 to-cyan-500 p-5 rounded-2xl relative overflow-hidden">
-                <div className="relative z-10">
-                    <span className="text-[10px] font-black uppercase text-white/50 tracking-widest">Bondad de Ajuste</span>
-                    <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-4xl font-black text-white">{currentR2.toFixed(3)}</span>
-                        <span className="text-lg font-bold text-white/50 italic leading-none">R²</span>
+            <div className={styles.r2Card}>
+                <div className={styles.r2Content}>
+                    <span className={styles.r2Label}>Bondad de Ajuste</span>
+                    <div className={styles.r2ValueRow}>
+                        <span className={styles.r2Value}>{currentR2.toFixed(3)}</span>
+                        <span className={styles.r2Symbol}>R²</span>
                     </div>
                 </div>
-                <Activity className="absolute -bottom-4 -right-4 w-24 h-24 text-white/10 rotate-12" />
+                <Activity className={styles.r2BgIcon} />
             </div>
           </div>
         </div>
       </div>
       
-      <div className="px-8 py-5 bg-teal-950/20 text-teal-200 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center justify-between border-t border-white/5">
-        <div className="flex items-center gap-2">
+      <div className={styles.footer}>
+        <div className={styles.equationBadgeInner}>
             <Info size={14} />
             {points.length < 2 ? "Añade puntos al gráfico cuadrado para ver la regresión." : `${points.length} puntos analizados.`}
         </div>
-        <div className="hidden sm:block text-teal-300/50">
+        <div className={styles.footerScale}>
             Escala: 5.0x SST
         </div>
       </div>

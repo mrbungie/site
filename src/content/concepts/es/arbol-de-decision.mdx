@@ -11,8 +11,20 @@ draft: false
 ---
 
 import DecisionTreeVisualizer from '../../../components/visuals/DecisionTreeVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 Un **árbol de decisión** divide el espacio de datos en ramas mediante preguntas del tipo “si-entonces”. Cada nodo evalúa una condición y cada hoja produce una decisión final.
+
+<TaxonomyBox
+  modelType="Un conjunto jerárquico de reglas if-else que particiona el espacio de entrada en hojas de decisión."
+  optimizationMethods={[
+    "Construcción greedy top-down con impureza Gini",
+    "Construcción greedy top-down con entropía / information gain",
+    "Poda posterior para reducir sobreajuste tras crecer el árbol",
+  ]}
+  typicalOptimization="CART greedy top-down con divisiones binarias"
+  typicalLoss="Impureza Gini o entropía logarítmica en clasificación"
+/>
 
 ## Recorre una ruta de decisión
 

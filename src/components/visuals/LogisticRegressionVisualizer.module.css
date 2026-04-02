@@ -1,0 +1,325 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.titleIcon {
+  color: #f0abfc;
+}
+
+.regenerateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(217, 70, 239, 0.4);
+  background-color: rgba(217, 70, 239, 0.05);
+  padding: 0.5rem 1rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f0abfc;
+  transition: all 0.2s;
+}
+
+.regenerateButton:hover {
+  background-color: rgba(217, 70, 239, 0.2);
+}
+
+.regenerateButton:active {
+  transform: scale(0.95);
+}
+
+.regenerateButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #020617, 0 0 0 4px #f0abfc;
+}
+
+.layout {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+.plotAreaContainer {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #0f172a;
+  padding: 1rem;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.modelBadge {
+  position: absolute;
+  left: 2rem;
+  top: 1.5rem;
+  z-index: 10;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(2, 6, 23, 0.8);
+  padding: 0.5rem 1rem;
+  backdrop-filter: blur(12px);
+}
+
+.modelBadgeEyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #f0abfc;
+}
+
+.modelBadgeContent {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modelBadgeEquation {
+  font-size: 0.75rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.modelBadgeThreshold {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #e2e8f0;
+}
+
+.svgPlot {
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+}
+
+.curvePath {
+  filter: drop-shadow(0 0 16px rgba(232, 121, 249, 0.45));
+}
+
+.plotLabels {
+  pointer-events: none;
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #64748b;
+}
+
+.controlsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.controlValueFuchsia {
+  font-family: monospace;
+  color: #f0abfc;
+}
+
+.controlValueCyan {
+  font-family: monospace;
+  color: #5eead4;
+}
+
+.controlValueAmber {
+  font-family: monospace;
+  color: #fcd34d;
+}
+
+.controlValueEmerald {
+  font-family: monospace;
+  color: #6ee7b7;
+}
+
+.sliderFuchsia {
+  accent-color: #e879f9;
+}
+.sliderFuchsia:focus-visible {
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #f0abfc;
+}
+
+.sliderCyan {
+  accent-color: #22d3ee;
+}
+.sliderCyan:focus-visible {
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #5eead4;
+}
+
+.sliderAmber {
+  accent-color: #fbbf24;
+}
+.sliderAmber:focus-visible {
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #fcd34d;
+}
+
+.sliderEmerald {
+  accent-color: #34d399;
+}
+.sliderEmerald:focus-visible {
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #6ee7b7;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.metricCard {
+  border-radius: 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1rem;
+}
+
+.metricLabel {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.metricValue {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+.metricValueFuchsia { color: #f0abfc; }
+.metricValueCyan { color: #5eead4; }
+.metricValueEmerald { color: #6ee7b7; }
+.metricValueAmber { color: #fcd34d; }
+
+.confusionPanel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.625;
+  color: #cbd5e1;
+}
+
+.confusionHeader {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.confusionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.confusionCellEmerald {
+  border-radius: 1rem;
+  background-color: rgba(16, 185, 129, 0.1);
+  padding: 0.75rem 1rem;
+}
+.confusionCellRose {
+  border-radius: 1rem;
+  background-color: rgba(244, 63, 94, 0.1);
+  padding: 0.75rem 1rem;
+}
+
+.confusionCellLabelEmerald {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6ee7b7;
+}
+.confusionCellLabelRose {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fda4af;
+}
+
+.confusionCellValue {
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.whatToLookFor {
+  margin-top: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(2, 6, 23, 0.6);
+  padding: 1rem;
+}
+
+.whatToLookForHeader {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.whatToLookForList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1rem;
+  list-style-type: disc;
+}
+.whatToLookForList::marker {
+  color: #f0abfc;
+}
+
+.avgProb {
+  margin-top: 1rem;
+  font-size: 11px;
+  color: #94a3b8;
+}
+.avgProbValue {
+  font-weight: 700;
+  color: #f0abfc;
+}
