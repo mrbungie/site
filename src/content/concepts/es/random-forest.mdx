@@ -11,8 +11,20 @@ draft: false
 ---
 
 import RandomForestVisualizer from '../../../components/visuals/RandomForestVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 **Random Forest** combina muchos árboles de decisión entrenados sobre muestras y subconjuntos de variables distintos. En lugar de confiar en una sola rama, agrega muchas voces pequeñas y decide por mayoría.
+
+<TaxonomyBox
+  modelType="Un ensamble bagging de múltiples árboles de decisión con muestreo bootstrap y selección aleatoria de variables por nodo."
+  optimizationMethods={[
+    "Crecimiento greedy de árboles CART dentro de cada árbol individual",
+    "Bootstrap aggregation (bagging) y feature subsampling para decorrelacionar el ensamble",
+    "Selección por validación de hiperparámetros como número de árboles, profundidad y mtry",
+  ]}
+  typicalOptimization="Bagging + árboles CART greedy con feature subsampling"
+  typicalLoss="Impureza Gini o entropía en los nodos de cada árbol; voto mayoritario como regla final del ensamble"
+/>
 
 ## Mira cómo vota el bosque
 

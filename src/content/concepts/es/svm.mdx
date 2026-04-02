@@ -12,8 +12,20 @@ draft: false
 
 import SVMVisualizer from '../../../components/visuals/SVMVisualizer';
 import Math from '../../../components/Math';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 La **Máquina de Vectores de Soporte** busca una frontera de decisión que no solo separe las clases, sino que lo haga dejando el **margen** más amplio posible entre ellas.
+
+<TaxonomyBox
+  modelType="Un hiperplano de máximo margen; con kernels se convierte en una frontera no lineal en el espacio original."
+  optimizationMethods={[
+    "Programación cuadrática convexa para margen duro o suave",
+    "Sequential Minimal Optimization (SMO) para kernels",
+    "Solvers lineales tipo coordinate descent o SGD en versiones lineales grandes",
+  ]}
+  typicalOptimization="SMO o un solver de programación cuadrática convexa"
+  typicalLoss="Hinge loss, a menudo con regularización L2"
+/>
 
 ## Experimenta con el margen
 

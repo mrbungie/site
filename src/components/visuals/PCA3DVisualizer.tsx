@@ -4,6 +4,7 @@ import { ContactShadows, Grid, Line, OrbitControls, PointMaterial, Text } from '
 import { AnimatePresence, motion } from 'framer-motion';
 import { Info, Layers, Play, Repeat, Rotate3d } from 'lucide-react';
 import * as THREE from 'three';
+import styles from './PCA3DVisualizer.module.css';
 
 const CANVAS_HEIGHT = 'clamp(360px, 62vh, 580px)';
 const PCA_SAMPLE_SEED = 20260402;
@@ -320,20 +321,20 @@ const PCA3DVisualizer = () => {
   }, [projected, springProgress]);
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950 shadow-2xl sm:rounded-[2.5rem]">
+    <div className={styles.container}>
       {/* Header */}
-      <div className="flex flex-col gap-4 border-b border-white/5 bg-slate-900/40 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-7">
-        <div className="flex flex-col">
-          <h3 className="flex items-center gap-2 text-lg font-black tracking-tight text-white sm:gap-3 sm:text-2xl">
-            <Layers className="text-teal-400" size={compactLayout ? 20 : 24} />
-            VISUALIZADOR <span className="text-teal-400">PCA</span>
+      <div className={styles.header}>
+        <div className={styles.titleContainer}>
+          <h3 className={styles.title}>
+            <Layers className={styles.titleIcon} size={compactLayout ? 20 : 24} />
+            VISUALIZADOR <span className={styles.titleAccent}>PCA</span>
           </h3>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500 sm:text-[11px] sm:tracking-[0.3em]">Concepto tridimensional</p>
+          <p className={styles.subtitle}>Concepto tridimensional</p>
         </div>
       </div>
 
       {/* 3D Canvas – fixed pixel height, no flex, no percentages */}
-      <div className="relative overflow-hidden bg-slate-950" style={{ height: CANVAS_HEIGHT, touchAction: coarsePointer ? 'pan-y' : 'none' }}>
+      <div className={styles.canvasContainer} style={{ height: CANVAS_HEIGHT, touchAction: coarsePointer ? 'pan-y' : 'none' }}>
         <div style={{ width: '100%', height: CANVAS_HEIGHT }}>
           <Canvas camera={{ position: [5.5, 3.8, 5.5], fov: 32 }} dpr={[1, 2]} style={{ touchAction: coarsePointer ? 'pan-y' : 'none' }}>
             <ambientLight intensity={0.4} />
@@ -359,10 +360,10 @@ const PCA3DVisualizer = () => {
 
         <AnimatePresence>
           {!projected && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-4 left-4 right-4 z-10 flex flex-col gap-4 sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-[220px]">
-              <div className="rounded-2xl border border-white/8 bg-slate-900/62 p-4 shadow-lg backdrop-blur-md">
-                <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-teal-300/90">Dimensión completa</span>
-                <p className="text-[11px] leading-relaxed text-slate-300/90">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.infoOverlay}>
+              <div className={styles.infoCard}>
+                <span className={styles.infoEyebrow}>Dimensión completa</span>
+                <p className={styles.infoText}>
                   Los componentes se calculan desde la nube actual. PC1 y PC2 se alinean con la máxima varianza, mientras PC3 recoge la dimensión residual.
                 </p>
               </div>
@@ -370,11 +371,11 @@ const PCA3DVisualizer = () => {
           )}
 
           {projected && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-4 left-4 right-4 z-10 rounded-3xl border border-teal-300/40 bg-teal-500/90 p-5 shadow-xl backdrop-blur-xl sm:bottom-6 sm:left-1/2 sm:right-auto sm:w-[min(540px,calc(100%-3rem))] sm:-translate-x-1/2">
-              <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-white/80">Éxito en reducción</span>
-              <p className="mb-1 text-sm font-bold text-white">{varianceStats.retained.toFixed(1)}% de varianza preservada</p>
-              <p className="text-xs font-medium leading-relaxed text-white/80">
-                Al descartar <span className="text-white">PC3</span>, solo perdemos {varianceStats.discarded.toFixed(1)}% de la variación total de la muestra.
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.successOverlay}>
+              <span className={styles.successEyebrow}>Éxito en reducción</span>
+              <p className={styles.successTitle}>{varianceStats.retained.toFixed(1)}% de varianza preservada</p>
+              <p className={styles.successText}>
+                Al descartar <span className={styles.successTextHighlight}>PC3</span>, solo perdemos {varianceStats.discarded.toFixed(1)}% de la variación total de la muestra.
               </p>
             </motion.div>
           )}
@@ -382,12 +383,12 @@ const PCA3DVisualizer = () => {
       </div>
 
       {/* Footer */}
-      <div className="flex flex-col gap-4 border-t border-white/5 bg-slate-900/40 px-4 py-5 shadow-inner sm:px-6 md:px-8 md:py-7">
-        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+      <div className={styles.footer}>
+        <div className={styles.footerActions}>
           <button
             type="button"
             onClick={() => setProjected(!projected)}
-            className={`flex w-full items-center justify-center gap-3 rounded-2xl px-5 py-4 text-sm font-black tracking-tight transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:w-auto sm:px-10 ${projected ? 'bg-teal-500 text-slate-950 shadow-xl shadow-teal-500/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
+            className={`${styles.primaryButton} ${projected ? styles.primaryButtonActive : styles.primaryButtonInactive}`}
           >
             {projected ? <Repeat size={18} /> : <Play size={18} fill="currentColor" />}
             {projected ? 'Restaurar Vista 3D' : 'Proyectar a 2D'}
@@ -397,19 +398,19 @@ const PCA3DVisualizer = () => {
             type="button"
             onClick={() => setRotationEnabled(!rotationEnabled)}
             aria-label={rotationEnabled ? 'Desactivar giro automático' : 'Activar giro automático'}
-            className={`self-end rounded-2xl p-4 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:self-auto ${rotationEnabled ? 'bg-slate-800 text-teal-400 shadow-lg shadow-teal-500/10' : 'bg-rose-500/10 text-rose-400 ring-1 ring-inset ring-rose-500/20'}`}
+            className={`${styles.iconButton} ${rotationEnabled ? styles.iconButtonActive : styles.iconButtonInactive}`}
             title="Giro automático"
           >
             <Rotate3d size={22} />
           </button>
         </div>
 
-        <div className="flex w-full flex-col items-start gap-1 sm:items-end">
-          <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500/80">
-            <Info size={12} className="text-slate-600" /> Varianza retenida
+        <div className={styles.statsContainer}>
+          <span className={styles.statsLabel}>
+            <Info size={12} className={styles.statsIcon} /> Varianza retenida
           </span>
-          <div className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-2 shadow-2xl ring-1 ring-slate-200 sm:w-auto">
-             <code className="text-[13px] font-black tracking-tight text-teal-600">
+          <div className={styles.statsBadge}>
+             <code className={styles.statsCode}>
                PC1 + PC2 = {varianceStats.retained.toFixed(1)}%
              </code>
           </div>

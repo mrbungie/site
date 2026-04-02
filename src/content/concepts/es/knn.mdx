@@ -11,8 +11,20 @@ draft: false
 ---
 
 import KNNVisualizer from '../../../components/visuals/KNNVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 **k-NN** no aprende una fórmula global: guarda los datos y, cuando llega un caso nuevo, mira cuáles son sus vecinos más cercanos para decidir por mayoría.
+
+<TaxonomyBox
+  modelType="Un método basado en instancias que decide por mayoría local entre los ejemplos más cercanos en el espacio de características."
+  optimizationMethods={[
+    "No tiene ajuste paramétrico: el método almacena la muestra y compara distancias",
+    "Selección por validación de k, métrica de distancia y ponderación por distancia",
+    "Aceleración de consulta con búsqueda exhaustiva, KD-tree o Ball tree",
+  ]}
+  typicalOptimization="No hay entrenamiento paramétrico; lo típico es ajustar k y usar búsqueda por distancia"
+  typicalLoss="No minimiza una pérdida explícita durante entrenamiento; típicamente se selecciona por error de clasificación en validación"
+/>
 
 ## Explora una decisión local
 

@@ -49,6 +49,13 @@ Search results can flood context. Use `context-mode_ctx_execute(language: "shell
 - Write artifacts (code, configs, PRDs) to FILES — never return them as inline text. Return only: file path + 1-line description.
 - When indexing content, use descriptive source labels so others can `search(source: "label")` later.
 
+## CSS Architecture Rules
+
+- **Shared structural sub-elements** (viz headers, panels, labels, cards, badges used across components) → defined as BEM classes in `src/styles/global.css`
+- **Component-specific styles** → `ComponentName.module.css` co-located with the component
+- **Inline `className`** → only for truly one-off, non-reusable values (e.g. a single margin tweak). Never for colors, typography, layout patterns, or anything that repeats across components
+- No hardcoded color/typography/spacing tokens in JSX — always via CSS class
+
 ## ctx commands
 
 | Command | Action |

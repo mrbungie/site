@@ -1,0 +1,41 @@
+---
+interface Props {
+	modelType: string;
+	optimizationMethods: string[];
+	typicalOptimization: string;
+	typicalLoss: string;
+	class?: string;
+}
+---
+
+<aside class:list={['taxonomy-box', 'not-prose', Astro.props.class]}>
+	<div class="taxonomy-box__header">
+		<p class="taxonomy-box__eyebrow">Taxonomía del método</p>
+		<h3 class="taxonomy-box__title">Resumen estructural</h3>
+		<p class="taxonomy-box__intro">
+			Qué clase de modelo es, cómo suele ajustarse y qué criterio de error usa con más frecuencia.
+		</p>
+	</div>
+
+	<div class="taxonomy-box__grid">
+		<div class="taxonomy-box__card">
+			<p class="taxonomy-box__label">Modelo</p>
+			<p class="taxonomy-box__body">{Astro.props.modelType}</p>
+		</div>
+
+		<div class="taxonomy-box__card taxonomy-box__card--accent">
+			<p class="taxonomy-box__label taxonomy-box__label--accent">Optimización</p>
+			<ul class="taxonomy-box__list">
+				{Astro.props.optimizationMethods.map((method: string) => <li>{method}</li>)}
+			</ul>
+			<p class="taxonomy-box__badge">
+				Más típico: {Astro.props.typicalOptimization}
+			</p>
+		</div>
+
+		<div class="taxonomy-box__card">
+			<p class="taxonomy-box__label">Pérdida típica</p>
+			<p class="taxonomy-box__body">{Astro.props.typicalLoss}</p>
+		</div>
+	</div>
+</aside>

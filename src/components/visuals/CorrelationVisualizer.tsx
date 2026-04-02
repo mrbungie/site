@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, RefreshCcw, SlidersHorizontal, Sparkles, TrendingUp } from 'lucide-react';
+import styles from './CorrelationVisualizer.module.css';
 
 interface Point {
   x: number;
@@ -103,14 +104,14 @@ const CorrelationVisualizer = () => {
   const lineEndY = clamp(100 - (stats.intercept + stats.slope * 100), 0, 100);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-[2.5rem] border border-slate-800 bg-slate-950 shadow-[0_32px_64px_-12px_rgba(15,23,42,0.75)]">
-      <div className="flex items-center justify-between border-b border-white/5 bg-slate-900/60 px-8 py-6">
-        <div className="flex flex-col">
-          <h3 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight text-white">
-            <Activity className="text-teal-400" size={20} />
+    <div className={`rf-visualizer ${styles.container}`}>
+      <div className={styles.header}>
+        <div className={styles.titleContainer}>
+          <h3 className={styles.title}>
+            <Activity className={styles.titleIcon} size={20} />
             Laboratorio de Correlación
           </h3>
-          <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          <p className={styles.subtitle}>
             Pearson en tiempo real
           </p>
         </div>
@@ -118,25 +119,25 @@ const CorrelationVisualizer = () => {
         <button
           type="button"
           onClick={() => setSampleVersion((value) => value + 1)}
-          className="inline-flex items-center gap-2 rounded-full border border-teal-500/20 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-teal-300 transition-colors hover:bg-teal-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          className={styles.regenerateButton}
         >
           <RefreshCcw size={12} /> Regenerar muestra
         </button>
       </div>
 
-      <div className="grid gap-8 p-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="relative aspect-square w-full overflow-hidden rounded-[2.5rem] border border-white/5 bg-slate-900 p-4 shadow-inner">
-          <div className="absolute left-8 top-6 z-10 rounded-2xl border border-white/5 bg-slate-950/70 px-4 py-2 backdrop-blur-md">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-300">r observado</p>
-            <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-3xl font-black text-white">{stats.correlation.toFixed(3)}</span>
-              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{stats.strength}</span>
+      <div className={styles.layout}>
+        <div className={styles.chartContainer}>
+          <div className={styles.statsOverlay}>
+            <p className={styles.statsLabel}>r observado</p>
+            <div className={styles.statsValueContainer}>
+              <span className={styles.statsValue}>{stats.correlation.toFixed(3)}</span>
+              <span className={styles.statsStrength}>{stats.strength}</span>
             </div>
           </div>
 
           <svg
             viewBox="0 0 100 100"
-            className="h-full w-full overflow-visible"
+            className={styles.svgChart}
             preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label="Diagrama de dispersión con recta de tendencia"
@@ -168,28 +169,28 @@ const CorrelationVisualizer = () => {
                 cy={100 - point.y}
                 r="1.35"
                 fill={stats.correlation >= 0 ? '#67e8f9' : '#fda4af'}
-                className="drop-shadow-[0_0_8px_rgba(103,232,249,0.55)]"
+                style={{ filter: "drop-shadow(0 0 8px rgba(103,232,249,0.55))" }}
               />
             ))}
           </svg>
 
-          <div className="pointer-events-none absolute bottom-6 left-8 right-8 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          <div className={styles.chartAxisLabels}>
             <span>X normalizada</span>
             <span>Y normalizada</span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <div className="rounded-[2rem] border border-white/5 bg-slate-900 p-6">
-            <div className="mb-5 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+        <div className={styles.controlsColumn}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
               <SlidersHorizontal size={14} /> Ajustes
             </div>
 
-            <div className="flex flex-col gap-5">
-              <label className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+            <div className={styles.controlsList}>
+              <label className={styles.controlItem}>
+                <div className={styles.controlMeta}>
                   <span>Correlación objetivo</span>
-                  <span className="font-mono text-teal-300">{targetCorrelation.toFixed(2)}</span>
+                  <span className={styles.controlValueTeal}>{targetCorrelation.toFixed(2)}</span>
                 </div>
                 <input
                   aria-label="Correlación objetivo"
@@ -199,14 +200,14 @@ const CorrelationVisualizer = () => {
                   step="0.05"
                   value={targetCorrelation}
                   onChange={(event) => setTargetCorrelation(parseFloat(event.target.value))}
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-800 accent-teal-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                  className={styles.sliderTeal}
                 />
               </label>
 
-              <label className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+              <label className={styles.controlItem}>
+                <div className={styles.controlMeta}>
                   <span>Tamaño de muestra</span>
-                  <span className="font-mono text-sky-300">{sampleSize}</span>
+                  <span className={styles.controlValueSky}>{sampleSize}</span>
                 </div>
                 <input
                   aria-label="Tamaño de muestra"
@@ -216,27 +217,27 @@ const CorrelationVisualizer = () => {
                   step="2"
                   value={sampleSize}
                   onChange={(event) => setSampleSize(parseInt(event.target.value, 10))}
-                  className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-800 accent-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                  className={styles.sliderSky}
                 />
               </label>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/5 bg-gradient-to-br from-teal-500 to-cyan-500 p-6 text-slate-950 shadow-lg shadow-cyan-900/20">
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-950/60">
+          <div className="model-callout model-callout--teal">
+            <div className="model-callout__eyebrow">
               <TrendingUp size={14} /> Lectura rápida
             </div>
-            <p className="mt-4 text-3xl font-black">{stats.correlation > 0 ? 'Positiva' : stats.correlation < 0 ? 'Negativa' : 'Neutra'}</p>
-            <p className="mt-2 text-sm font-semibold text-slate-950/75">
+            <p className="model-callout__title">{stats.correlation > 0 ? 'Positiva' : stats.correlation < 0 ? 'Negativa' : 'Neutra'}</p>
+            <p className="model-callout__body">
               Cuando la nube se inclina hacia arriba, r crece. Cuando cae, r se vuelve negativa. Con muestras pequeñas, el valor observado oscila más.
             </p>
           </div>
 
-          <div className="rounded-[2rem] border border-white/5 bg-slate-900 p-6 text-xs leading-relaxed text-slate-300">
-            <div className="mb-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <div className={styles.notesPanel}>
+            <div className={styles.notesHeader}>
               <Sparkles size={14} /> Qué mirar
             </div>
-            <ul className="flex list-disc flex-col gap-2 pl-4 marker:text-teal-300">
+            <ul className={styles.notesList}>
               <li>Acerca el deslizador a ±1 para ver una relación lineal casi perfecta.</li>
               <li>Baja el tamaño de muestra para notar el ruido muestral.</li>
               <li>La recta discontinua resume la tendencia lineal de la nube.</li>

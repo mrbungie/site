@@ -1,0 +1,197 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  border: 1px solid #1e293b;
+  background-color: #020617;
+  box-shadow: 0 32px 64px -12px rgba(15, 23, 42, 0.75);
+}
+
+.header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 1.5rem 2rem;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.titleIcon {
+  color: #fbbf24;
+}
+
+.subtitle {
+  margin-top: 0.25rem;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #64748b;
+  margin-bottom: 0;
+}
+
+.layout {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+}
+
+.leftPanel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+}
+
+.panelHeader {
+  margin-bottom: 1.25rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.featureButtonsGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.featureBtnActive {
+  border-radius: 1rem;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fde68a;
+  cursor: pointer;
+}
+
+.featureBtnInactive {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  transition: all 0.2s;
+  background-color: #1e293b;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.probabilityPanel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+}
+
+.probGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.probLabelRow {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.probValueAmber {
+  font-family: monospace;
+  color: #fcd34d;
+}
+
+.probValueCyan {
+  font-family: monospace;
+  color: #67e8f9;
+}
+
+.barTrack {
+  height: 0.75rem;
+  border-radius: 9999px;
+  background-color: #1e293b;
+  overflow: hidden;
+}
+
+.barFillAmber {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #fbbf24;
+  transition: width 0.3s ease-out;
+}
+
+.barFillCyan {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #22d3ee;
+  transition: width 0.3s ease-out;
+}
+
+.notesPanel {
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: #0f172a;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.625;
+  color: #cbd5e1;
+}
+
+.notesHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+
+.notesListAmberMarker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1rem;
+  list-style-type: disc;
+}
+
+.notesListAmberMarker::marker {
+  color: #fcd34d;
+}
