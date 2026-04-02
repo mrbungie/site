@@ -35,17 +35,29 @@ En este simulador 3D, puedes ver cómo una nube de puntos compleja se proyecta s
 
 La idea es "rotar" el espacio de tus datos hasta que estemos mirando desde el ángulo más informativo. Ese ángulo es el que maximiza la dispersión de los puntos.
 
-## El Proceso Matemático
+## El Algoritmo Paso a Paso
 
-1. **Estandarización**: Transformar las variables para tener media <Math formula={"\\mu = 0"} /> y varianza <Math formula={"\\sigma^2 = 1"} />.
-2. **Matriz de Covarianza**: Calcular la matriz <Math formula={"C"} /> que describe las relaciones entre las variables.
-3. **Autovectores y Autovalores**: Resolver la ecuación característica <Math formula={"\\det(C - \\lambda I) = 0"} /> para encontrar los componentes que maximizan la varianza.
+Para comprender cómo los datos pierden dimensiones sin perder su "esencia" informativa, seguimos este flujo matemático riguroso:
 
-La fórmula de proyección reducida es:
+### 1. Centrado y Estandarización
+Para evitar que variables con escalas grandes (como "ingresos") dominen injustamente sobre variables con escalas pequeñas (como "edad"), reescalamos todos los datos:
+<Math formula={"Z = \\frac{X - \\mu}{\\sigma}"} block />
+*   **Media cero**: Centramos la nube de puntos en el origen.
+*   **Varianza unitaria**: Aseguramos que cada dimensión tenga el mismo peso estadístico inicial.
 
-<Math formula={"T = XW_k"} block />
+### 2. Construcción de la Matriz de Covarianza
+Calculamos la matriz <Math formula={"\\Sigma"} /> (o <Math formula={"C"} />) que describe las interdependencias lineales entre todas las variables originales.
+<Math formula={"\\Sigma = \\frac{1}{n-1} Z^T Z"} block />
+Cada celda en esta matriz nos dice si dos variables tienden a crecer juntas (covarianza positiva) o de forma inversa.
 
-Donde:
-- <Math formula={"X"} />: Matriz de datos originales de <Math formula={"n \\times p"} />.
-- <Math formula={"W_k"} />: Matriz de los <Math formula={"k"} /> autovectores seleccionados.
-- <Math formula={"T"} />: Datos proyectados en el nuevo espacio de menor dimensión.
+### 3. Autovalores y Autovectores: El "ADN" de tus datos
+Para extraer los ejes principales, resolvemos la **ecuación característica** de la matriz de covarianza. No son columnas de la matriz, sino los valores especiales que equilibran esta relación:
+<Math formula={"\\det(\\Sigma - \\lambda I) = 0"} block />
+
+*   **Autovalores (<Math formula={"\\lambda"} />)**: Indican la **Importancia**. Al resolver el determinante, obtenemos estos números que nos dicen cuánta varianza captura cada dirección.
+*   **Autovectores (<Math formula={"v"} />)**: Indican la **Dirección**. Son los vectores que definen los nuevos ejes de coordenadas (las líneas amarillo/celeste del simulador).
+
+### 4. Proyección al Nuevo Espacio
+Finalmente, seleccionamos los mejores autovectores (aquellos con mayores autovalores) y proyectamos nuestros datos originales sobre ellos:
+<Math formula={"T = Z \\cdot W_k"} block />
+Donde <Math formula={"W_k"} /> es la matriz de los <Math formula={"k"} /> autovectores principales seleccionados. El resultado <Math formula={"T"} /> son tus datos reducidos, listos para visualización o entrenamiento eficiente.

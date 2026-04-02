@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { useTranslations, getLangFromUrl } from '../../i18n/utils';
+import { getTranslations, getLangFromUrl } from '../../i18n/utils';
 
 const lang = 'en'; // Force English for /en/ route
-const t = useTranslations(lang);
+const t = getTranslations(lang);
 ---
 
 <BaseLayout title={t('nav.about')} description={t('site.description')} lang={lang}>

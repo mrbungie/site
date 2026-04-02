@@ -3,7 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import Badge from '../components/ui/Badge.astro';
 import TagList from '../components/ui/TagList.astro';
 import ConceptMeta from '../components/concept/ConceptMeta.astro';
-import { useTranslations, getLangFromUrl } from '../i18n/utils';
+import { getLangFromUrl, getLevelTranslationKey, getTranslations } from '../i18n/utils';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -14,7 +14,7 @@ const { concept } = Astro.props;
 const { title, summary, tags, area, level, prerequisites, related } = concept.data;
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const t = getTranslations(lang);
 ---
 
 <BaseLayout title={title} description={summary} lang={lang}>
@@ -22,7 +22,7 @@ const t = useTranslations(lang);
 		<header class="flex flex-col gap-6 border-b border-slate-200 pb-12">
 			<div class="flex flex-wrap items-center gap-3">
 				<Badge variant="secondary" class="uppercase tracking-wider">{area}</Badge>
-				<Badge variant="accent">{t(`level.${level}` as any)}</Badge>
+				<Badge variant="accent">{t(getLevelTranslationKey(level))}</Badge>
 			</div>
 			<div class="flex flex-col gap-4">
 				<h1 class="text-4xl font-extrabold tracking-tight text-slate-950 sm:text-6xl">

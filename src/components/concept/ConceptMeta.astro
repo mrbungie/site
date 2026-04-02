@@ -1,9 +1,9 @@
 ---
-import { useTranslations as getTranslations, type Locale } from '../../i18n/utils';
+import { getLevelTranslationKey, getTranslations, localePath, type Level, type Locale } from '../../i18n/utils';
 import Badge from '../ui/Badge.astro';
 
 interface Props {
-	level: 'beginner' | 'intermediate' | 'advanced';
+	level: Level;
 	area: string;
 	prerequisites?: string[];
 	related?: string[];
@@ -17,7 +17,7 @@ const t = getTranslations(lang);
 <div class="flex flex-col gap-6 p-6 rounded-2xl border border-slate-200 bg-slate-50">
 	<div class="flex flex-col gap-2">
 		<h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">{t('concepts.level')}</h4>
-		<Badge variant="accent" class="w-fit">{t(`level.${level}` as any)}</Badge>
+		<Badge variant="accent" class="w-fit">{t(getLevelTranslationKey(level))}</Badge>
 	</div>
 	
 	<div class="flex flex-col gap-2">
@@ -31,7 +31,7 @@ const t = getTranslations(lang);
 			<ul class="flex flex-col gap-2">
 				{prerequisites.map((p) => (
 					<li>
-						<a href={`/conceptos/${p}`} class="text-sm text-teal-700 hover:underline">
+						<a href={localePath(lang, `/conceptos/${p}`)} class="text-sm text-teal-700 hover:underline">
 							{p.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
 						</a>
 					</li>
@@ -46,7 +46,7 @@ const t = getTranslations(lang);
 			<ul class="flex flex-col gap-2">
 				{related.map((r) => (
 					<li>
-						<a href={`/conceptos/${r}`} class="text-sm text-teal-700 hover:underline">
+						<a href={localePath(lang, `/conceptos/${r}`)} class="text-sm text-teal-700 hover:underline">
 							{r.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
 						</a>
 					</li>

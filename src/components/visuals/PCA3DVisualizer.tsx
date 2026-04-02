@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Info, Layers, Play, Repeat, Rotate3d } from 'lucide-react';
 import * as THREE from 'three';
 
-/* ── Height of the 3D canvas area in pixels ─────────────────────── */
-const CANVAS_HEIGHT = 580;
+const CANVAS_HEIGHT = 'clamp(360px, 62vh, 580px)';
+const PCA_SAMPLE_SEED = 20260402;
+const MOBILE_BREAKPOINT = 640;
 
 type Basis = {
   pc1: THREE.Vector3;
@@ -17,6 +18,17 @@ type Basis = {
 };
 
 const dot = (a: THREE.Vector3, b: THREE.Vector3) => a.x * b.x + a.y * b.y + a.z * b.z;
+
+const createSeededRandom = (seed: number) => {
+  let value = seed % 2147483647;
+
+  if (value <= 0) value += 2147483646;
+
+  return () => {
+    value = (value * 16807) % 2147483647;
+    return (value - 1) / 2147483646;
+  };
+};
 
 const multiplyMatrixVector = (matrix: number[][], vector: THREE.Vector3) =>
   new THREE.Vector3(
@@ -96,23 +108,30 @@ const computeBasis = (points: THREE.Vector3[]): Basis => {
   };
 };
 
-const CameraRig = ({ basis, projected }: { basis: Basis; projected: boolean }) => {
+const CameraRig = ({ basis, projected, progress }: { basis: Basis; projected: boolean; progress: number }) => {
   const { camera } = useThree();
 
   useFrame(() => {
-    const targetLookAt = projected ? new THREE.Vector3(0, 0, 0) : basis.pc2.clone().multiplyScalar(-0.45);
-    const targetPosition = projected
-      ? basis.pc3.clone().multiplyScalar(5.2)
-      : basis.pc3.clone().multiplyScalar(7.1).add(basis.pc1.clone().multiplyScalar(2.5)).add(basis.pc2.clone().multiplyScalar(0.35));
-    const targetUp = projected ? basis.pc2.clone() : new THREE.Vector3(0, 1, 0).lerp(basis.pc2, 0.35).normalize();
-    const targetFov = projected ? 20 : 26;
+    const target = projected ? 1 : 0;
+    const isTransitioning = Math.abs(progress - target) > 0.001;
 
-    camera.position.lerp(targetPosition, 0.08);
-    camera.up.lerp(targetUp, 0.08);
+    // Only force the camera if we are in the middle of a transition.
+    // Once settled, users can interact freely via OrbitControls.
+    if (!isTransitioning) return;
+
+    const targetLookAt = projected ? new THREE.Vector3(0, 0, 0) : basis.pc2.clone().multiplyScalar(-0.35);
+    const targetPosition = projected
+      ? basis.pc3.clone().multiplyScalar(18.5)
+      : basis.pc3.clone().multiplyScalar(15.2).add(basis.pc1.clone().multiplyScalar(3.2)).add(basis.pc2.clone().multiplyScalar(0.4));
+    const targetUp = projected ? basis.pc2.clone() : new THREE.Vector3(0, 1, 0).lerp(basis.pc2, 0.4).normalize();
+    const targetFov = projected ? 26 : 34;
+
+    camera.position.lerp(targetPosition, 0.1);
+    camera.up.lerp(targetUp, 0.1);
     camera.lookAt(targetLookAt);
 
     if ('fov' in camera) {
-      camera.fov += (targetFov - camera.fov) * 0.08;
+      camera.fov += (targetFov - camera.fov) * 0.1;
       camera.updateProjectionMatrix();
     }
   });
@@ -159,7 +178,7 @@ const PointCloud = ({
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={points.length} args={[animatedPoints, 3]} />
       </bufferGeometry>
-      <PointMaterial transparent color="#5eead4" size={isProjected ? 0.18 : 0.17} sizeAttenuation depthWrite={false} opacity={0.85} />
+      <PointMaterial transparent color="#5eead4" size={isProjected ? 0.22 : 0.2} sizeAttenuation depthWrite={false} opacity={0.85} />
     </points>
   );
 };
@@ -203,8 +222,44 @@ const PCA3DVisualizer = () => {
   const [projected, setProjected] = useState(false);
   const [rotationEnabled, setRotationEnabled] = useState(true);
   const [springProgress, setSpringProgress] = useState(0);
+  const [compactLayout, setCompactLayout] = useState(false);
+  const [coarsePointer, setCoarsePointer] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const compactLayoutQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const coarsePointerQuery = window.matchMedia('(pointer: coarse)');
+    const updateMediaState = () => {
+      setCompactLayout(compactLayoutQuery.matches);
+      setCoarsePointer(coarsePointerQuery.matches);
+    };
+
+    updateMediaState();
+
+    if (compactLayoutQuery.addEventListener && coarsePointerQuery.addEventListener) {
+      compactLayoutQuery.addEventListener('change', updateMediaState);
+      coarsePointerQuery.addEventListener('change', updateMediaState);
+
+      return () => {
+        compactLayoutQuery.removeEventListener('change', updateMediaState);
+        coarsePointerQuery.removeEventListener('change', updateMediaState);
+      };
+    }
+
+    compactLayoutQuery.addListener(updateMediaState);
+    coarsePointerQuery.addListener(updateMediaState);
+
+    return () => {
+      compactLayoutQuery.removeListener(updateMediaState);
+      coarsePointerQuery.removeListener(updateMediaState);
+    };
+  }, []);
 
   const points = useMemo(() => {
+    const random = createSeededRandom(PCA_SAMPLE_SEED);
     const seedPc1 = new THREE.Vector3(1, 0.55, 0.18).normalize();
     const seedPc2Raw = new THREE.Vector3(-0.45, 1, 0.12);
     const seedPc2 = seedPc2Raw
@@ -213,16 +268,22 @@ const PCA3DVisualizer = () => {
       .normalize();
     const seedPc3 = new THREE.Vector3().crossVectors(seedPc1, seedPc2).normalize();
 
-    return Array.from({ length: 150 }, () => {
-      const v1 = (Math.random() - 0.5) * 6.5;
-      const v2 = (Math.random() - 0.5) * 3.2;
-      const v3 = (Math.random() - 0.5) * 0.8;
+    const rawPoints = Array.from({ length: 150 }, () => {
+      const v1 = (random() - 0.5) * 6.5;
+      const v2 = (random() - 0.5) * 3.2;
+      const v3 = (random() - 0.5) * 0.8;
 
       return new THREE.Vector3()
         .addScaledVector(seedPc1, v1)
         .addScaledVector(seedPc2, v2)
         .addScaledVector(seedPc3, v3);
     });
+
+    const centroid = rawPoints
+      .reduce((accumulator, point) => accumulator.add(point), new THREE.Vector3())
+      .multiplyScalar(1 / rawPoints.length);
+
+    return rawPoints.map((point) => point.sub(centroid));
   }, []);
 
   const basis = useMemo(() => computeBasis(points), [points]);
@@ -238,7 +299,7 @@ const PCA3DVisualizer = () => {
     };
   }, [basis]);
 
-  const sceneYOffset = projected ? 0 : -1.75;
+  const sceneYOffset = compactLayout ? (1 - springProgress) * -0.9 : (1 - springProgress) * -1.25;
 
   useEffect(() => {
     const target = projected ? 1 : 0;
@@ -259,27 +320,34 @@ const PCA3DVisualizer = () => {
   }, [projected, springProgress]);
 
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-800 bg-slate-950 p-1 shadow-2xl">
+    <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950 shadow-2xl sm:rounded-[2.5rem]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/5 bg-slate-900/40 px-8 py-7">
+      <div className="flex flex-col gap-4 border-b border-white/5 bg-slate-900/40 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-7">
         <div className="flex flex-col">
-          <h3 className="flex items-center gap-3 text-2xl font-black tracking-tight text-white">
-            <Layers className="text-teal-400" size={24} />
+          <h3 className="flex items-center gap-2 text-lg font-black tracking-tight text-white sm:gap-3 sm:text-2xl">
+            <Layers className="text-teal-400" size={compactLayout ? 20 : 24} />
             VISUALIZADOR <span className="text-teal-400">PCA</span>
           </h3>
-          <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.3em] text-slate-500">Concepto tridimensional</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500 sm:text-[11px] sm:tracking-[0.3em]">Concepto tridimensional</p>
         </div>
       </div>
 
       {/* 3D Canvas – fixed pixel height, no flex, no percentages */}
-      <div className="relative bg-slate-950" style={{ height: CANVAS_HEIGHT }}>
+      <div className="relative overflow-hidden bg-slate-950" style={{ height: CANVAS_HEIGHT, touchAction: coarsePointer ? 'pan-y' : 'none' }}>
         <div style={{ width: '100%', height: CANVAS_HEIGHT }}>
-          <Canvas camera={{ position: [5.5, 3.8, 5.5], fov: 32 }} dpr={[1, 2]}>
+          <Canvas camera={{ position: [5.5, 3.8, 5.5], fov: 32 }} dpr={[1, 2]} style={{ touchAction: coarsePointer ? 'pan-y' : 'none' }}>
             <ambientLight intensity={0.4} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} />
-            <CameraRig basis={basis} projected={projected} />
-            <OrbitControls enableRotate={rotationEnabled && !projected} enablePan={false} enableZoom={!projected} autoRotate={rotationEnabled && !projected} autoRotateSpeed={0.65} makeDefault />
+            <CameraRig basis={basis} projected={projected} progress={springProgress} />
+            <OrbitControls
+              enableRotate={rotationEnabled && !projected && !coarsePointer}
+              enablePan={false}
+              enableZoom={!projected && !coarsePointer}
+              autoRotate={rotationEnabled && !projected}
+              autoRotateSpeed={0.65}
+              makeDefault
+            />
             <group position={[0, sceneYOffset, 0]}>
               <PointCloud basis={basis} points={points} projectionProgress={springProgress} projected={projected} />
               <PCAAxes basis={basis} projected={projected} />
@@ -291,7 +359,7 @@ const PCA3DVisualizer = () => {
 
         <AnimatePresence>
           {!projected && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-5 left-5 z-10 flex max-w-[220px] flex-col gap-4">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-4 left-4 right-4 z-10 flex flex-col gap-4 sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-[220px]">
               <div className="rounded-2xl border border-white/8 bg-slate-900/62 p-4 shadow-lg backdrop-blur-md">
                 <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-teal-300/90">Dimensión completa</span>
                 <p className="text-[11px] leading-relaxed text-slate-300/90">
@@ -302,7 +370,7 @@ const PCA3DVisualizer = () => {
           )}
 
           {projected && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-6 left-1/2 z-10 w-[min(540px,calc(100%-3rem))] -translate-x-1/2 rounded-3xl border border-teal-300/40 bg-teal-500/90 p-5 shadow-xl backdrop-blur-xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute bottom-4 left-4 right-4 z-10 rounded-3xl border border-teal-300/40 bg-teal-500/90 p-5 shadow-xl backdrop-blur-xl sm:bottom-6 sm:left-1/2 sm:right-auto sm:w-[min(540px,calc(100%-3rem))] sm:-translate-x-1/2">
               <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-white/80">Éxito en reducción</span>
               <p className="mb-1 text-sm font-bold text-white">{varianceStats.retained.toFixed(1)}% de varianza preservada</p>
               <p className="text-xs font-medium leading-relaxed text-white/80">
@@ -314,12 +382,12 @@ const PCA3DVisualizer = () => {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-t border-white/5 bg-slate-900/40 px-8 py-7 shadow-inner">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4 border-t border-white/5 bg-slate-900/40 px-4 py-5 shadow-inner sm:px-6 md:px-8 md:py-7">
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
           <button
             type="button"
             onClick={() => setProjected(!projected)}
-            className={`flex items-center gap-3 rounded-2xl px-10 py-4.5 text-sm font-black tracking-tight transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${projected ? 'bg-teal-500 text-slate-950 shadow-xl shadow-teal-500/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
+            className={`flex w-full items-center justify-center gap-3 rounded-2xl px-5 py-4 text-sm font-black tracking-tight transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:w-auto sm:px-10 ${projected ? 'bg-teal-500 text-slate-950 shadow-xl shadow-teal-500/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'}`}
           >
             {projected ? <Repeat size={18} /> : <Play size={18} fill="currentColor" />}
             {projected ? 'Restaurar Vista 3D' : 'Proyectar a 2D'}
@@ -329,18 +397,18 @@ const PCA3DVisualizer = () => {
             type="button"
             onClick={() => setRotationEnabled(!rotationEnabled)}
             aria-label={rotationEnabled ? 'Desactivar giro automático' : 'Activar giro automático'}
-            className={`rounded-2xl p-4.5 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${rotationEnabled ? 'bg-slate-800 text-teal-400 shadow-lg shadow-teal-500/10' : 'bg-rose-500/10 text-rose-400 ring-1 ring-inset ring-rose-500/20'}`}
+            className={`self-end rounded-2xl p-4 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:self-auto ${rotationEnabled ? 'bg-slate-800 text-teal-400 shadow-lg shadow-teal-500/10' : 'bg-rose-500/10 text-rose-400 ring-1 ring-inset ring-rose-500/20'}`}
             title="Giro automático"
           >
             <Rotate3d size={22} />
           </button>
         </div>
 
-        <div className="hidden flex-col items-end gap-1 md:flex">
+        <div className="flex w-full flex-col items-start gap-1 sm:items-end">
           <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500/80">
             <Info size={12} className="text-slate-600" /> Varianza retenida
           </span>
-          <div className="flex items-center gap-2 rounded-xl bg-white px-4 py-2 shadow-2xl ring-1 ring-slate-200">
+          <div className="flex w-full items-center gap-2 rounded-xl bg-white px-4 py-2 shadow-2xl ring-1 ring-slate-200 sm:w-auto">
              <code className="text-[13px] font-black tracking-tight text-teal-600">
                PC1 + PC2 = {varianceStats.retained.toFixed(1)}%
              </code>

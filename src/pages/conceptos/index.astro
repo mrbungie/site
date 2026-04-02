@@ -3,11 +3,11 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeader from '../../components/ui/SectionHeader.astro';
 import ConceptCard from '../../components/concept/ConceptCard.astro';
-import { useTranslations, getLangFromUrl } from '../../i18n/utils';
+import { getTranslations, getLangFromUrl } from '../../i18n/utils';
 import { routePath } from '../../i18n/routes';
 
 const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const t = getTranslations(lang);
 
 const concepts = (await getCollection('concepts'))
 	.filter(c => c.id.startsWith(`${lang}/`) && !c.data.draft)
