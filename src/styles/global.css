@@ -21,6 +21,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-outfit);
   @apply font-black tracking-tight;
+  color: inherit;
 }
 
 .prose :where(h1, h2, h3, h4, h5, h6):not(.not-prose *) {
@@ -34,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 .prose .rf-notes :where(h1, h2, h3, h4, h5, h6),
 .prose .rf-tree-card :where(h1, h2, h3, h4, h5, h6),
 .prose .model-callout :where(h1, h2, h3, h4, h5, h6) {
-  color: inherit;
+  color: white;
 }
 
 ::selection {
