@@ -63,3 +63,10 @@ Search results can flood context. Use `context-mode_ctx_execute(language: "shell
 | `ctx stats` | Call the `stats` MCP tool and display the full output verbatim |
 | `ctx doctor` | Call the `doctor` MCP tool, run the returned shell command, display as checklist |
 | `ctx upgrade` | Call the `upgrade` MCP tool, run the returned shell command, display as checklist |
+
+## Astro & Tailwind v4 Deployment Rules
+
+- **CSS Modules & Hydration** → Never use `client:only="react"` for components that use CSS Modules and Tailwind v4. This prevents Astro's static build from "discovering" and linking the corresponding stylesheet in the HTML `<head>`.
+- **Force CSS Extraction** → Use `client:load` (or `client:visible`) even for Three.js/browser-heavy components. This ensures the CSS is correctly extracted and linked during production builds.
+- **SSR Safety** → Ensure components that use browser APIs (window, document) guard them with `useEffect` or `typeof window !== 'undefined'` checks so they don't crash under `client:load`.
+- **Inlining avoidance** → If CSS stays missing in production despite using `client:load`, check if Astro is aggressively inlining critical CSS into the `<style>` tag but failing to reach the threshold for the component's module.
