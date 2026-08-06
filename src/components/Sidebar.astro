@@ -1,0 +1,119 @@
+---
+import { getLangFromUrl, getTranslations, type Locale } from '../i18n/utils';
+import { routePath } from '../i18n/routes';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = getLangFromUrl(Astro.url) } = Astro.props;
+const t = getTranslations(lang);
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const homeHref = lang === 'es' ? '' : `/${lang}`;
+const conceptsHref = routePath(lang, 'concepts');
+const blogHref = routePath(lang, 'blog');
+
+function isConceptsPage(): boolean {
+  return pathname.startsWith(conceptsHref.replace(/\/$/, ''));
+}
+function isBlogPage(): boolean {
+  return pathname.startsWith(blogHref.replace(/\/$/, ''));
+}
+function isHomePage(): boolean {
+  return pathname === homeHref || pathname === `${homeHref}/` || pathname === '/';
+}
+---
+
+<aside class="sidebar">
+  <div class="sidebar-monogram">G.O.</div>
+  <div class="sidebar-name">Germán<br/>Oviedo</div>
+  <div class="sidebar-role">
+    Data &amp; AI Executive<br/>MBA · MIB Trieste
+  </div>
+  <div class="sidebar-status">
+    <span class="status-dot"></span>
+    <span>{lang === 'es' ? 'Disponible para oportunidades' : 'Available for opportunities'}</span>
+  </div>
+
+  <nav>
+    <ul>
+      <li><a href={`${homeHref}/#about`} data-section="about">{t('nav.about-section')}</a></li>
+      <li><a href={`${homeHref}/#work`} data-section="work">{t('nav.work')}</a></li>
+      <li><a href={`${homeHref}/#writing`} data-section="writing">{t('nav.writing')}</a></li>
+      <li><a href={`${homeHref}/#speaking`} data-section="speaking">{t('nav.speaking')}</a></li>
+      <li><a href={`${homeHref}/#resume`} data-section="resume">{t('nav.resume')}</a></li>
+      <li class="nav-divider"></li>
+      <li><a href={conceptsHref} class:list={[{ active: isConceptsPage() }]}>{t('nav.concepts')}</a></li>
+      <li><a href={blogHref} class:list={[{ active: isBlogPage() }]}>{t('nav.blog')}</a></li>
+      <li class="nav-divider"></li>
+      <li><a href={`${homeHref}/#contact`} data-section="contact">{t('nav.contact')}</a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-controls">
+    <a href="/" class:list={['ctrl-btn', { active: lang === 'es' }]}>ES</a>
+    <a href="/en" class:list={['ctrl-btn', { active: lang === 'en' }]}>EN</a>
+    <div class="ctrl-divider"></div>
+    <button class="ctrl-btn" id="btn-dark" onclick="toggleDark()">
+      <span id="dark-label">Dark</span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="mailto:german.oviedo.b@gmail.com">german.oviedo.b@gmail.com</a><br/>
+    <a href="https://linkedin.com/in/goviedb" target="_blank">LinkedIn</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/mrbungie" target="_blank">GitHub</a>
+  </div>
+</aside>
+
+<script is:inline>
+  (function () {
+    const isDark = () => localStorage.getItem('go-dark') === 'true';
+
+    function applyDark(dark) {
+      localStorage.setItem('go-dark', String(dark));
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+      const label = document.getElementById('dark-label');
+      if (label) label.textContent = dark ? 'Light' : 'Dark';
+      const btn = document.getElementById('btn-dark');
+      if (btn) btn.classList.toggle('active', dark);
+    }
+
+    window.toggleDark = function () { applyDark(!isDark()); };
+
+    if (isDark()) document.documentElement.setAttribute('data-theme', 'dark');
+
+    document.addEventListener('DOMContentLoaded', function () {
+      applyDark(isDark());
+
+      // Scroll spy — only on home page (has anchor sections)
+      const sections = document.querySelectorAll('section[id]');
+      if (sections.length === 0) return;
+
+      const navLinks = document.querySelectorAll('.sidebar nav a[data-section]');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navLinks.forEach(link => {
+              link.classList.toggle('active', link.dataset.section === entry.target.id);
+            });
+          }
+        });
+      }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+      sections.forEach(s => observer.observe(s));
+    });
+  })();
+</script>
+
+<style>
+  .nav-divider {
+    height: 1px;
+    background: var(--rule);
+    margin: 8px 0;
+    list-style: none;
+  }
+</style>

@@ -1,77 +1,302 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/ui/SectionHeader.astro';
-import ConceptCard from '../components/concept/ConceptCard.astro';
-import Card from '../components/ui/Card.astro';
 import { getTranslations, getLangFromUrl } from '../i18n/utils';
 import { routePath } from '../i18n/routes';
+import { projects } from '../data/projects';
 
 const lang = getLangFromUrl(Astro.url);
 const t = getTranslations(lang);
+const isES = lang === 'es';
+
+// ─── COLECCIONES ────────────────────────────────────────────────────────────
+const allPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const featuredConcepts = (await getCollection('concepts'))
-	.filter(c => c.id.startsWith(`${lang}/`) && c.data.featured && !c.data.draft)
-	.slice(0, 3);
+  .filter(c => c.id.startsWith(`${lang}/`) && c.data.featured && !c.data.draft)
+  .slice(0, 5);
 
-const latestPosts = (await getCollection('blog'))
-  .filter(p => p.id.startsWith(`${lang}/`))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 3);
+// ─── DATOS ESTÁTICOS (editar en src/data/) ──────────────────────────────────
+// Charlas — editar en src/data/speaking.ts cuando tengas contenido
+const speakingItems: { year: string; title: string; titleEN?: string; venue: string }[] = [
+  // { year: '2025', title: 'Título de la charla', titleEN: 'Talk title', venue: 'Evento · Ciudad' },
+];
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString(isES ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
+}
 ---
 
 <BaseLayout title={t('site.title')} description={t('site.description')} lang={lang}>
-	<div class="flex flex-col gap-24 py-12">
-		<!-- Hero Section -->
-		<section class="flex flex-col gap-6 text-center md:text-left py-12">
-			<h1 class="text-5xl font-extrabold tracking-tight text-slate-950 sm:text-7xl lg:text-8xl">
-				{t('home.hero.title')}
-			</h1>
-			<p class="text-2xl text-slate-600 leading-relaxed max-w-4xl mx-auto md:mx-0">
-				{t('home.hero.subtitle')}
-			</p>
-		</section>
 
-		<!-- Featured Concepts -->
-		{featuredConcepts.length > 0 && (
-			<section class="flex flex-col">
-				<SectionHeader 
-					title={t('home.featured')} 
-					href={routePath(lang, 'concepts')} 
-					linkText="Explorar conceptos"
-				/>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{featuredConcepts.map((concept) => (
-						<ConceptCard 
-							title={concept.data.title}
-							summary={concept.data.summary}
-							href={routePath(lang, 'concepts', concept.id.split('/')[1].replace(/\.(mdx|md)$/, ''))}
-							level={concept.data.level}
-							area={concept.data.area}
-							lang={lang}
-						/>
-					))}
-				</div>
-			</section>
-		)}
+  <!-- ── ABOUT ─────────────────────────────────────────────────── -->
+  <section id="about" style="padding-top: 100px;">
+    <div class="section-label">{isES ? 'Sobre mí' : 'About'}</div>
+    <div class="about-grid">
+      <div>
+        <h1 class="about-headline">
+          {isES
+            ? <Fragment>Ejecutivo de Datos e IA con más de <em>10 años</em> escalando capacidades empresariales.</Fragment>
+            : <Fragment>Data & AI executive with <em>10+ years</em> scaling enterprise capabilities.</Fragment>
+          }
+        </h1>
+        <p class="about-body">
+          {isES
+            ? 'Especializado en convertir capacidades de ML, GenAI y analítica avanzada en productos financieros escalables, automatización operativa y decisiones comerciales medibles. Trayectoria en banca y fintech en Chile e Italia.'
+            : 'Specialized in turning ML, GenAI, and advanced analytics into scalable financial products, operational automation, and measurable business outcomes. Track record across banking and fintech in Chile and Italy.'
+          }
+        </p>
+        <p class="about-body">
+          {isES
+            ? 'Cursando un MBA en MIB Trieste School of Management (Exp. Sep. 2026) e instructor universitario de Machine Learning y Estadística desde 2016.'
+            : 'Completing an MBA at MIB Trieste School of Management (Exp. Sep. 2026). University lecturer in Machine Learning and Statistics since 2016.'
+          }
+        </p>
+      </div>
+      <div class="about-photo-wrap">
+        <img class="about-photo" src="/photo-1777897986347.jpeg" alt="Germán Oviedo" />
+        <p class="about-photo-caption">Trieste, 2025</p>
+      </div>
+    </div>
+  </section>
 
-		<!-- Latest Blog Posts -->
-		<section class="flex flex-col">
-			<SectionHeader 
-				title="Últimos posts" 
-				href={routePath(lang, 'blog')} 
-			/>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{latestPosts.map((post) => (
-					<Card 
-						title={post.data.title}
-						description={post.data.description}
-						href={`/blog/${post.id}/`}
-						tags={post.data.tags}
-						image={post.data.heroImage?.src}
-					/>
-				))}
-			</div>
-		</section>
-	</div>
+  <!-- ── TRABAJO / PORTFOLIO ───────────────────────────────────── -->
+  <!-- Agrega proyectos en src/data/projects.ts para mostrar esta sección -->
+  {projects.length > 0 && (
+    <section id="work" style="padding-top: 100px;">
+      <div class="section-label">{isES ? 'Trabajo' : 'Work'}</div>
+      <div class="work-list">
+        {projects.map(p => (
+          <div class:list={['work-item', { 'cursor: pointer': !!p.href }]}>
+            <div class="work-year">{p.year}</div>
+            <div>
+              <div class="work-title">
+                {p.href
+                  ? <a href={p.href} target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">{isES ? p.title : (p.titleEN ?? p.title)}</a>
+                  : (isES ? p.title : (p.titleEN ?? p.title))
+                }
+              </div>
+              <p class="work-desc">{isES ? p.desc : (p.descEN ?? p.desc)}</p>
+              <div class="work-tags">
+                {p.tags.map(tag => <span class="tag">{tag}</span>)}
+              </div>
+            </div>
+            {p.href && <div class="work-arrow"><a href={p.href} target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">↗</a></div>}
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ── ESCRITURA (posts reales del blog) ─────────────────────── -->
+  {allPosts.length > 0 && (
+    <section id="writing" style="padding-top: 100px;">
+      <div class="section-label" style="justify-content: space-between;">
+        <span>{isES ? 'Escritura' : 'Writing'}</span>
+        <a href={routePath(lang, 'blog')} style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+          {isES ? 'Ver todos →' : 'All posts →'}
+        </a>
+      </div>
+      <div class="writing-list">
+        {allPosts.slice(0, 5).map(post => (
+          <a href={`/blog/${post.id}/`} class="writing-item" style="text-decoration: none;">
+            <div class="writing-date">{formatDate(post.data.pubDate)}</div>
+            <div>
+              <div class="writing-title">{post.data.title}</div>
+              {post.data.description && <p class="writing-excerpt">{post.data.description}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ── CHARLAS ───────────────────────────────────────────────── -->
+  <!-- Descomenta y llena speakingItems arriba para mostrar esta sección -->
+  {speakingItems.length > 0 && (
+    <section id="speaking" style="padding-top: 100px;">
+      <div class="section-label">{isES ? 'Charlas' : 'Speaking'}</div>
+      <div class="talks-list">
+        {speakingItems.map(talk => (
+          <div class="talk-item">
+            <div class="talk-year">{talk.year}</div>
+            <div>
+              <div class="talk-title">{isES ? talk.title : (talk.titleEN ?? talk.title)}</div>
+              <div class="talk-venue">{talk.venue}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ── CONCEPTOS (colección real) ───────────────────────────── -->
+  {featuredConcepts.length > 0 && (
+    <section id="concepts" style="padding-top: 100px;">
+      <div class="section-label" style="justify-content: space-between;">
+        <span>{isES ? 'Conceptos' : 'Concepts'}</span>
+        <a href={routePath(lang, 'concepts')} style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
+          {isES ? 'Ver todos →' : 'Browse all →'}
+        </a>
+      </div>
+      <div class="concept-list">
+        {featuredConcepts.map(concept => (
+          <a href={routePath(lang, 'concepts', concept.id.split('/')[1].replace(/\.(mdx|md)$/, ''))} class="concept-item">
+            <div class="concept-area">{concept.data.area}</div>
+            <div>
+              <div class="concept-title">{concept.data.title}</div>
+              <p class="concept-summary">{concept.data.summary}</p>
+            </div>
+            <div class="work-arrow">↗</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ── CV / RÉSUMÉ ───────────────────────────────────────────── -->
+  <section id="resume" style="padding-top: 100px;">
+    <div class="section-label">{isES ? 'CV' : 'Résumé'}</div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">{isES ? 'Experiencia Profesional' : 'Professional Experience'}</div>
+
+      <div class="resume-item">
+        <div class="resume-period">Nov 2023<br/>May 2025</div>
+        <div>
+          <div class="resume-org">Banco Bci</div>
+          <div class="resume-title-role">{isES ? 'Subgerente de IA Generativa' : 'Head of Generative AI'}</div>
+          <p class="resume-detail">{isES
+            ? 'Estrategia corporativa de IA, CLP 800MM+ en presupuesto. GenAI CoE (3 ML Engineers, 2 Product Leads). 26% de automatización en ~80K consultas/mes. Adopción de Gemini en 9.000+ colaboradores.'
+            : 'Corporate AI strategy, CLP 800MM+ budget. GenAI Center of Excellence (3 ML Engineers, 2 Product Leads). 26% automation over ~80K monthly inquiries. Led Gemini adoption across 9,000+ employees.'
+          }</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">Mar 2022<br/>Nov 2023</div>
+        <div>
+          <div class="resume-org">MACH</div>
+          <div class="resume-title-role">Head of Analytics & Data Science</div>
+          <p class="resume-detail">{isES
+            ? 'Equipo de 9 para 3,8M+ usuarios. Inferencia causal en +100 campañas mensuales. Motor "Next Best Action" en AWS. AutoML + DataBot GPT.'
+            : 'Team of 9 for 3.8M+ users. Causal inference across 100+ monthly campaigns. "Next Best Action" engine on AWS. AutoML + GPT-based DataBot.'
+          }</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">{isES ? 'Dic 2020' : 'Dec 2020'}<br/>{isES ? 'Ene 2022' : 'Jan 2022'}</div>
+        <div>
+          <div class="resume-org">Tenpo</div>
+          <div class="resume-title-role">Head of Data & Analytics</div>
+          <p class="resume-detail">{isES
+            ? 'Función de datos desde cero para 1M+ clientes. Cultura de datos de 2,0 → 4,5/5. Data lake en GCP (BigQuery, DBT, Airflow, Looker, Kubernetes).'
+            : 'Built data function from scratch for 1M+ customers. Data culture 2.0 → 4.5/5. Data lake on GCP (BigQuery, DBT, Airflow, Looker, Kubernetes).'
+          }</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">Mar 2015<br/>{isES ? 'Dic 2020' : 'Dec 2020'}</div>
+        <div>
+          <div class="resume-org">Banco Bci</div>
+          <div class="resume-title-role">Principal Data Scientist</div>
+          <p class="resume-detail">{isES
+            ? '+20 modelos XGBoost para predicción de comportamiento. Motor CRM híbrido para 400K+ clientes diarios. Framework de monitoreo macro COVID-19.'
+            : '20+ XGBoost models for behavioral prediction. Hybrid CRM engine for 400K+ daily customers. COVID-19 macro-monitoring framework (NBER-style).'
+          }</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">{isES ? '2016 – Presente' : '2016 – Present'}</div>
+        <div>
+          <div class="resume-org">{isES ? 'Múltiples Universidades' : 'Multiple Universities'}</div>
+          <div class="resume-title-role">{isES ? 'Docente' : 'Lecturer'}</div>
+          <p class="resume-detail">{isES
+            ? 'Data Mining, Machine Learning e Ingeniería de Software en U. Andrés Bello, U. Adolfo Ibáñez y U. Diego Portales.'
+            : 'Data Mining, Machine Learning, and Software Engineering at Universidad Andrés Bello, Universidad Adolfo Ibáñez, and Universidad Diego Portales.'
+          }</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">{isES ? 'Educación' : 'Education'}</div>
+
+      <div class="resume-item">
+        <div class="resume-period">2024 – 2026</div>
+        <div>
+          <div class="resume-org">MIB Trieste School of Management</div>
+          <div class="resume-title-role">MBA in International Business</div>
+          <p class="resume-detail">{isES ? 'En colaboración con la Universidad de Trieste. Esperado Sep. 2026.' : 'In collaboration with University of Trieste. Expected Sep. 2026.'}</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">2021 – 2022</div>
+        <div>
+          <div class="resume-org">Universidad Adolfo Ibáñez</div>
+          <div class="resume-title-role">{isES ? 'Máster en Ciencias de la Ingeniería, TI' : 'M.Sc. in Engineering, IT specialization'}</div>
+          <p class="resume-detail">Santiago & Viña del Mar, Chile</p>
+        </div>
+      </div>
+
+      <div class="resume-item">
+        <div class="resume-period">2010 – 2015</div>
+        <div>
+          <div class="resume-org">Universidad Adolfo Ibáñez</div>
+          <div class="resume-title-role">{isES ? 'Licenciatura en Ingeniería Industrial' : 'B.Sc. in Engineering (Industrial Engineering)'}</div>
+          <p class="resume-detail">Santiago & Viña del Mar, Chile</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="resume-section">
+      <div class="resume-section-title">{isES ? 'Habilidades Técnicas' : 'Technical Skills'}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--ink-muted);line-height:1.7;">
+        <div><span style="color:var(--ink);font-weight:500;">GenAI & ML:</span> LLMs, RAG, LangGraph, PydanticAI, MLOps, model evaluation</div>
+        <div><span style="color:var(--ink);font-weight:500;">{isES ? 'Datos & Plataformas:' : 'Data & Platforms:'}</span> BigQuery, Snowflake, DBT, Airflow, Spark, feature stores, data governance</div>
+        <div><span style="color:var(--ink);font-weight:500;">Cloud:</span> AWS (Glue, Athena), GCP, Azure · Kubernetes, Terraform</div>
+        <div><span style="color:var(--ink);font-weight:500;">{isES ? 'Analítica:' : 'Analytics:'}</span> {isES ? 'Inferencia causal, A/B testing, quasi-experiments, marketing analytics' : 'Causal inference, A/B testing, quasi-experiments, marketing analytics'}</div>
+        <div><span style="color:var(--ink);font-weight:500;">{isES ? 'Programación:' : 'Programming:'}</span> Python (numpy, pytorch, tensorflow), SQL, Spark (Java, Scala), R</div>
+        <div><span style="color:var(--ink);font-weight:500;">{isES ? 'Idiomas:' : 'Languages:'}</span> {isES ? 'Español (nativo), Inglés (profesional)' : 'Spanish (native), English (professional)'}</div>
+      </div>
+    </div>
+
+    <a class="cv-download" href={isES ? '/GermanOviedo_CV_ES.pdf' : '/GermanOviedo_CV_EN.pdf'} download>
+      {isES ? 'Descargar CV completo ↓' : 'Download full résumé ↓'}
+    </a>
+  </section>
+
+  <!-- ── CONTACTO ──────────────────────────────────────────────── -->
+  <section id="contact" style="padding-top:100px;padding-bottom:120px;">
+    <div class="section-label">{isES ? 'Contacto' : 'Contact'}</div>
+    <h2 class="contact-headline">
+      {isES ? 'Trabajemos en algo que importe.' : "Let's work on something that matters."}
+    </h2>
+    <p class="contact-body">
+      {isES
+        ? 'Abierto a roles de liderazgo en datos e IA, consultoría, proyectos de ML, docencia e invitaciones a hablar. Me muevo entre Europa y Latinoamérica — primero remoto, presencial cuando vale la pena.'
+        : 'Open to data & AI leadership roles, advisory work, ML contractor projects, teaching, and speaking. I move between Europe and Latin America — remote-first, in-person when it counts.'
+      }
+    </p>
+    <div class="contact-links">
+      <a class="contact-link-row" href="mailto:german.oviedo.b@gmail.com">
+        <span class="contact-link-label">Email</span>
+        <span class="contact-link-value">german.oviedo.b@gmail.com</span>
+      </a>
+      <a class="contact-link-row" href="https://linkedin.com/in/goviedb" target="_blank">
+        <span class="contact-link-label">LinkedIn</span>
+        <span class="contact-link-value">linkedin.com/in/goviedb</span>
+      </a>
+      <a class="contact-link-row" href="https://github.com/mrbungie" target="_blank">
+        <span class="contact-link-label">GitHub</span>
+        <span class="contact-link-value">github.com/mrbungie</span>
+      </a>
+    </div>
+  </section>
+
 </BaseLayout>
