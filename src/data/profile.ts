@@ -44,8 +44,8 @@ export const profile = {
       en: { before: 'I turn AI and data into', em: 'measurable business', after: 'results.' },
     } as L10n<{ before: string; em: string; after: string }>,
     valueProp: {
-      es: 'Más de 10 años escalando capacidades de ML, GenAI y analítica avanzada en banca y fintech, en Chile e Italia. MBA por MIB Trieste, de vuelta en Chile y enseñando Machine Learning desde 2016.',
-      en: 'Over 10 years scaling ML, GenAI and advanced analytics in banking and fintech across Chile and Italy. MBA from MIB Trieste, back in Chile and teaching Machine Learning since 2016.',
+      es: 'He liderado equipos de datos e IA en Bci, MACH y Tenpo. Llevo modelos de ML y GenAI a producción y los mido en resultados de negocio. Hago clases de Machine Learning en la universidad desde 2016.',
+      en: 'I've led data and AI teams at Bci, MACH and Tenpo. I take ML and GenAI models to production and measure them in business results. I've taught Machine Learning at university since 2016.',
     } as L10n<string>,
     stats: [
       { value: '10+', label: { es: 'años de experiencia en banca y fintech', en: 'years in banking & fintech' } },
@@ -56,11 +56,11 @@ export const profile = {
 
   bio: {
     es: [
-      'Especializado en convertir capacidades de ML, GenAI y analítica avanzada en productos financieros escalables, automatización operativa y decisiones comerciales medibles. Trayectoria en banca y fintech en Chile e Italia.',
+      'Especializado en convertir capacidades de ML, GenAI y analítica avanzada en productos financieros escalables, automatización operativa y decisiones comerciales medibles. Trayectoria en banca y fintech en Chile.',
       'MBA en International Business por MIB Trieste School of Management (2026). De vuelta en Chile e instructor universitario de Machine Learning y Estadística desde 2016.',
     ],
     en: [
-      'Specialized in turning ML, GenAI, and advanced analytics into scalable financial products, operational automation, and measurable business outcomes. Track record across banking and fintech in Chile and Italy.',
+      'Specialized in turning ML, GenAI, and advanced analytics into scalable financial products, operational automation, and measurable business outcomes. Track record across banking and fintech in Chile.',
       'MBA in International Business from MIB Trieste School of Management (2026). Back in Chile; university lecturer in Machine Learning and Statistics since 2016.',
     ],
   } as L10n<string[]>,
