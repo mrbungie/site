@@ -48,8 +48,10 @@ export const profile = {
       en: 'Over 10 years scaling ML, GenAI and advanced analytics in banking and fintech across Chile and Italy. MBA from MIB Trieste, back in Chile and teaching Machine Learning since 2016.',
     } as L10n<string>,
     stats: [
-      { value: '10+', label: { es: 'años en banca y fintech', en: 'years in banking & fintech' } },
+      { value: '2015', label: { es: 'trabajando en datos desde', en: 'working in data since' } },
+      { value: '10+', label: { es: 'años de experiencia en banca y fintech', en: 'years in banking & fintech' } },
       { value: '2016', label: { es: 'docente universitario desde', en: 'university lecturer since' } },
+      { value: '2026', label: { es: 'MBA, MIB Trieste', en: 'MBA, MIB Trieste' } },
     ] as { value: string; label: L10n<string> }[],
   },
 
