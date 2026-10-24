@@ -49,8 +49,6 @@ export const profile = {
     } as L10n<string>,
     stats: [
       { value: '10+', label: { es: 'años en banca y fintech', en: 'years in banking & fintech' } },
-      { value: '9.000+', label: { es: 'colaboradores en la adopción de Gemini que lideré', en: 'employees in the Gemini rollout I led' } },
-      { value: '3,8M+', label: { es: 'usuarios cubiertos por el stack de decision science', en: 'users covered by our decision-science stack' } },
       { value: '2016', label: { es: 'docente universitario desde', en: 'university lecturer since' } },
     ] as { value: string; label: L10n<string> }[],
   },
