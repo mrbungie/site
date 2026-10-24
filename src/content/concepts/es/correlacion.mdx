@@ -1,53 +1,56 @@
 ---
 title: "Correlación"
-summary: "La versión normalizada de la covarianza que nos permite medir la fuerza de una relación lineal."
-tags: ["estadística", "datos", "análisis"]
-area: "statistics"
+summary: "La covarianza normalizada: un número entre -1 y 1 que mide la fuerza de una relación lineal."
+area: "Fundamentos estadísticos"
 level: "beginner"
+order: 2
+tags: ["estadística", "relación lineal", "Pearson"]
 prerequisites: ["covarianza"]
-related: ["regresion-lineal", "regresion-logistica", "knn", "covarianza"]
+related: ["covarianza", "regresion-lineal", "pca"]
 featured: true
 draft: false
 ---
 
 import CorrelationVisualizer from '../../../components/visuals/CorrelationVisualizer';
-import Math from '../../../components/Math';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+import Callout from '../../../components/concept/Callout.astro';
 
-La **correlación de Pearson** es probablemente la métrica más utilizada para entender la relación entre dos variables. A diferencia de la covarianza, la correlación está normalizada y siempre oscila entre **-1 y 1**.
+La **correlación de Pearson** es probablemente la medida más usada para describir la relación entre dos variables. A diferencia de la [covarianza](/conceptos/covarianza), está normalizada y siempre queda entre **-1 y 1**.
 
-## La normalización definitiva
+## Definición
 
-A diferencia de la covarianza, la correlación de Pearson (<Math formula="\rho" />) normaliza los datos dividiendo por el producto de sus desviaciones estándar:
+La correlación $\rho$ divide la covarianza por el producto de las desviaciones estándar:
 
-<Math formula="\rho_{x,y} = \frac{cov(X,Y)}{\sigma_x \sigma_y}" block />
+$$
+\rho_{X,Y} = \frac{\operatorname{cov}(X,Y)}{\sigma_X \, \sigma_Y}
+$$
 
-Donde:
-- <Math formula="cov(X,Y)" />: Covarianza entre $X$ e $Y$.
-- <Math formula="\sigma_x" />: Desviación estándar de $X$.
-- <Math formula="\sigma_y" />: Desviación estándar de $Y$.
+donde $\operatorname{cov}(X,Y)$ es la covarianza y $\sigma_X$, $\sigma_Y$ son las desviaciones estándar de $X$ e $Y$. Con datos muestrales, el estimador se escribe $r$.
 
-## Interpretación de los valores
-- **1**: Correlación positiva perfecta.
-- **0**: Ninguna relación lineal.
-- **-1**: Correlación negativa perfecta.
+## Interpretación
 
-## Juega con una muestra real
+- **1**: relación lineal positiva perfecta.
+- **0**: sin relación lineal.
+- **-1**: relación lineal negativa perfecta.
 
-Mueve los controles para cambiar la correlación objetivo y el tamaño de la muestra. Verás cómo el coeficiente observado cambia por el ruido muestral, incluso cuando la relación subyacente es la misma.
+## Juega con una muestra
 
-<div class="my-10 not-prose">
-  <CorrelationVisualizer client:load />
-</div>
+Cambia la correlación objetivo y el tamaño de la muestra. Verás que el coeficiente observado fluctúa por el ruido muestral, aunque la relación subyacente sea siempre la misma.
 
-> [!TIP]
-> Si trabajas con pocas observaciones, el valor de <Math formula="r" /> puede apartarse bastante del objetivo. Más datos suelen estabilizar la estimación.
+<VizFrame>
+  <CorrelationVisualizer client:visible />
+</VizFrame>
 
-## ¿Por qué es mejor que la covarianza?
+<Callout type="tip">
+Con pocas observaciones, $r$ puede alejarse bastante del valor real. Más datos suelen estabilizar la estimación.
+</Callout>
 
-Al estar limitada a un rango fijo, podemos comparar la relación entre "Altura y Peso" con la relación entre "Temperatura y Consumo Eléctrico" de forma directa, sin importar las unidades de medida.
+## Por qué es mejor que la covarianza
 
-## ¡Cuidado!
+Al vivir en un rango fijo, permite comparar la relación entre "altura y peso" con la de "temperatura y consumo eléctrico" sin preocuparse por las unidades.
 
-> "Correlación no implica causalidad."
+## Cuidado
 
-Este es el mantra sagrado de la estadística. Que dos variables se muevan juntas no significa que una cause la otra. Podría haber una tercera variable oculta (confounding variable) o ser simple coincidencia.
+<Callout type="warning">
+**Correlación no implica causalidad.** Que dos variables se muevan juntas no significa que una cause la otra: puede haber una tercera variable oculta (un confusor) o una simple coincidencia. Además, Pearson solo detecta relaciones **lineales**: una relación en forma de U puede tener correlación cercana a 0.
+</Callout>

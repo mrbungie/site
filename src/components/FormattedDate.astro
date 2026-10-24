@@ -1,17 +1,21 @@
 ---
+import type { Locale } from '../i18n/ui';
+import { getLangFromUrl } from '../i18n/utils';
+
 interface Props {
 	date: Date;
+	lang?: Locale;
+	/** Intl month style. Defaults to the short form ("Oct 23, 2026" / "23 oct 2026"). */
+	month?: 'short' | 'long' | 'numeric';
 }
 
-const { date } = Astro.props;
+const { date, lang = getLangFromUrl(Astro.url), month = 'short' } = Astro.props;
+const label = date.toLocaleDateString(lang === 'es' ? 'es-CL' : 'en-US', {
+	year: 'numeric',
+	month,
+	day: 'numeric',
+	timeZone: 'UTC',
+});
 ---
 
-<time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
-</time>
+<time datetime={date.toISOString()}>{label}</time>

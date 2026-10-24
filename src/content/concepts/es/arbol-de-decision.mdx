@@ -1,17 +1,19 @@
 ---
 title: "Árbol de Decisión"
-summary: "Un modelo que toma decisiones por ramas, aplicando reglas simples y altamente interpretables."
-tags: ["machine-learning", "clasificación", "interpretabilidad"]
-area: "statistics"
+summary: "Toma decisiones por ramas con reglas simples y altamente interpretables."
+area: "Árboles y ensambles"
 level: "beginner"
-prerequisites: ["regresion-logistica"]
-related: ["random-forest", "svm", "regresion-logistica"]
+order: 9
+tags: ["clasificación", "interpretabilidad", "reglas"]
+prerequisites: []
+related: ["random-forest", "knn", "regresion-logistica"]
 featured: false
 draft: false
 ---
 
 import DecisionTreeVisualizer from '../../../components/visuals/DecisionTreeVisualizer';
 import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
 
 Un **árbol de decisión** divide el espacio de datos en ramas mediante preguntas del tipo “si-entonces”. Cada nodo evalúa una condición y cada hoja produce una decisión final.
 
@@ -28,13 +30,19 @@ Un **árbol de decisión** divide el espacio de datos en ramas mediante pregunta
 
 ## Recorre una ruta de decisión
 
-<div class="my-10 not-prose">
-  <DecisionTreeVisualizer client:load />
-</div>
+<VizFrame>
+  <DecisionTreeVisualizer client:visible />
+</VizFrame>
 
 ## Cómo piensa un árbol
 
-El árbol busca cortes que hagan a las hojas lo más “puras” posible. Por eso prueba umbrales como ingreso, deuda o score hasta encontrar divisiones que separen mejor las clases.
+En cada nodo, el árbol prueba umbrales de las variables (ingreso, deuda, score…) y se queda con el corte que deja las hojas lo más "puras" posible. La pureza se mide con la impureza de Gini o con la entropía:
+
+$$
+G = 1 - \sum_{k} p_k^2, \qquad H = -\sum_{k} p_k \log_2 p_k
+$$
+
+donde $p_k$ es la proporción de la clase $k$ en el nodo. Ambas valen 0 cuando el nodo es puro.
 
 ## Qué observar
 

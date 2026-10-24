@@ -1,19 +1,21 @@
 ---
 title: "Regresión Lineal"
-summary: "El modelo predictivo más simple y potente para entender relaciones entre variables continuas."
-tags: ["machine-learning", "estadística", "predicción"]
-area: "statistics"
+summary: "El modelo más simple para predecir una variable continua ajustando la mejor recta a los datos."
+area: "Modelos lineales"
 level: "intermediate"
+order: 3
+tags: ["regresión", "OLS", "predicción"]
 prerequisites: ["correlacion"]
 related: ["correlacion", "regresion-logistica", "pca"]
 featured: true
 draft: false
 ---
-import RegressionVisualizer from '../../../components/visuals/RegressionVisualizer';
-import Math from '../../../components/Math';
-import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
-La **Regresión Lineal** busca encontrar la "mejor línea" que se ajuste a un conjunto de puntos. Es la base de gran parte del Machine Learning moderno y la herramienta principal para la predicción de valores numéricos.
+import RegressionVisualizer from '../../../components/visuals/RegressionVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+La **regresión lineal** busca la recta que mejor se ajusta a un conjunto de puntos. Es la base de buena parte del aprendizaje automático moderno y la herramienta estándar para predecir valores numéricos.
 
 <TaxonomyBox
   modelType="Una función lineal paramétrica que predice un valor continuo a partir de una combinación lineal de variables de entrada."
@@ -22,37 +24,52 @@ La **Regresión Lineal** busca encontrar la "mejor línea" que se ajuste a un co
     "Descenso por gradiente, mini-batch o SGD cuando el problema escala",
     "Versiones regularizadas como Ridge o Lasso con optimizadores iterativos",
   ]}
-  typicalOptimization="OLS por solución cerrada (normal equations / QR)"
-  typicalLoss="Error cuadrático medio o suma de errores cuadrados (MSE / SSE)"
+  typicalOptimization="OLS por solución cerrada (ecuaciones normales / QR)"
+  typicalLoss="Error cuadrático medio o suma de errores al cuadrado (MSE / SSE)"
 />
 
-## Experimenta con la Recta OLS
+## Experimenta con la recta OLS
 
-Usa el laboratorio interactivo para dibujar puntos y ver cómo la línea se ajusta automáticamente mediante **Mínimos Cuadrados Ordinarios (OLS)**.
+Dibuja puntos y observa cómo la recta se reajusta automáticamente por **mínimos cuadrados ordinarios (OLS)**.
 
-<div class="my-10 not-prose">
-  <RegressionVisualizer client:load />
-</div>
+<VizFrame>
+  <RegressionVisualizer client:visible />
+</VizFrame>
 
-## La ecuación fundamental
+## El modelo
 
-La regresión lineal busca modelar la relación entre una variable dependiente <Math formula={"y"} /> y una variable independiente <Math formula={"x"} /> mediante la siguiente forma:
+Con una variable explicativa $x$, el modelo es
 
-<Math formula={"y = \\beta_0 + \\beta_1x + \\epsilon"} block />
+$$
+y = \beta_0 + \beta_1 x + \varepsilon
+$$
 
-Donde:
-- <Math formula={"\\beta_0"} />: Intercepto (valor de $y$ cuando $x=0$).
-- <Math formula={"\\beta_1"} />: Pendiente.
-- <Math formula={"\\epsilon"} />: Término de error aleatorio.
+donde $\beta_0$ es el intercepto (el valor esperado de $y$ cuando $x=0$), $\beta_1$ es la pendiente y $\varepsilon$ es el error aleatorio.
 
-El algoritmo OLS minimiza el **Error Residual (SSE)**:
+OLS elige los coeficientes que minimizan la **suma de errores al cuadrado** (SSE):
 
-<Math formula={"SSE = \\sum_{i=1}^{n} (y_{i} - \\hat{y}_{i})^2"} block />
+$$
+\mathrm{SSE} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$$
 
-Y el coeficiente de determinación <Math formula={"R^2"} /> se define como:
+En el caso simple hay solución cerrada, y conecta con los conceptos anteriores:
 
-<Math formula={"R^2 = 1 - \\frac{SSE}{SSTotal}"} block />
+$$
+\hat{\beta}_1 = \frac{\operatorname{cov}(X,Y)}{\operatorname{var}(X)} = \rho_{X,Y}\,\frac{\sigma_Y}{\sigma_X},
+\qquad
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+$$
+
+## Qué tan bien ajusta
+
+El coeficiente de determinación $R^2$ mide la fracción de la varianza de $y$ que explica el modelo:
+
+$$
+R^2 = 1 - \frac{\mathrm{SSE}}{\mathrm{SST}}, \qquad \mathrm{SST} = \sum_{i=1}^{n} (y_i - \bar{y})^2
+$$
+
+En regresión simple, $R^2 = \rho^2$. Un $R^2$ alto no garantiza que el modelo sea correcto: conviene revisar siempre los residuos.
 
 ## Aplicaciones
 
-Desde predecir el precio de una casa basándose en sus metros cuadrados hasta estimar el impacto de una campaña de marketing en el ROI.
+Desde predecir el precio de una casa según sus metros cuadrados hasta estimar el efecto de una campaña de marketing sobre las ventas.

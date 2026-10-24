@@ -1,23 +1,121 @@
 ---
-import { getTranslations, type Locale } from '../../i18n/utils';
+import { getLevelTranslationKey, getTranslations, type Level, type Locale } from '../../i18n/utils';
 
 interface Props {
 	title: string;
 	summary: string;
 	href: string;
-	level: 'beginner' | 'intermediate' | 'advanced';
+	level: Level;
 	area: string;
+	order?: number;
+	minutes?: number;
+	featured?: boolean;
 	lang: Locale;
 }
 
-const { title, summary, href, level, area, lang } = Astro.props;
+const { title, summary, href, level, area, order, minutes, featured = false, lang } = Astro.props;
+const t = getTranslations(lang);
 ---
 
-<a href={href} class="concept-item">
-	<div class="concept-area">{area}</div>
-	<div>
-		<div class="concept-title">{title}</div>
-		<p class="concept-summary">{summary}</p>
+<a href={href} class:list={['concept-card', { 'concept-card--featured': featured }]} data-level={level}>
+	<div class="concept-card__top">
+		<span class="concept-card__area">{area}</span>
+		{order !== undefined && <span class="concept-card__order">{String(order).padStart(2, '0')}</span>}
 	</div>
-	<div class="work-arrow">↗</div>
+	<h3 class="concept-card__title">{title}</h3>
+	<p class="concept-card__summary">{summary}</p>
+	<div class="concept-card__foot">
+		<span class="concept-card__level">
+			<span class={`concept-card__dot concept-card__dot--${level}`} aria-hidden="true"></span>
+			{t(getLevelTranslationKey(level))}
+		</span>
+		{minutes && <span>{minutes} {t('concepts.minRead')}</span>}
+		<span class="concept-card__arrow" aria-hidden="true">↗</span>
+	</div>
 </a>
+
+<style>
+	.concept-card {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		height: 100%;
+		padding: 22px;
+		border: 1px solid var(--rule);
+		text-decoration: none;
+		color: inherit;
+		transition: border-color 0.2s, transform 0.2s;
+	}
+	.concept-card:hover,
+	.concept-card:focus-visible {
+		border-color: var(--accent);
+		transform: translateY(-2px);
+	}
+	.concept-card--featured {
+		background: var(--accent-light);
+	}
+	.concept-card__top {
+		display: flex;
+		justify-content: space-between;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.concept-card__area {
+		color: var(--accent);
+	}
+	.concept-card__order {
+		color: var(--ink-muted);
+	}
+	.concept-card__title {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 21px;
+		line-height: 1.25;
+		font-weight: 400;
+		color: var(--ink);
+	}
+	.concept-card:hover .concept-card__title {
+		color: var(--accent);
+	}
+	.concept-card__summary {
+		margin: 0;
+		flex: 1;
+		font-size: 14px;
+		line-height: 1.65;
+		color: var(--ink-muted);
+	}
+	.concept-card__foot {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.concept-card__level {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.concept-card__dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+		opacity: 0.35;
+	}
+	.concept-card__dot--intermediate {
+		opacity: 0.7;
+	}
+	.concept-card__dot--advanced {
+		opacity: 1;
+	}
+	.concept-card__arrow {
+		margin-left: auto;
+		font-size: 14px;
+	}
+</style>

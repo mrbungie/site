@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content';
+import ConceptLayout from '../../layouts/ConceptLayout.astro';
+import { routePath } from '../../i18n/routes';
+import { defaultLocale, type Locale } from '../../i18n/ui';
+import { conceptHref, getConcepts, readingMinutes, resolveRefs, conceptSlug, type ConceptEntry } from './concepts';
+
+interface Props {
+	concept: ConceptEntry;
+	lang: Locale;
+}
+
+const { concept, lang } = Astro.props;
+const { entries, fallback } = await getConcepts(lang);
+const { Content, headings } = await render(concept);
+
+const slug = conceptSlug(concept);
+const index = entries.findIndex((e) => e.id === concept.id);
+const prerequisites = resolveRefs(entries, concept.data.prerequisites, slug);
+const related = resolveRefs(entries, concept.data.related, slug);
+const originalHref = fallback ? routePath(defaultLocale, 'concepts', slug) : undefined;
+---
+
+<ConceptLayout
+	concept={concept}
+	headings={headings}
+	minutes={readingMinutes(concept)}
+	lang={lang}
+	fallback={fallback}
+	prerequisites={prerequisites}
+	related={related}
+	prev={entries[index - 1]}
+	next={entries[index + 1]}
+	originalHref={originalHref}
+>
+	<Content />
+</ConceptLayout>

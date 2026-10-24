@@ -1,18 +1,19 @@
 ---
 title: "Máquina de Vectores de Soporte (SVM)"
-summary: "Un clasificador que busca la frontera que separa las clases con el mayor margen posible."
-tags: ["machine-learning", "clasificación", "margen"]
-area: "statistics"
+summary: "Busca la frontera que separa las clases con el mayor margen posible."
+area: "Clasificación"
 level: "intermediate"
-prerequisites: ["regresion-logistica", "correlacion"]
+order: 8
+tags: ["clasificación", "margen", "kernels"]
+prerequisites: ["regresion-logistica"]
 related: ["regresion-logistica", "knn", "arbol-de-decision"]
 featured: false
 draft: false
 ---
 
 import SVMVisualizer from '../../../components/visuals/SVMVisualizer';
-import Math from '../../../components/Math';
 import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
 
 La **Máquina de Vectores de Soporte** busca una frontera de decisión que no solo separe las clases, sino que lo haga dejando el **margen** más amplio posible entre ellas.
 
@@ -29,23 +30,35 @@ La **Máquina de Vectores de Soporte** busca una frontera de decisión que no so
 
 ## Experimenta con el margen
 
-<div class="my-10 not-prose">
-  <SVMVisualizer client:load />
-</div>
+Observa cómo la frontera, el margen y los vectores de soporte responden a los datos.
+
+<VizFrame>
+  <SVMVisualizer client:visible />
+</VizFrame>
 
 ## La idea matemática
 
-En su versión lineal, SVM define un hiperplano:
+En su versión lineal, SVM define un hiperplano de separación:
 
-<Math formula={"w^T x + b = 0"} block />
+$$
+w^\top x + b = 0
+$$
 
-La clasificación depende del signo de esa expresión, y el entrenamiento busca maximizar la distancia entre el hiperplano y los puntos más cercanos de cada clase.
+Un punto se clasifica según el signo de $w^\top x + b$. El **margen** (la distancia entre las dos clases a ambos lados de la frontera) vale $2/\lVert w \rVert$, así que maximizar el margen equivale a minimizar $\lVert w \rVert$.
+
+Cuando las clases no son perfectamente separables, se permite cierto error con el **hinge loss** y un parámetro de regularización $C$:
+
+$$
+\min_{w,b} \; \tfrac{1}{2}\lVert w \rVert^2 + C \sum_{i=1}^{n} \max\bigl(0,\; 1 - y_i (w^\top x_i + b)\bigr)
+$$
+
+Un $C$ grande castiga los errores y da márgenes estrechos; un $C$ pequeño tolera errores y da márgenes anchos.
 
 ## Qué observar
 
-- Los **vectores de soporte** son los puntos más críticos: si se mueven, cambian la frontera.
+- Los **vectores de soporte** son los puntos más críticos: si se mueven, cambia la frontera; el resto no la afecta.
 - Un kernel como **RBF** permite fronteras curvas cuando una recta no alcanza.
-- El margen protege al modelo frente a pequeñas perturbaciones.
+- Un margen amplio hace al modelo más robusto frente a pequeñas perturbaciones.
 
 ## Aplicaciones
 

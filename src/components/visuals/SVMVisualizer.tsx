@@ -1,169 +1,122 @@
-import React, { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Activity, RefreshCcw, SlidersHorizontal, Sparkles, Target } from 'lucide-react';
-import { clamp, generateLinearSample, generateRadialSample } from './classificationUtils';
-import styles from './SVMVisualizer.module.css';
+import { useMemo, useState } from 'react';
+import { linearSample, ringSample } from './shared/datasets';
+import { clipLine, contourPath, fmt, pct } from './shared/math';
+import { trainSvm, type KernelName } from './shared/svm';
+import {
+  Button, Callout, Legend, Mark, Notes, Panel, Plot, PlotSvg, Segmented, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v,
+} from './shared/ui';
 
-type Kernel = 'linear' | 'rbf';
+type Dataset = 'linear' | 'ring';
+const SCALE = 25; // training happens on u = (x − 50) / 25 so kernels see O(1) distances
+const GRID = 36;
 
 const SVMVisualizer = () => {
-  const [kernel, setKernel] = useState<Kernel>('linear');
-  const [overlap, setOverlap] = useState(0.55);
-  const [marginWidth, setMarginWidth] = useState(0.85);
-  const [sampleVersion, setSampleVersion] = useState(0);
+  const [dataset, setDataset] = useState<Dataset>('linear');
+  const [kernel, setKernel] = useState<KernelName>('linear');
+  const [overlap, setOverlap] = useState(0.5);
+  const [logC, setLogC] = useState(0);
+  const [gamma, setGamma] = useState(1);
+  const [version, setVersion] = useState(0);
 
-  const points = useMemo(
-    () =>
-      kernel === 'linear'
-        ? generateLinearSample({ sampleSize: 46, version: sampleVersion, overlap })
-        : generateRadialSample({ sampleSize: 46, version: sampleVersion, overlap }),
-    [kernel, overlap, sampleVersion],
-  );
+  const C = 10 ** logC;
+  const points = useMemo(() => (dataset === 'linear' ? linearSample(46, version, overlap) : ringSample(46, version, overlap)), [dataset, overlap, version]);
 
-  const decision = useMemo(() => {
-    const marginBand = marginWidth * (kernel === 'linear' ? 11 : 5.5);
+  const model = useMemo(() => {
+    const inputs = points.map((p) => [(p.x - 50) / SCALE, (p.y - 50) / SCALE]);
+    const targets = points.map((p) => (p.label === 1 ? 1 : -1)) as (1 | -1)[];
+    const svm = trainSvm(inputs, targets, { C, kernel, gamma, seed: version + 3 });
+    const correct = points.filter((p, i) => (svm.decision(inputs[i][0], inputs[i][1]) >= 0 ? 1 : -1) === targets[i]).length;
+    return { svm, accuracy: correct / points.length, support: new Set(svm.supportIndices) };
+  }, [C, gamma, kernel, points, version]);
 
-    const scoreFor = (x: number, y: number) => {
-      if (kernel === 'linear') {
-        return (x - 50) * 0.92 - (y - 50) * 0.78;
-      }
+  // Linear: f(x, y) = w·u + b = 0 is a line; margins are f = ±1. Mapped back to plot units.
+  const lines = useMemo(() => {
+    const w = model.svm.weights;
+    if (!w) return null;
+    const at = (level: number) => clipLine(w[0] / SCALE, w[1] / SCALE, model.svm.bias - 2 * (w[0] + w[1]) - level);
+    return { boundary: at(0), plus: at(1), minus: at(-1), width: (2 * SCALE) / Math.hypot(w[0], w[1]) };
+  }, [model]);
 
-      return Math.hypot(x - 50, y - 50) - 22;
-    };
+  // RBF: sample f on a grid, shade by sign, trace f = 0 and f = ±1 with marching squares.
+  const field = useMemo(() => {
+    if (kernel !== 'rbf') return null;
+    const values = Array.from({ length: GRID }, (_, r) =>
+      Array.from({ length: GRID }, (_, c) => model.svm.decision(((c / (GRID - 1)) * 100 - 50) / SCALE, ((r / (GRID - 1)) * 100 - 50) / SCALE)),
+    );
+    // Row index runs top→bottom in SVG space, so rows were sampled with y_data = 100·r/(GRID−1); flip when drawing.
+    return { values, zero: contourPath(values, 0), plus: contourPath(values, 1), minus: contourPath(values, -1) };
+  }, [kernel, model]);
 
-    const supportVectors = [...points]
-      .map((point) => ({ ...point, score: Math.abs(scoreFor(point.x, point.y)) }))
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 8);
-
-    const correct = points.filter((point) => {
-      const predicted = scoreFor(point.x, point.y) >= 0 ? 1 : 0;
-      return predicted === point.label;
-    }).length;
-
-    return {
-      scoreFor,
-      supportVectors,
-      accuracy: correct / points.length,
-      marginBand,
-    };
-  }, [kernel, marginWidth, points]);
-
-  const lineY = (x: number, offset: number) => {
-    const numerator = 0.92 * (x - 50) - offset;
-    return clamp(50 + numerator / 0.78, 0, 100);
-  };
+  const cell = 100 / (GRID - 1);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.titleContainer}>
-          <h3 className={styles.title}>
-            <Activity className={styles.titleIcon} size={20} /> Laboratorio SVM
-          </h3>
-          <p className={styles.subtitle}>Margen máximo y vectores de soporte</p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSampleVersion((value) => value + 1)}
-          className={styles.regenerateButton}
-        >
-          <RefreshCcw size={12} /> Regenerar muestra
-        </button>
-      </div>
-
-      <div className={styles.layout}>
-        <div className={styles.chartContainer}>
-          <div className={styles.statsOverlay}>
-            <p className={styles.statsLabel}>kernel</p>
-            <div className={styles.statsValueContainer}>
-              <span className={styles.statsValue}>{kernel === 'linear' ? 'Lineal' : 'RBF'}</span>
-              <span className={styles.statsAccuracy}>accuracy {(decision.accuracy * 100).toFixed(1)}%</span>
-            </div>
-          </div>
-
-          <svg viewBox="0 0 100 100" className={styles.svgChart} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Plano cartesiano con frontera SVM">
-            {Array.from({ length: 11 }, (_, value) => value).map((value) => (
-              <React.Fragment key={value}>
-                <line x1={value * 10} y1="0" x2={value * 10} y2="100" stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-                <line x1="0" y1={value * 10} x2="100" y2={value * 10} stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-              </React.Fragment>
-            ))}
-
-            {kernel === 'linear' ? (
-              <>
-                <line x1="0" y1={100 - lineY(0, 0)} x2="100" y2={100 - lineY(100, 0)} stroke="#c084fc" strokeWidth="1.15" />
-                <line x1="0" y1={100 - lineY(0, decision.marginBand)} x2="100" y2={100 - lineY(100, decision.marginBand)} stroke="rgba(192,132,252,0.45)" strokeWidth="0.75" strokeDasharray="2.5 2" />
-                <line x1="0" y1={100 - lineY(0, -decision.marginBand)} x2="100" y2={100 - lineY(100, -decision.marginBand)} stroke="rgba(192,132,252,0.45)" strokeWidth="0.75" strokeDasharray="2.5 2" />
-              </>
-            ) : (
-              <>
-                <circle cx="50" cy="50" r="22" fill="none" stroke="#c084fc" strokeWidth="1.15" />
-                <circle cx="50" cy="50" r={22 + decision.marginBand} fill="none" stroke="rgba(192,132,252,0.4)" strokeWidth="0.75" strokeDasharray="2.5 2" />
-                <circle cx="50" cy="50" r={Math.max(4, 22 - decision.marginBand)} fill="none" stroke="rgba(192,132,252,0.4)" strokeWidth="0.75" strokeDasharray="2.5 2" />
-              </>
-            )}
-
-            {points.map((point) => {
-              const isSupport = decision.supportVectors.some((vector) => vector.id === point.id);
-              return (
-                <motion.circle
-                  key={`${kernel}-${sampleVersion}-${point.id}`}
-                  initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, delay: point.id * 0.01 }}
-                  cx={point.x}
-                  cy={100 - point.y}
-                  r={isSupport ? 2.1 : 1.45}
-                  fill={point.label === 1 ? '#67e8f9' : '#fda4af'}
-                  stroke={isSupport ? '#f8fafc' : 'transparent'}
-                  strokeWidth="0.45"
-                />
-              );
-            })}
-          </svg>
-        </div>
-
-        <div className={styles.controlsColumn}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <SlidersHorizontal size={14} /> Ajustes
-            </div>
-
-            <div className={styles.toggleGrid}>
-              <button type="button" onClick={() => setKernel('linear')} className={`model-toggle-button ${kernel === 'linear' ? 'model-toggle-button--active-violet' : 'model-toggle-button--inactive'}`}>Lineal</button>
-              <button type="button" onClick={() => setKernel('rbf')} className={`model-toggle-button ${kernel === 'rbf' ? 'model-toggle-button--active-violet' : 'model-toggle-button--inactive'}`}>RBF</button>
-            </div>
-
-            <label className={styles.controlItem}>
-              <div className={styles.controlMeta}><span>Solapamiento</span><span className={styles.controlValueViolet}>{overlap.toFixed(2)}</span></div>
-              <input type="range" min="0.1" max="1.2" step="0.05" value={overlap} onChange={(event) => setOverlap(parseFloat(event.target.value))} className={styles.sliderViolet} />
-            </label>
-
-            <label className={styles.controlItem}>
-              <div className={styles.controlMeta}><span>Ancho del margen</span><span className={styles.controlValueCyan}>{marginWidth.toFixed(2)}</span></div>
-              <input type="range" min="0.4" max="1.4" step="0.05" value={marginWidth} onChange={(event) => setMarginWidth(parseFloat(event.target.value))} className={styles.sliderCyan} />
-            </label>
-          </div>
-
-          <div className="model-callout model-callout--violet">
-            <div className="model-callout__eyebrow"><Target size={14} /> Idea central</div>
-            <p className="model-callout__title">Margen máximo</p>
-            <p className="model-callout__body">SVM no busca solo separar clases: busca hacerlo dejando la franja de seguridad más amplia posible alrededor de la frontera.</p>
-          </div>
-
-          <div className={styles.notesPanel}>
-            <div className={styles.notesHeader}><Sparkles size={14} /> Qué mirar</div>
-            <ul className={styles.notesListVioletMarker}>
-              <li>Los puntos con borde blanco son los más cercanos a la frontera: vectores de soporte.</li>
-              <li>Con kernel RBF, la frontera deja de ser recta y puede envolver regiones.</li>
-              <li>Más solapamiento hace más difícil sostener un margen limpio.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <VizFrame
+      title="Laboratorio SVM"
+      subtitle="Margen máximo y vectores de soporte (SMO)"
+      actions={<Button onClick={() => setVersion((n) => n + 1)}>Nueva muestra</Button>}
+    >
+      <VizBody
+        plot={
+          <Plot
+            overlay={<>accuracy {pct(model.accuracy)} · {model.svm.supportIndices.length} vectores de soporte</>}
+            caption={<><span>Kernel {kernel === 'linear' ? 'lineal' : 'RBF'}</span><span>C = {fmt(C, 2)}{kernel === 'rbf' ? ` · γ = ${fmt(gamma, 2)}` : ''}</span></>}
+          >
+            <PlotSvg label={`Frontera SVM con kernel ${kernel}, exactitud ${pct(model.accuracy)}`}>
+              {field && (
+                <g>
+                  {field.values.flatMap((row, r) =>
+                    row.map((value, c) => (
+                      <rect key={`${r}-${c}`} className={value >= 0 ? v.regionPos : v.regionNeg} x={c * cell - cell / 2} y={flipY(r * cell + cell / 2)} width={cell + 0.05} height={cell + 0.05} />
+                    )),
+                  )}
+                  {/* contours were computed with row 0 at y = 0 (data space); mirror into SVG space */}
+                  <g transform="translate(0 100) scale(1 -1)">
+                    <path d={field.plus} className={v.lineDashed} />
+                    <path d={field.minus} className={v.lineDashed} />
+                    <path d={field.zero} className={v.lineMain} />
+                  </g>
+                </g>
+              )}
+              {lines && (
+                <g>
+                  {([lines.plus, lines.minus] as const).map((l, i) => l && <line key={i} className={v.lineDashed} x1={l[0].x} y1={flipY(l[0].y)} x2={l[1].x} y2={flipY(l[1].y)} />)}
+                  {lines.boundary && <line className={v.lineMain} x1={lines.boundary[0].x} y1={flipY(lines.boundary[0].y)} x2={lines.boundary[1].x} y2={flipY(lines.boundary[1].y)} />}
+                </g>
+              )}
+              {points.map((p, i) => (
+                <Mark key={`${dataset}-${version}-${p.id}`} x={p.x} y={p.y} label={p.label} ring={model.support.has(i)} delay={p.id * 0.006} />
+              ))}
+            </PlotSvg>
+          </Plot>
+        }
+        side={
+          <>
+            <Panel title="Ajustes">
+              <Segmented<Dataset> label="Conjunto de datos" value={dataset} onChange={setDataset} options={[{ value: 'linear', label: 'Separable' }, { value: 'ring', label: 'Anillo' }]} />
+              <Segmented<KernelName> label="Kernel" value={kernel} onChange={setKernel} options={[{ value: 'linear', label: 'Lineal' }, { value: 'rbf', label: 'RBF' }]} />
+              <Slider label="Solapamiento (ruido)" value={overlap} min={0.1} max={1.2} step={0.05} onChange={setOverlap} format={(x) => fmt(x, 2)} tone="c5" />
+              <Slider label="Penalización C" value={logC} min={-1.5} max={2} step={0.1} onChange={setLogC} format={() => fmt(C, 2)} tone="c4" hint="C pequeño = margen ancho y tolerante; C grande = menos errores permitidos." />
+              {kernel === 'rbf' && <Slider label="Ancho γ" value={gamma} min={0.1} max={6} step={0.1} onChange={setGamma} format={(x) => fmt(x, 1)} tone="c3" hint="γ grande = frontera local y sinuosa." />}
+            </Panel>
+            <Callout eyebrow="Idea central" title="Margen máximo" tone="c4">
+              {lines
+                ? `Ancho del margen ≈ ${fmt(lines.width, 1)} unidades; solo los ${model.svm.supportIndices.length} vectores de soporte lo determinan.`
+                : `Con RBF el margen vive en un espacio de características implícito; ${model.svm.supportIndices.length} vectores de soporte definen la frontera.`}
+            </Callout>
+            <StatGrid>
+              <Stat label="Accuracy" value={pct(model.accuracy)} tone="pos" />
+              <Stat label="Soporte" value={model.svm.supportIndices.length} tone="c4" />
+            </StatGrid>
+            <Legend items={[{ kind: 'pos', label: 'Clase 1' }, { kind: 'neg', label: 'Clase 0' }, { kind: 'ring', label: 'Vector de soporte' }, { kind: 'line', label: 'Frontera f = 0', tone: 'ink' }, { kind: 'dash', label: 'Margen f = ±1' }]} />
+            <Notes items={[
+              'Los vectores de soporte (αᵢ > 0) son los únicos puntos que mueven la frontera.',
+              'En “Anillo”, el kernel lineal falla; RBF envuelve la región.',
+              'Sube C o γ y la frontera se ajusta al ruido: sobreajuste.',
+            ]} />
+          </>
+        }
+      />
+    </VizFrame>
   );
 };
 

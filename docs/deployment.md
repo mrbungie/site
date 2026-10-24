@@ -4,7 +4,7 @@ This document explains how to deploy the Astro website to Cloudflare Pages autom
 
 ## Overview
 
-We use continuous integration and delivery (CI/CD) natively through GitHub Actions. Every push to the `main` or `master` branch will trigger a workflow that builds the Astro site and deploys the generated `dist/` folder directly to Cloudflare Pages. 
+We use continuous integration and delivery (CI/CD) natively through GitHub Actions. Every push to `main`, `master` or `dev` (or a manual dispatch) triggers a workflow that builds the Astro site and deploys the generated `dist/` folder directly to Cloudflare Pages. 
 
 ## Configuration Requirements
 
@@ -25,7 +25,7 @@ Variables are accessible in plaintext and are used for environment configuration
 
 The deployment workflow is defined in the repository at `.github/workflows/deploy.yml`. When triggered, it performs the following steps:
 1. Checks out the repository source code.
-2. Sets up the specified version of Node.js (`v22`).
+2. Sets up the specified version of Node.js (`22`, matching `engines` in `package.json`), with npm cache.
 3. Clean-installs dependencies via `npm ci`.
 4. Builds the Astro project for production using `npm run build`.
 5. Deploys the resulting `dist` output folder to Cloudflare Pages utilizing the `cloudflare/pages-action` package and the secrets/variables provided above.

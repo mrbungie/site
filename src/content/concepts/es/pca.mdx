@@ -1,63 +1,89 @@
 ---
 title: "PCA (Análisis de Componentes Principales)"
-summary: "Una técnica de reducción de dimensionalidad para simplificar datos complejos sin perder información esencial."
-tags: ["machine-learning", "estadística", "visualización"]
-area: "statistics"
+summary: "Reduce la dimensionalidad de los datos conservando la mayor parte de su varianza."
+area: "Reducción de dimensión"
 level: "intermediate"
+order: 5
+tags: ["reducción de dimensión", "álgebra lineal", "visualización"]
 prerequisites: ["covarianza", "correlacion"]
-related: ["regresion-lineal", "svm", "random-forest"]
+related: ["covarianza", "regresion-lineal"]
 featured: true
 draft: false
 ---
+
 import PCA3DVisualizer from '../../../components/visuals/PCA3DVisualizer';
-import Math from '../../../components/Math';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+import Callout from '../../../components/concept/Callout.astro';
 
-El **PCA (Principal Component Analysis)** es una técnica matemática que transforma un conjunto de variables correlacionadas en un número menor de variables no correlacionadas llamadas "componentes principales".
+El **PCA** (Principal Component Analysis) transforma un conjunto de variables correlacionadas en un número menor de variables no correlacionadas, llamadas **componentes principales**, que conservan la mayor parte de la varianza.
 
-## Visualiza la Reducción de Dimensiones
+## Visualiza la reducción de dimensiones
 
-En este simulador 3D, puedes ver cómo una nube de puntos compleja se proyecta sobre un plano de 2 dimensiones (PC1 y PC2) perdiendo la mínima información posible.
+En este simulador 3D, una nube de puntos se proyecta sobre un plano de 2 dimensiones (PC1 y PC2) perdiendo la mínima información posible.
 
-<div class="my-10 not-prose">
-  <PCA3DVisualizer client:load />
-</div>
+<VizFrame>
+  <PCA3DVisualizer client:visible />
+</VizFrame>
 
-> [!TIP]
-> **PC1** es la línea amarilla. Observa cómo atraviesa la parte más larga de la elipse. Representa la dirección de **máxima varianza**.
+<Callout type="tip">
+**PC1** es la línea amarilla: atraviesa la parte más larga de la elipse y es la dirección de **máxima varianza**.
+</Callout>
 
-## ¿Para qué sirve?
+## Para qué sirve
 
-1. **Reducción de ruido**: Al quedarnos solo con los componentes que explican la mayor parte de la varianza, eliminamos el ruido aleatorio (como el eje rojo PC3).
-2. **Visualización**: Permite proyectar datos de muchas dimensiones a solo 2 o 3 para poder verlos en un gráfico.
-3. **Eficiencia**: Los modelos de ML entrenan mucho más rápido con menos variables.
+1. **Reducir ruido**: al quedarnos con los componentes que explican la mayor parte de la varianza, descartamos direcciones dominadas por ruido (como el eje rojo PC3).
+2. **Visualizar**: permite proyectar datos de muchas dimensiones a 2 o 3 para graficarlos.
+3. **Ganar eficiencia**: los modelos entrenan más rápido con menos variables.
 
 ## Intuición geométrica
 
-La idea es "rotar" el espacio de tus datos hasta que estemos mirando desde el ángulo más informativo. Ese ángulo es el que maximiza la dispersión de los puntos.
+Se trata de "rotar" el espacio de los datos hasta mirarlos desde el ángulo más informativo: aquel que maximiza la dispersión de los puntos.
 
-## El Algoritmo Paso a Paso
+## El algoritmo paso a paso
 
-Para comprender cómo los datos pierden dimensiones sin perder su "esencia" informativa, seguimos este flujo matemático riguroso:
+### 1. Centrado y estandarización
 
-### 1. Centrado y Estandarización
-Para evitar que variables con escalas grandes (como "ingresos") dominen injustamente sobre variables con escalas pequeñas (como "edad"), reescalamos todos los datos:
-<Math formula={"Z = \\frac{X - \\mu}{\\sigma}"} block />
-*   **Media cero**: Centramos la nube de puntos en el origen.
-*   **Varianza unitaria**: Aseguramos que cada dimensión tenga el mismo peso estadístico inicial.
+Para que variables con escalas grandes (como "ingresos") no dominen sobre las de escalas pequeñas (como "edad"), reescalamos cada columna:
 
-### 2. Construcción de la Matriz de Covarianza
-Calculamos la matriz <Math formula={"\\Sigma"} /> (o <Math formula={"C"} />) que describe las interdependencias lineales entre todas las variables originales.
-<Math formula={"\\Sigma = \\frac{1}{n-1} Z^T Z"} block />
-Cada celda en esta matriz nos dice si dos variables tienden a crecer juntas (covarianza positiva) o de forma inversa.
+$$
+Z = \frac{X - \mu}{\sigma}
+$$
 
-### 3. Autovalores y Autovectores: El "ADN" de tus datos
-Para extraer los ejes principales, resolvemos la **ecuación característica** de la matriz de covarianza. No son columnas de la matriz, sino los valores especiales que equilibran esta relación:
-<Math formula={"\\det(\\Sigma - \\lambda I) = 0"} block />
+Esto deja cada variable con **media cero** y **varianza uno**. Si solo centras (sin dividir por $\sigma$), trabajas con la matriz de covarianza original; si estandarizas, con la matriz de correlación.
 
-*   **Autovalores (<Math formula={"\\lambda"} />)**: Indican la **Importancia**. Al resolver el determinante, obtenemos estos números que nos dicen cuánta varianza captura cada dirección.
-*   **Autovectores (<Math formula={"v"} />)**: Indican la **Dirección**. Son los vectores que definen los nuevos ejes de coordenadas (las líneas amarillo/celeste del simulador).
+### 2. Matriz de covarianza
 
-### 4. Proyección al Nuevo Espacio
-Finalmente, seleccionamos los mejores autovectores (aquellos con mayores autovalores) y proyectamos nuestros datos originales sobre ellos:
-<Math formula={"T = Z \\cdot W_k"} block />
-Donde <Math formula={"W_k"} /> es la matriz de los <Math formula={"k"} /> autovectores principales seleccionados. El resultado <Math formula={"T"} /> son tus datos reducidos, listos para visualización o entrenamiento eficiente.
+Calculamos la matriz $\Sigma$, que resume las relaciones lineales entre todos los pares de variables:
+
+$$
+\Sigma = \frac{1}{n-1} Z^\top Z
+$$
+
+### 3. Autovalores y autovectores
+
+Los ejes principales son los autovectores de $\Sigma$. Se obtienen resolviendo la **ecuación característica**:
+
+$$
+\det(\Sigma - \lambda I) = 0
+$$
+
+- **Autovalores** $\lambda$: indican la **importancia**; cada uno es la varianza capturada por su dirección.
+- **Autovectores** $v$: indican la **dirección**; definen los nuevos ejes (las líneas del simulador).
+
+La fracción de varianza que explica el componente $j$ es $\lambda_j / \sum_k \lambda_k$.
+
+### 4. Proyección
+
+Elegimos los $k$ autovectores con mayores autovalores, los reunimos como columnas de $W_k$ y proyectamos:
+
+$$
+T = Z \, W_k
+$$
+
+$T$ contiene los datos reducidos, listos para graficar o para entrenar un modelo.
+
+## Cuidado
+
+<Callout type="warning">
+PCA es lineal y sensible a la escala: sin estandarizar, la variable con mayor magnitud domina PC1. Además, "más varianza" no siempre significa "más útil para predecir".
+</Callout>

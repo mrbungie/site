@@ -1,0 +1,187 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConceptCard from './ConceptCard.astro';
+import { getLevelTranslationKey, getTranslations, type Locale } from '../../i18n/utils';
+import { conceptHref, getConcepts, groupByArea, readingMinutes } from './concepts';
+
+interface Props {
+	lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = getTranslations(lang);
+const { entries, fallback } = await getConcepts(lang);
+const featured = entries.filter((e) => e.data.featured);
+const groups = groupByArea(entries);
+const levels = (['beginner', 'intermediate', 'advanced'] as const).filter((l) =>
+	entries.some((e) => e.data.level === l),
+);
+
+const card = (e: (typeof entries)[number]) => ({
+	title: e.data.title,
+	summary: e.data.summary,
+	href: conceptHref(lang, e),
+	level: e.data.level,
+	area: e.data.area,
+	order: e.data.order,
+	minutes: readingMinutes(e),
+	lang,
+});
+---
+
+<BaseLayout title={t('concepts.title')} description={t('concepts.subtitle')} lang={lang}>
+	<section class="concepts-index">
+		<div class="section-label">{t('nav.concepts')}</div>
+		<h1 class="concepts-index__title">{t('concepts.title')}</h1>
+		<p class="concepts-index__subtitle">{t('concepts.subtitle')}</p>
+		<p class="concepts-index__count">{entries.length} {t('concepts.count')}</p>
+		{fallback && <p class="concepts-index__notice" role="note">{t('concepts.spanishOnly')}</p>}
+
+		{featured.length > 0 && (
+			<div class="concepts-index__featured">
+				<h2 class="concepts-index__heading">{t('concepts.featured')}</h2>
+				<div class="concepts-index__grid">
+					{featured.map((e) => <ConceptCard {...card(e)} featured />)}
+				</div>
+			</div>
+		)}
+
+		<div class="concepts-index__filters" role="group" aria-label={t('concepts.level')}>
+			<button type="button" class="chip is-active" data-filter="all">{t('concepts.all')}</button>
+			{levels.map((l) => <button type="button" class="chip" data-filter={l}>{t(getLevelTranslationKey(l))}</button>)}
+		</div>
+
+		{groups.map(({ area, items }) => (
+			<section class="concepts-index__group" data-group>
+				<h2 class="concepts-index__heading">{area}</h2>
+				<div class="concepts-index__grid">
+					{items.map((e) => (
+						<div data-level={e.data.level}><ConceptCard {...card(e)} /></div>
+					))}
+				</div>
+			</section>
+		))}
+		<p class="concepts-index__empty" data-empty hidden>{t('concepts.noResults')}</p>
+	</section>
+</BaseLayout>
+
+<script>
+	const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+	const groups = document.querySelectorAll<HTMLElement>('[data-group]');
+	const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+	function apply(filter: string) {
+		let total = 0;
+		groups.forEach((g) => {
+			let visible = 0;
+			g.querySelectorAll<HTMLElement>('[data-level]').forEach((c) => {
+				const show = filter === 'all' || c.dataset.level === filter;
+				c.hidden = !show;
+				if (show) visible++;
+			});
+			g.hidden = visible === 0;
+			total += visible;
+		});
+		if (empty) empty.hidden = total > 0;
+		chips.forEach((b) => b.classList.toggle('is-active', b.dataset.filter === filter));
+	}
+	chips.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? 'all')));
+</script>
+
+<style>
+	.concepts-index {
+		padding-top: 100px;
+	}
+	.concepts-index__title {
+		margin: 0 0 12px;
+		font-family: var(--font-serif);
+		font-size: clamp(30px, 4vw, 46px);
+		line-height: 1.12;
+		font-weight: 400;
+		color: var(--ink);
+	}
+	.concepts-index__subtitle {
+		margin: 0 0 8px;
+		max-width: 520px;
+		font-size: 16px;
+		line-height: 1.7;
+		color: var(--ink-muted);
+	}
+	.concepts-index__count {
+		margin: 0 0 40px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.concepts-index__notice {
+		margin: -16px 0 40px;
+		padding: 12px 16px;
+		border-left: 3px solid var(--accent);
+		background: var(--accent-light);
+		font-size: 14px;
+		color: var(--ink);
+	}
+	.concepts-index__heading {
+		margin: 0 0 18px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 400;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+	.concepts-index__featured {
+		margin-bottom: 56px;
+	}
+	.concepts-index__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 16px;
+	}
+	.concepts-index__grid > div {
+		display: contents;
+	}
+	.concepts-index__grid > div[hidden] {
+		display: none;
+	}
+	.concepts-index__filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 32px;
+		padding-top: 24px;
+		border-top: 1px solid var(--rule);
+	}
+	.chip {
+		padding: 6px 14px;
+		border: 1px solid var(--rule);
+		background: transparent;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+		cursor: pointer;
+		transition: color 0.2s, border-color 0.2s, background 0.2s;
+	}
+	.chip:hover {
+		color: var(--ink);
+		border-color: var(--accent);
+	}
+	.chip.is-active {
+		color: var(--accent);
+		border-color: var(--accent);
+		background: var(--accent-light);
+	}
+	.concepts-index__group {
+		margin-bottom: 48px;
+	}
+	.concepts-index__empty {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-style: italic;
+		color: var(--ink-muted);
+	}
+</style>

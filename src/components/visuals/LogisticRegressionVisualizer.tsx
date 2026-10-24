@@ -1,342 +1,226 @@
-import React, { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePrefersReducedMotion } from './shared/hooks';
+import { clamp, createRng, fmt, pct, sigmoid } from './shared/math';
+import { Button, Callout, Legend, Notes, Panel, Plot, PlotSvg, Slider, Stat, StatGrid, VizBody, VizFrame, flipY } from './shared/ui';
 import styles from './LogisticRegressionVisualizer.module.css';
-import { Activity, Binary, RefreshCcw, ShieldCheck, SlidersHorizontal, Target } from 'lucide-react';
 
-interface SamplePoint {
-  x: number;
-  probability: number;
-  observedLabel: 0 | 1;
-  predictedLabel: 0 | 1;
+interface Obs {
   id: number;
+  x: number;
+  y: 0 | 1;
+}
+interface Params {
+  b0: number;
+  b1: number;
 }
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const X_MIN = -6;
+const X_MAX = 6;
+const B1_RANGE = 4;
+const B0_RANGE = 5;
+const TRUE_PARAMS: Params = { b0: -0.4, b1: 1.2 };
+const toPlotX = (x: number) => ((x - X_MIN) / (X_MAX - X_MIN)) * 100;
 
-const sigmoid = (value: number) => 1 / (1 + Math.exp(-value));
+/** Mean negative log-likelihood (cross-entropy) computed with log1p-stable terms. */
+const logLoss = (data: Obs[], { b0, b1 }: Params) =>
+  data.reduce((sum, o) => {
+    const z = b0 + b1 * o.x;
+    // −[y·log σ(z) + (1−y)·log(1−σ(z))] = softplus(z) − y·z
+    return sum + (Math.max(z, 0) + Math.log1p(Math.exp(-Math.abs(z))) - o.y * z);
+  }, 0) / data.length;
 
-const createSeededRandom = (seed: number) => {
-  let value = seed % 2147483647;
+/** ∇ of mean cross-entropy:  ∂/∂β₀ = mean(p − y),  ∂/∂β₁ = mean((p − y)·x). */
+const gradient = (data: Obs[], { b0, b1 }: Params): Params => {
+  let g0 = 0;
+  let g1 = 0;
+  for (const o of data) {
+    const r = sigmoid(b0 + b1 * o.x) - o.y;
+    g0 += r;
+    g1 += r * o.x;
+  }
+  return { b0: g0 / data.length, b1: g1 / data.length };
+};
 
-  if (value <= 0) value += 2147483646;
-
-  return () => {
-    value = (value * 16807) % 2147483647;
-    return (value - 1) / 2147483646;
-  };
+/** Newton–Raphson (IRLS) with a tiny ridge so perfectly separable samples stay finite. */
+const fitNewton = (data: Obs[]): Params => {
+  let b0 = 0;
+  let b1 = 0;
+  const ridge = 1e-3;
+  for (let i = 0; i < 40; i += 1) {
+    let g0 = ridge * b0;
+    let g1 = ridge * b1;
+    let h00 = ridge;
+    let h01 = 0;
+    let h11 = ridge;
+    for (const o of data) {
+      const p = sigmoid(b0 + b1 * o.x);
+      const w = p * (1 - p);
+      g0 += (p - o.y) / data.length;
+      g1 += ((p - o.y) * o.x) / data.length;
+      h00 += w / data.length;
+      h01 += (w * o.x) / data.length;
+      h11 += (w * o.x * o.x) / data.length;
+    }
+    const det = h00 * h11 - h01 * h01;
+    if (Math.abs(det) < 1e-12) break;
+    const d0 = (h11 * g0 - h01 * g1) / det;
+    const d1 = (-h01 * g0 + h00 * g1) / det;
+    b0 -= d0;
+    b1 -= d1;
+    if (Math.abs(d0) + Math.abs(d1) < 1e-9) break;
+  }
+  return { b0: clamp(b0, -B0_RANGE, B0_RANGE), b1: clamp(b1, -B1_RANGE, B1_RANGE) };
 };
 
 const LogisticRegressionVisualizer = () => {
-  const [slope, setSlope] = useState(1.45);
-  const [intercept, setIntercept] = useState(-0.35);
+  const [params, setParams] = useState<Params>({ b0: 0, b1: 0.4 });
   const [threshold, setThreshold] = useState(0.5);
-  const [sampleSize, setSampleSize] = useState(42);
-  const [sampleVersion, setSampleVersion] = useState(0);
+  const [n, setN] = useState(48);
+  const [version, setVersion] = useState(0);
+  const [descending, setDescending] = useState(false);
+  const reduced = usePrefersReducedMotion();
+  const paramsRef = useRef(params);
+  paramsRef.current = params;
 
-  const points = useMemo<SamplePoint[]>(() => {
-    const random = createSeededRandom(sampleVersion + 11);
-
-    return Array.from({ length: sampleSize }, (_, index) => {
-      const x = -6 + (12 * index) / Math.max(1, sampleSize - 1);
-      const jitter = (random() - 0.5) * 0.55;
-      const effectiveX = clamp(x + jitter, -6, 6);
-      const probability = sigmoid(intercept + slope * effectiveX);
-      const observedLabel: 0 | 1 = random() < probability ? 1 : 0;
-      const predictedLabel: 0 | 1 = probability >= threshold ? 1 : 0;
-
-      return {
-        x: effectiveX,
-        probability,
-        observedLabel,
-        predictedLabel,
-        id: index,
-      };
+  // The sample is generated once from a fixed "true" model, independent of the sliders you are tuning.
+  const data = useMemo<Obs[]>(() => {
+    const random = createRng(version + 11);
+    return Array.from({ length: n }, (_, id) => {
+      const x = clamp(X_MIN + 0.4 + ((X_MAX - X_MIN - 0.8) * id) / Math.max(1, n - 1) + (random() - 0.5) * 0.5, X_MIN, X_MAX);
+      return { id, x, y: random() < sigmoid(TRUE_PARAMS.b0 + TRUE_PARAMS.b1 * x) ? 1 : 0 };
     });
-  }, [intercept, sampleSize, sampleVersion, slope, threshold]);
+  }, [n, version]);
+
+  const mle = useMemo(() => fitNewton(data), [data]);
+
+  useEffect(() => {
+    if (!descending) return;
+    if (reduced) {
+      setParams(mle);
+      setDescending(false);
+      return;
+    }
+    let frame = 0;
+    let steps = 0;
+    const tick = () => {
+      let { b0, b1 } = paramsRef.current;
+      for (let i = 0; i < 4; i += 1) {
+        const g = gradient(data, { b0, b1 });
+        b0 = clamp(b0 - 0.4 * g.b0, -B0_RANGE, B0_RANGE);
+        b1 = clamp(b1 - 0.4 * g.b1, -B1_RANGE, B1_RANGE);
+        steps += 1;
+      }
+      const g = gradient(data, { b0, b1 });
+      paramsRef.current = { b0, b1 };
+      setParams({ b0, b1 });
+      if (Math.hypot(g.b0, g.b1) < 2e-3 || steps > 2400) setDescending(false);
+      else frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [data, descending, mle, reduced]);
 
   const metrics = useMemo(() => {
-    let truePositive = 0;
-    let trueNegative = 0;
-    let falsePositive = 0;
-    let falseNegative = 0;
-    let logLoss = 0;
-
-    points.forEach((point) => {
-      const probability = clamp(point.probability, 0.0001, 0.9999);
-      logLoss += -(point.observedLabel * Math.log(probability) + (1 - point.observedLabel) * Math.log(1 - probability));
-
-      if (point.observedLabel === 1 && point.predictedLabel === 1) truePositive += 1;
-      if (point.observedLabel === 0 && point.predictedLabel === 0) trueNegative += 1;
-      if (point.observedLabel === 0 && point.predictedLabel === 1) falsePositive += 1;
-      if (point.observedLabel === 1 && point.predictedLabel === 0) falseNegative += 1;
-    });
-
-    const total = points.length || 1;
-    const accuracy = (truePositive + trueNegative) / total;
-    const precision = truePositive + falsePositive === 0 ? 0 : truePositive / (truePositive + falsePositive);
-    const recall = truePositive + falseNegative === 0 ? 0 : truePositive / (truePositive + falseNegative);
-    const averageProbability = points.reduce((sum, point) => sum + point.probability, 0) / total;
-
+    let tp = 0, tn = 0, fp = 0, fn = 0;
+    for (const o of data) {
+      const predicted = sigmoid(params.b0 + params.b1 * o.x) >= threshold ? 1 : 0;
+      if (predicted && o.y) tp += 1;
+      else if (!predicted && !o.y) tn += 1;
+      else if (predicted) fp += 1;
+      else fn += 1;
+    }
+    const total = data.length;
     return {
-      truePositive,
-      trueNegative,
-      falsePositive,
-      falseNegative,
-      accuracy,
-      precision,
-      recall,
-      logLoss: logLoss / total,
-      averageProbability,
+      tp, tn, fp, fn,
+      accuracy: (tp + tn) / total,
+      precision: tp + fp ? tp / (tp + fp) : null,
+      recall: tp + fn ? tp / (tp + fn) : null,
+      loss: logLoss(data, params),
+      grad: gradient(data, params),
     };
-  }, [points]);
+  }, [data, params, threshold]);
 
-  const decisionBoundary = useMemo(() => {
-    if (Math.abs(slope) < 0.0001) return null;
-
-    const odds = Math.log(threshold / (1 - threshold));
-    return (odds - intercept) / slope;
-  }, [intercept, slope, threshold]);
-
-  const curvePath = useMemo(() => {
-    const coordinates = Array.from({ length: 97 }, (_, index) => {
-      const x = -6 + (12 * index) / 96;
-      const probability = sigmoid(intercept + slope * x);
-      const svgX = ((x + 6) / 12) * 100;
-      const svgY = 90 - probability * 80;
-      return `${index === 0 ? 'M' : 'L'} ${svgX.toFixed(2)} ${svgY.toFixed(2)}`;
-    });
-
-    return coordinates.join(' ');
-  }, [intercept, slope]);
-
-  const thresholdY = 90 - threshold * 80;
-  const boundaryX = decisionBoundary === null ? null : clamp(((decisionBoundary + 6) / 12) * 100, 0, 100);
+  const boundary = Math.abs(params.b1) > 1e-4 ? (Math.log(threshold / (1 - threshold)) - params.b0) / params.b1 : null;
+  const curve = useMemo(
+    () =>
+      Array.from({ length: 121 }, (_, i) => {
+        const x = X_MIN + ((X_MAX - X_MIN) * i) / 120;
+        return `${i ? 'L' : 'M'}${toPlotX(x).toFixed(2)} ${flipY(sigmoid(params.b0 + params.b1 * x) * 100).toFixed(2)}`;
+      }).join(''),
+    [params],
+  );
+  const minLoss = useMemo(() => logLoss(data, mle), [data, mle]);
+  const gradNorm = Math.hypot(metrics.grad.b0, metrics.grad.b1);
+  const inRange = boundary !== null && boundary >= X_MIN && boundary <= X_MAX;
 
   return (
-    <div className="rf-visualizer">
-      <div className={`rf-visualizer__header ${styles.header}`}>
-        <div className={styles.headerLeft}>
-          <h3 className="rf-visualizer__title">
-            <Activity className={styles.titleIcon} strokeWidth={3} size={20} />
-            Laboratorio de Regresión Logística
-          </h3>
-          <p className="rf-visualizer__subtitle">
-            Clasificación binaria con sigmoide
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setSampleVersion((value) => value + 1)}
-          className={styles.regenerateButton}
-        >
-          <RefreshCcw size={12} strokeWidth={3} /> Regenerar muestra
-        </button>
-      </div>
-
-      <div className={styles.layout}>
-        <div className={styles.plotAreaContainer}>
-          <div className={styles.modelBadge}>
-            <p className={styles.modelBadgeEyebrow}>modelo</p>
-            <div className={styles.modelBadgeContent}>
-              <span className={styles.modelBadgeEquation}>p(y=1|x) = σ({slope.toFixed(2)}x {intercept >= 0 ? '+' : '−'} {Math.abs(intercept).toFixed(2)})</span>
-              <span className={styles.modelBadgeThreshold}>umbral = {threshold.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <svg
-            viewBox="0 0 100 100"
-            className={styles.svgPlot}
-            preserveAspectRatio="xMidYMid meet"
-            role="img"
-            aria-label="Curva logística con observaciones binarias"
+    <VizFrame
+      title="Laboratorio de regresión logística"
+      subtitle="Sigmoide, verosimilitud y umbral"
+      actions={<Button onClick={() => setVersion((value) => value + 1)}>Nueva muestra</Button>}
+    >
+      <VizBody
+        plot={
+          <Plot
+            wide
+            overlay={<>p(y=1|x) = σ({fmt(params.b1, 2)}·x {params.b0 < 0 ? '−' : '+'} {fmt(Math.abs(params.b0), 2)})</>}
+            caption={<><span>x (característica)</span><span>y = 0 abajo · y = 1 arriba</span></>}
           >
-            {Array.from({ length: 11 }, (_, value) => value).map((value) => (
-              <React.Fragment key={value}>
-                <line x1={value * 10} y1="10" x2={value * 10} y2="90" stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-                <line x1="0" y1={10 + value * 8} x2="100" y2={10 + value * 8} stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-              </React.Fragment>
-            ))}
-
-            <line x1="0" y1={thresholdY} x2="100" y2={thresholdY} stroke="rgba(250,204,21,0.65)" strokeWidth="0.7" strokeDasharray="2.5 2" />
-
-            {boundaryX !== null && (
-              <line x1={boundaryX} y1="10" x2={boundaryX} y2="90" stroke="rgba(244,114,182,0.6)" strokeWidth="0.7" strokeDasharray="2.5 2" />
-            )}
-
-            <path d={curvePath} fill="none" stroke="#e879f9" strokeWidth="1.2" className={styles.curvePath} />
-
-            {points.map((point) => {
-              const svgX = ((point.x + 6) / 12) * 100;
-              const baseY = point.observedLabel === 1 ? 14 : 86;
-              const jitter = ((point.id % 5) - 2) * 1.2;
-
-              return (
-                <motion.circle
-                  key={`${sampleVersion}-${point.id}`}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.18, delay: point.id * 0.008 }}
-                  cx={svgX}
-                  cy={baseY + jitter}
-                  r="1.35"
-                  fill={point.predictedLabel === point.observedLabel ? '#67e8f9' : '#fda4af'}
-                  className={styles.pointPoint}
-                />
-              );
-            })}
-          </svg>
-
-          <div className={styles.plotLabels}>
-            <span>x baja</span>
-            <span>p(y=1 | x)</span>
-            <span>x alta</span>
-          </div>
-        </div>
-
-        <div className={styles.controlsCol}>
-          <div className="rf-panel">
-            <div className="rf-panel__header">
-              <SlidersHorizontal size={14} /> Ajustes de la simulación
-            </div>
-
-            <div className="rf-controls">
-              <label className="rf-control">
-                <div className="rf-control__meta">
-                  <span>Pendiente β₁</span>
-                  <span className={styles.controlValueFuchsia}>{slope.toFixed(2)}</span>
-                </div>
-                <input
-                  aria-label="Pendiente del modelo"
-                  type="range"
-                  min="-3"
-                  max="3"
-                  step="0.05"
-                  value={slope}
-                  onChange={(event) => setSlope(parseFloat(event.target.value))}
-                  className={`rf-control__slider ${styles.sliderFuchsia}`}
-                />
-              </label>
-
-              <label className="rf-control">
-                <div className="rf-control__meta">
-                  <span>Intercepto β₀</span>
-                  <span className={styles.controlValueCyan}>{intercept.toFixed(2)}</span>
-                </div>
-                <input
-                  aria-label="Intercepto del modelo"
-                  type="range"
-                  min="-4"
-                  max="4"
-                  step="0.05"
-                  value={intercept}
-                  onChange={(event) => setIntercept(parseFloat(event.target.value))}
-                  className={`rf-control__slider ${styles.sliderCyan}`}
-                />
-              </label>
-
-              <label className="rf-control">
-                <div className="rf-control__meta">
-                  <span>Umbral de decisión</span>
-                  <span className={styles.controlValueAmber}>{threshold.toFixed(2)}</span>
-                </div>
-                <input
-                  aria-label="Umbral de decisión"
-                  type="range"
-                  min="0.1"
-                  max="0.9"
-                  step="0.01"
-                  value={threshold}
-                  onChange={(event) => setThreshold(parseFloat(event.target.value))}
-                  className={`rf-control__slider ${styles.sliderAmber}`}
-                />
-              </label>
-
-              <label className="rf-control">
-                <div className="rf-control__meta">
-                  <span>Tamaño de muestra</span>
-                  <span className={styles.controlValueEmerald}>{sampleSize}</span>
-                </div>
-                <input
-                  aria-label="Tamaño de muestra"
-                  type="range"
-                  min="18"
-                  max="80"
-                  step="2"
-                  value={sampleSize}
-                  onChange={(event) => setSampleSize(parseInt(event.target.value, 10))}
-                  className={`rf-control__slider ${styles.sliderEmerald}`}
-                />
-              </label>
-            </div>
-          </div>
-
-          <div className="model-callout model-callout--multi">
-            <div className="model-callout__eyebrow">
-              <Binary size={14} /> Lectura rápida
-            </div>
-            <p className="model-callout__title">{boundaryX === null ? 'Sin frontera útil' : `x* ≈ ${decisionBoundary?.toFixed(2)}`}</p>
-            <p className="model-callout__body">
-              La frontera cambia cuando mueves el intercepto o el umbral. Si subes el umbral, la simulación exige más evidencia para predecir la clase positiva.
-            </p>
-          </div>
-
-          <div className={styles.metricsGrid}>
-            {[
-              { label: 'Accuracy', value: `${(metrics.accuracy * 100).toFixed(1)}%`, accent: 'text-fuchsia-300' },
-              { label: 'Precision', value: `${(metrics.precision * 100).toFixed(1)}%`, accent: 'text-cyan-300' },
-              { label: 'Recall', value: `${(metrics.recall * 100).toFixed(1)}%`, accent: 'text-emerald-300' },
-              { label: 'Log Loss', value: metrics.logLoss.toFixed(3), accent: 'text-amber-300' },
-            ].map((item) => (
-              <div key={item.label} className={styles.metricCard}>
-                <p className={styles.metricLabel}>{item.label}</p>
-                <p className={`${styles.metricValue} ${item.accent === "text-fuchsia-300" ? styles.metricValueFuchsia : item.accent === "text-cyan-300" ? styles.metricValueCyan : item.accent === "text-emerald-300" ? styles.metricValueEmerald : styles.metricValueAmber}`}>{item.value}</p>
+            <PlotSvg label={`Curva logística con ${data.length} observaciones. Pérdida ${fmt(metrics.loss, 3)}`}>
+              <line className={styles.threshold} x1={0} y1={flipY(threshold * 100)} x2={100} y2={flipY(threshold * 100)} />
+              {inRange && <line className={styles.boundary} x1={toPlotX(boundary)} y1={0} x2={toPlotX(boundary)} y2={100} />}
+              <path className={styles.curve} d={curve} />
+              {data.map((o) => {
+                const correct = (sigmoid(params.b0 + params.b1 * o.x) >= threshold ? 1 : 0) === o.y;
+                const y = (o.y === 1 ? 96 : 4) + (o.y === 1 ? -1 : 1) * (o.id % 4) * 1.8;
+                return <circle key={`${version}-${o.id}`} className={`${styles.dot} ${correct ? styles.ok : styles.bad}`} cx={toPlotX(o.x)} cy={flipY(y)} r={1.6} />;
+              })}
+            </PlotSvg>
+          </Plot>
+        }
+        side={
+          <>
+            <Panel title="Parámetros">
+              <Slider label="Pendiente β₁" value={params.b1} min={-B1_RANGE} max={B1_RANGE} step={0.05} onChange={(b1) => setParams((p) => ({ ...p, b1 }))} format={(x) => fmt(x, 2)} tone="c4" />
+              <Slider label="Intercepto β₀" value={params.b0} min={-B0_RANGE} max={B0_RANGE} step={0.05} onChange={(b0) => setParams((p) => ({ ...p, b0 }))} format={(x) => fmt(x, 2)} tone="pos" />
+              <Slider label="Umbral de decisión" value={threshold} min={0.1} max={0.9} step={0.01} onChange={setThreshold} format={(x) => fmt(x, 2)} tone="c5" hint="Cambia las decisiones, no las probabilidades." />
+              <Slider label="Tamaño de muestra" value={n} min={20} max={120} step={2} onChange={setN} tone="c3" />
+              <Button pressed={descending} onClick={() => setDescending((d) => !d)}>{descending ? 'Detener descenso' : 'Descenso de gradiente'}</Button>
+              <Button onClick={() => { setDescending(false); setParams(mle); }}>Ir al óptimo (Newton)</Button>
+            </Panel>
+            <Callout eyebrow="Verosimilitud" title={`Pérdida ${fmt(metrics.loss, 3)}`} tone="c4">
+              Mínimo alcanzable: {fmt(minLoss, 3)}. |∇| = {fmt(gradNorm, 3)}{boundary !== null ? ` · frontera en x* = ${fmt(boundary, 2)}` : ''}.
+            </Callout>
+            <StatGrid>
+              <Stat label="∂L/∂β₀" value={fmt(metrics.grad.b0, 3)} />
+              <Stat label="∂L/∂β₁" value={fmt(metrics.grad.b1, 3)} />
+              <Stat label="Accuracy" value={pct(metrics.accuracy)} tone="pos" />
+              <Stat label="Precision" value={metrics.precision === null ? '—' : pct(metrics.precision)} tone="c3" />
+              <Stat label="Recall" value={metrics.recall === null ? '—' : pct(metrics.recall)} tone="c5" />
+            </StatGrid>
+            <Panel title="Matriz de confusión">
+              <div className={styles.confusion}>
+                <span />
+                <span>pred. 1</span>
+                <span>pred. 0</span>
+                <span>real 1</span>
+                <div className={`${styles.cell} ${styles.good}`}><small>VP</small>{metrics.tp}</div>
+                <div className={`${styles.cell} ${styles.miss}`}><small>FN</small>{metrics.fn}</div>
+                <span>real 0</span>
+                <div className={`${styles.cell} ${styles.miss}`}><small>FP</small>{metrics.fp}</div>
+                <div className={`${styles.cell} ${styles.good}`}><small>VN</small>{metrics.tn}</div>
               </div>
-            ))}
-          </div>
-
-          <div className={styles.confusionPanel}>
-            <div className={styles.confusionHeader}>
-              <ShieldCheck size={14} /> Matriz de confusión
-            </div>
-            <div className={styles.confusionGrid}>
-              <div className={styles.confusionCellEmerald}>
-                <p className={styles.confusionCellLabelEmerald}>TP</p>
-                <p className={styles.confusionCellValue}>{metrics.truePositive}</p>
-              </div>
-              <div className={styles.confusionCellRose}>
-                <p className={styles.confusionCellLabelRose}>FP</p>
-                <p className={styles.confusionCellValue}>{metrics.falsePositive}</p>
-              </div>
-              <div className={styles.confusionCellRose}>
-                <p className={styles.confusionCellLabelRose}>FN</p>
-                <p className={styles.confusionCellValue}>{metrics.falseNegative}</p>
-              </div>
-              <div className={styles.confusionCellEmerald}>
-                <p className={styles.confusionCellLabelEmerald}>TN</p>
-                <p className={styles.confusionCellValue}>{metrics.trueNegative}</p>
-              </div>
-            </div>
-
-            <div className={styles.whatToLookFor}>
-              <div className={styles.whatToLookForHeader}>
-                <Target size={12} /> Qué mirar
-              </div>
-              <ul className={styles.whatToLookForList}>
-                <li>La sigmoide convierte una combinación lineal en una probabilidad entre 0 y 1.</li>
-                <li>El umbral no cambia las probabilidades; solo cambia la decisión final.</li>
-                <li>Con más pendiente, la transición entre clases se vuelve más brusca.</li>
-                <li>Cuando cambias β₀ o β₁, también cambia el proceso que genera la muestra observada.</li>
-              </ul>
-            </div>
-
-            <p className={styles.avgProb}>
-              Probabilidad media positiva: <span className={styles.avgProbValue}>{metrics.averageProbability.toFixed(3)}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Panel>
+            <Legend items={[{ kind: 'pos', label: 'Bien clasificado', tone: 'pos' }, { kind: 'neg', label: 'Error' }, { kind: 'dash', label: 'Umbral', tone: 'c5' }]} />
+            <Notes items={[
+              'Los datos vienen de un modelo fijo; tú buscas los β que mejor lo recuperan.',
+              'El gradiente es cero en el óptimo: ahí la pérdida deja de bajar.',
+              'Subir el umbral sacrifica recall para ganar precision.',
+            ]} />
+          </>
+        }
+      />
+    </VizFrame>
   );
 };
 

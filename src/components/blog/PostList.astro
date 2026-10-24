@@ -1,0 +1,61 @@
+---
+import FormattedDate from '../FormattedDate.astro';
+import { getTranslations } from '../../i18n/utils';
+import type { Locale } from '../../i18n/ui';
+import { getPosts, postHref, readingTime } from '../../utils/blog';
+
+interface Props {
+	lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = getTranslations(lang);
+const posts = await getPosts();
+---
+
+{posts.length === 0 ? (
+	<p class="post-empty">{t('blog.empty')}</p>
+) : (
+	<ol class="post-list">
+		{posts.map((post) => (
+			<li class="post-item">
+				<a href={postHref(lang, post.id)} class="post-link">
+					<p class="post-meta">
+						<FormattedDate date={post.data.pubDate} lang={lang} />
+						<span aria-hidden="true">·</span>
+						<span>{readingTime(post.body)} {t('blog.min')}</span>
+					</p>
+					<h2 class="post-title">{post.data.title}</h2>
+					<p class="post-desc">{post.data.description}</p>
+					{post.data.tags.length > 0 && (
+						<p class="post-tags">{post.data.tags.map((tag) => <span>#{tag}</span>)}</p>
+					)}
+				</a>
+			</li>
+		))}
+	</ol>
+)}
+
+<style>
+	.post-list { list-style: none; margin: 0; padding: 0; max-width: 42rem; }
+	.post-item { border-top: 1px solid var(--rule); }
+	.post-item:last-child { border-bottom: 1px solid var(--rule); }
+	.post-link { display: block; padding: 1.75rem 0; color: inherit; text-decoration: none; }
+	.post-meta {
+		display: flex; gap: 0.5rem; margin: 0 0 0.5rem;
+		font-family: var(--font-mono); font-size: 0.75rem;
+		color: var(--ink-muted); letter-spacing: 0.04em;
+	}
+	.post-title {
+		margin: 0 0 0.5rem; font-family: var(--font-serif);
+		font-size: 1.75rem; font-weight: 400; line-height: 1.2; color: var(--ink);
+		transition: color 0.2s;
+	}
+	.post-link:hover .post-title, .post-link:focus-visible .post-title { color: var(--accent); }
+	.post-desc { margin: 0; color: var(--ink-muted); }
+	.post-tags {
+		display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0.75rem 0 0;
+		font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent);
+	}
+	.post-empty { color: var(--ink-muted); }
+</style>

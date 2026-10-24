@@ -1,40 +1,48 @@
 ---
 title: "Covarianza"
-summary: "Una medida técnica fundamental para entender cómo dos variables se mueven en conjunto."
-tags: ["estadística", "probabilidad", "datos"]
-area: "statistics"
+summary: "Mide cómo se mueven juntas dos variables respecto a sus medias; es la base de la correlación y del PCA."
+area: "Fundamentos estadísticos"
 level: "beginner"
+order: 1
+tags: ["estadística", "probabilidad", "relación lineal"]
 prerequisites: []
-related: ["correlacion"]
+related: ["correlacion", "pca"]
 featured: true
 draft: false
 ---
 
-import Math from '../../../components/Math';
+La **covarianza** indica en qué medida dos variables aleatorias varían juntas alrededor de sus respectivas medias. Es el ingrediente básico para describir una relación lineal entre dos magnitudes.
 
-La **covarianza** es un valor que indica el grado de variación conjunta de dos variables aleatorias respecto a sus medias. Es el dato básico para entender la relación lineal entre dos métricas.
+## Qué nos dice el signo
 
-## ¿Qué nos dice el signo?
+El valor numérico depende de las unidades de las variables, así que casi nunca se interpreta por sí solo. El signo, en cambio, sí es informativo:
 
-El valor de la covarianza puede ser difícil de interpretar por sí solo (ya que depende de las unidades de las variables), pero su signo es clave:
+- **Positiva**: cuando una variable sube, la otra tiende a subir.
+- **Negativa**: cuando una variable sube, la otra tiende a bajar.
+- **Cercana a cero**: no hay una tendencia lineal evidente.
 
-- **Positiva**: Cuando una variable aumenta, la otra también tiende a aumentar.
-- **Negativa**: Cuando una variable aumenta, la otra tiende a disminuir.
-- **Cero**: No hay una relación lineal aparente entre las variables.
+## Definición
 
-## Definición Matemática
+Para una muestra de $n$ pares $(x_i, y_i)$, la covarianza muestral es
 
-La covarianza entre dos variables <Math formula={"X"} /> e <Math formula={"Y"} /> se calcula como:
+$$
+\operatorname{cov}(X, Y) = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{n-1}
+$$
 
-<Math formula={"cov(X, Y) = \\frac{\\sum_{i=1}^{n} (x_i - \\bar{x})(y_i - \\bar{y})}{n-1}"} block />
+donde $\bar{x}$ e $\bar{y}$ son las medias de cada variable. Cada término del numerador es positivo cuando ambos valores están del mismo lado de su media, y negativo cuando están en lados opuestos.
 
-Donde <Math formula={"\\bar{x}"} /> e <Math formula={"\\bar{y}"} /> son los promedios de las variables.
+### Relación con la varianza
 
-### Relación con la Varianza
-Si calculas la covarianza de una variable consigo misma, obtienes la **Varianza**:
+Si calculas la covarianza de una variable consigo misma, obtienes su **varianza**:
 
-<Math formula={"cov(X, X) = var(X) = \\sigma_x^2"} block />
+$$
+\operatorname{cov}(X, X) = \operatorname{var}(X) = \sigma_x^2
+$$
 
-## Ejemplo práctico
+## Ejemplo
 
-Imagina que analizas el gasto en publicidad (<Math formula={"x"} />) y las ventas (<Math formula={"y"} />). Si ambos suben juntos, tendrás una covarianza positiva. Si gastas más y las ventas bajan, será negativa.
+Si analizas el gasto en publicidad ($x$) y las ventas ($y$) de varios meses y ambos suben a la vez, la covarianza será positiva. Si el gasto aumenta y las ventas bajan, será negativa.
+
+## Aplicaciones
+
+La covarianza aparece en el cálculo de portafolios financieros, en la matriz de covarianza que usa el [PCA](/conceptos/pca) y en la definición de la [correlación](/conceptos/correlacion), que es su versión sin unidades.

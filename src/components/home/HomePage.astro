@@ -1,0 +1,152 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from './Hero.astro';
+import { getTranslations } from '../../i18n/utils';
+import type { Locale } from '../../i18n/ui';
+import { routePath } from '../../i18n/routes';
+import { projects } from '../../data/projects';
+import { profile, copy, contact, cvHref } from '../../data/profile';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const t = getTranslations(lang);
+
+const allPosts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const featuredConcepts = (await getCollection('concepts'))
+  .filter(c => c.id.startsWith(`${lang}/`) && c.data.featured && !c.data.draft)
+  .slice(0, 5);
+
+const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
+const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es));
+const aboutHref = routePath(lang, 'about');
+---
+
+<BaseLayout title={t('site.title')} description={profile.hero.valueProp[lang]} lang={lang}>
+
+  <Hero lang={lang} />
+
+  {projects.length > 0 && (
+    <section id="work" class="home-section">
+      <div class="section-label">{copy.work[lang]}</div>
+      <div class="work-list">
+        {projects.map(p => (
+          <div class="work-item">
+            <div class="work-year">{p.year}</div>
+            <div>
+              <div class="work-title">
+                {p.href
+                  ? <a class="plain-link" href={p.href} target="_blank" rel="noopener">{localized(p.title, p.titleEN)}</a>
+                  : localized(p.title, p.titleEN)}
+              </div>
+              <p class="work-desc">{localized(p.desc, p.descEN)}</p>
+              <div class="work-tags">{p.tags.map(tag => <span class="tag">{tag}</span>)}</div>
+            </div>
+            {p.href && <div class="work-arrow"><a class="plain-link" href={p.href} target="_blank" rel="noopener" aria-label={localized(p.title, p.titleEN)}>↗</a></div>}
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {featuredConcepts.length > 0 && (
+    <section id="concepts" class="home-section">
+      <div class="section-label section-label--split">
+        <span>{copy.concepts[lang]}</span>
+        <a class="section-more" href={routePath(lang, 'concepts')}>{copy.browseAll[lang]}</a>
+      </div>
+      <div class="concept-list">
+        {featuredConcepts.map(concept => (
+          <a href={routePath(lang, 'concepts', concept.id.split('/')[1].replace(/\.(mdx|md)$/, ''))} class="concept-item">
+            <div class="concept-area">{concept.data.area}</div>
+            <div>
+              <div class="concept-title">{concept.data.title}</div>
+              <p class="concept-summary">{concept.data.summary}</p>
+            </div>
+            <div class="work-arrow">↗</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {allPosts.length > 0 && (
+    <section id="writing" class="home-section">
+      <div class="section-label section-label--split">
+        <span>{copy.writing[lang]}</span>
+        <a class="section-more" href={routePath(lang, 'blog')}>{copy.viewAll[lang]}</a>
+      </div>
+      <div class="writing-list">
+        {allPosts.slice(0, 4).map(post => (
+          <a href={`/blog/${post.id}/`} class="writing-item plain-link">
+            <div class="writing-date">{dateFmt.format(post.data.pubDate)}</div>
+            <div>
+              <div class="writing-title">{post.data.title}</div>
+              {post.data.description && <p class="writing-excerpt">{post.data.description}</p>}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section id="resume" class="home-section">
+    <div class="section-label section-label--split">
+      <span>{copy.experience[lang]}</span>
+      <a class="section-more" href={aboutHref}>{copy.readMore[lang]}</a>
+    </div>
+    <div class="resume-section">
+      {profile.experience.map(e => (
+        <div class="resume-item">
+          <div class="resume-period">{e.period[lang]}</div>
+          <div>
+            <div class="resume-org">{e.org}</div>
+            <div class="resume-title-role">{e.role[lang]}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+    <a class="cv-download" href={cvHref[lang]} download>{copy.downloadCvFull[lang]}</a>
+  </section>
+
+  <section id="contact" class="home-section home-section--last">
+    <div class="section-label">{copy.contact[lang]}</div>
+    <h2 class="contact-headline">{profile.contact.headline[lang]}</h2>
+    <p class="contact-body">{profile.contact.body[lang]}</p>
+    <div class="contact-links">
+      <a class="contact-link-row" href={`mailto:${contact.email}`}>
+        <span class="contact-link-label">Email</span>
+        <span class="contact-link-value">{contact.email}</span>
+      </a>
+      <a class="contact-link-row" href={contact.linkedin.url} target="_blank" rel="noopener">
+        <span class="contact-link-label">LinkedIn</span>
+        <span class="contact-link-value">{contact.linkedin.label}</span>
+      </a>
+      <a class="contact-link-row" href={contact.github.url} target="_blank" rel="noopener">
+        <span class="contact-link-label">GitHub</span>
+        <span class="contact-link-value">{contact.github.label}</span>
+      </a>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .home-section { padding-top: clamp(64px, 9vw, 100px); }
+  .home-section--last { padding-bottom: 120px; }
+  .plain-link { text-decoration: none; color: inherit; }
+  .section-label--split { justify-content: space-between; }
+  .section-label--split::after { display: none; }
+  .section-more {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .section-more:hover { color: var(--ink); }
+</style>

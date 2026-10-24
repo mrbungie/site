@@ -1,0 +1,27 @@
+.votes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(1.1rem, 1fr));
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  color: var(--v-bg);
+}
+
+.votePos {
+  background: var(--v-pos);
+}
+
+.voteNeg {
+  background: var(--v-neg);
+}

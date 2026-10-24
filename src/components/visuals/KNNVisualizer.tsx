@@ -1,103 +1,115 @@
-import React, { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Activity, RefreshCcw, SlidersHorizontal, Sparkles, Target } from 'lucide-react';
-import { distance, generateLinearSample } from './classificationUtils';
-import styles from './KNNVisualizer.module.css';
+import { useMemo, useRef, useState } from 'react';
+import { linearSample, ringSample, type Label, type Point2D } from './shared/datasets';
+import { fmt } from './shared/math';
+import {
+  Button, Callout, Legend, Mark, Notes, Panel, Plot, PlotSvg, QueryHandle, Segmented, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v,
+} from './shared/ui';
+
+type Dataset = 'linear' | 'ring';
+const GRID = 24;
+
+/** Indices of the k nearest training points (ties broken by id so results are deterministic). */
+const nearest = (points: Point2D[], x: number, y: number, k: number) =>
+  points
+    .map((p) => ({ p, d: Math.hypot(p.x - x, p.y - y) }))
+    .sort((a, b) => a.d - b.d || a.p.id - b.p.id)
+    .slice(0, k);
+
+const vote = (neighbors: { p: Point2D }[]): { label: Label; positives: number } => {
+  const positives = neighbors.reduce((s, { p }) => s + p.label, 0);
+  // k is odd, so a strict majority always exists.
+  return { label: positives * 2 > neighbors.length ? 1 : 0, positives };
+};
 
 const KNNVisualizer = () => {
-  const [sampleVersion, setSampleVersion] = useState(0);
+  const [dataset, setDataset] = useState<Dataset>('ring');
+  const [version, setVersion] = useState(0);
   const [k, setK] = useState(5);
-  const [queryX, setQueryX] = useState(56);
-  const [queryY, setQueryY] = useState(46);
+  const [query, setQuery] = useState({ x: 56, y: 46 });
+  const [showRegions, setShowRegions] = useState(true);
+  const svgRef = useRef<SVGSVGElement>(null);
 
-  const points = useMemo(() => generateLinearSample({ sampleSize: 42, version: sampleVersion, overlap: 0.8 }), [sampleVersion]);
+  const points = useMemo(
+    () => (dataset === 'linear' ? linearSample(60, version, 0.8) : ringSample(60, version, 0.8)),
+    [dataset, version],
+  );
 
-  const neighborhood = useMemo(() => {
-    const query = { x: queryX, y: queryY };
-    const ranked = points
-      .map((point) => ({ ...point, distance: distance(point, query) }))
-      .sort((a, b) => a.distance - b.distance);
-    const nearest = ranked.slice(0, k);
-    const positives = nearest.filter((point) => point.label === 1).length;
+  const result = useMemo(() => {
+    const neighbors = nearest(points, query.x, query.y, k);
+    return { neighbors, ...vote(neighbors), radius: neighbors.at(-1)?.d ?? 0, ids: new Set(neighbors.map(({ p }) => p.id)) };
+  }, [k, points, query]);
 
-    return {
-      nearest,
-      positives,
-      negatives: nearest.length - positives,
-      decision: positives >= nearest.length / 2 ? 1 : 0,
-      radius: nearest[nearest.length - 1]?.distance ?? 0,
-    };
-  }, [k, points, queryX, queryY]);
+  const regions = useMemo(() => {
+    if (!showRegions) return [];
+    const cell = 100 / GRID;
+    return Array.from({ length: GRID * GRID }, (_, i) => {
+      const x = (i % GRID) * cell + cell / 2;
+      const y = Math.floor(i / GRID) * cell + cell / 2;
+      return { x: x - cell / 2, y: y - cell / 2, label: vote(nearest(points, x, y, k)).label, cell };
+    });
+  }, [k, points, showRegions]);
+
+  const decisionText = result.label === 1 ? 'Clase 1 (círculos)' : 'Clase 0 (cuadrados)';
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.titleContainer}>
-          <h3 className={styles.title}><Activity className={styles.titleIcon} size={20} /> Laboratorio k-NN</h3>
-          <p className={styles.subtitle}>Mayoría local entre vecinos</p>
-        </div>
-        <button type="button" onClick={() => setSampleVersion((value) => value + 1)} className={styles.regenerateButton}><RefreshCcw size={12} /> Regenerar muestra</button>
-      </div>
-
-      <div className={styles.layout}>
-        <div className={styles.chartContainer}>
-          <svg viewBox="0 0 100 100" className={styles.svgChart} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Puntos clasificados por k vecinos cercanos">
-            {Array.from({ length: 11 }, (_, value) => value).map((value) => (
-              <React.Fragment key={value}>
-                <line x1={value * 10} y1="0" x2={value * 10} y2="100" stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-                <line x1="0" y1={value * 10} x2="100" y2={value * 10} stroke="rgba(255,255,255,0.04)" strokeWidth="0.2" />
-              </React.Fragment>
-            ))}
-
-            <circle cx={queryX} cy={100 - queryY} r={neighborhood.radius} fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.35)" strokeWidth="0.5" strokeDasharray="2 2" />
-
-            {points.map((point) => {
-              const isNeighbor = neighborhood.nearest.some((neighbor) => neighbor.id === point.id);
-              return (
-                <motion.circle
-                  key={`${sampleVersion}-${point.id}`}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.18, delay: point.id * 0.008 }}
-                  cx={point.x}
-                  cy={100 - point.y}
-                  r={isNeighbor ? 2 : 1.35}
-                  fill={point.label === 1 ? '#67e8f9' : '#fda4af'}
-                  stroke={isNeighbor ? '#f8fafc' : 'transparent'}
-                  strokeWidth="0.4"
-                />
-              );
-            })}
-
-            <circle cx={queryX} cy={100 - queryY} r="1.8" fill={neighborhood.decision === 1 ? '#0f172a' : '#ffffff'} stroke={neighborhood.decision === 1 ? '#67e8f9' : '#fda4af'} strokeWidth="0.8" />
-          </svg>
-        </div>
-
-        <div className={styles.controlsColumn}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}><SlidersHorizontal size={14} /> Ajustes</div>
-            <label className={styles.controlItem}><div className={styles.controlMeta}><span>k vecinos</span><span className={styles.controlValueSky}>{k}</span></div><input type="range" min="1" max="11" step="2" value={k} onChange={(event) => setK(parseInt(event.target.value, 10))} className={styles.sliderSky} /></label>
-            <label className={styles.controlItemWithMargin}><div className={styles.controlMeta}><span>Consulta X</span><span className={styles.controlValueCyan}>{queryX.toFixed(0)}</span></div><input type="range" min="10" max="90" step="1" value={queryX} onChange={(event) => setQueryX(parseFloat(event.target.value))} className={styles.sliderCyan} /></label>
-            <label className={styles.controlItemWithMargin}><div className={styles.controlMeta}><span>Consulta Y</span><span className={styles.controlValueRose}>{queryY.toFixed(0)}</span></div><input type="range" min="10" max="90" step="1" value={queryY} onChange={(event) => setQueryY(parseFloat(event.target.value))} className={styles.sliderRose} /></label>
-          </div>
-
-          <div className="model-callout model-callout--sky">
-            <div className="model-callout__eyebrow"><Target size={14} /> Predicción local</div>
-            <p className="model-callout__title">{neighborhood.decision === 1 ? 'Clase positiva' : 'Clase negativa'}</p>
-            <p className="model-callout__body">{neighborhood.positives} de {neighborhood.nearest.length} vecinos cercanos apoyan esta clase.</p>
-          </div>
-
-          <div className={styles.notesPanel}>
-            <div className={styles.notesHeader}><Sparkles size={14} /> Qué mirar</div>
-            <ul className={styles.notesList}>
-              <li>k pequeño hace el modelo más sensible al ruido.</li>
-              <li>k grande suaviza la decisión pero puede borrar patrones locales.</li>
-              <li>Los vecinos resaltados son la única evidencia usada para clasificar.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <VizFrame
+      title="Laboratorio k-NN"
+      subtitle="Mayoría local entre vecinos"
+      actions={<Button onClick={() => setVersion((n) => n + 1)}>Nueva muestra</Button>}
+    >
+      <VizBody
+        plot={
+          <Plot caption={<><span>Arrastra el punto de consulta o usa las flechas</span><span>radio = {fmt(result.radius, 1)}</span></>}>
+            <PlotSvg
+              svgRef={svgRef}
+              label={`Clasificación k-NN con k igual a ${k}. Predicción: ${decisionText}`}
+            >
+              {regions.map((r) => (
+                <rect key={`${r.x}-${r.y}`} className={r.label === 1 ? v.regionPos : v.regionNeg} x={r.x} y={flipY(r.y + r.cell)} width={r.cell + 0.05} height={r.cell + 0.05} />
+              ))}
+              <circle cx={query.x} cy={flipY(query.y)} r={result.radius} className={v.regionPos} style={{ opacity: 0.06 }} />
+              <circle cx={query.x} cy={flipY(query.y)} r={result.radius} className={v.lineDashed} />
+              {result.neighbors.map(({ p }) => (
+                <line key={`l${p.id}`} className={v.gridLine} style={{ strokeWidth: 1 }} x1={query.x} y1={flipY(query.y)} x2={p.x} y2={flipY(p.y)} />
+              ))}
+              {points.map((p) => (
+                <Mark key={`${dataset}-${version}-${p.id}`} x={p.x} y={p.y} label={p.label} ring={result.ids.has(p.id)} delay={p.id * 0.006} />
+              ))}
+              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label="Punto de consulta" onMove={(x, y) => setQuery({ x, y })} />
+            </PlotSvg>
+          </Plot>
+        }
+        side={
+          <>
+            <Panel title="Ajustes">
+              <Segmented<Dataset>
+                label="Conjunto de datos"
+                value={dataset}
+                onChange={setDataset}
+                options={[{ value: 'ring', label: 'Anillo' }, { value: 'linear', label: 'Lineal' }]}
+              />
+              <Slider label="k vecinos" value={k} min={1} max={21} step={2} onChange={setK} tone="pos" hint="Siempre impar para evitar empates." />
+              <Slider label="Consulta X" value={query.x} min={2} max={98} step={1} onChange={(x) => setQuery((q) => ({ ...q, x }))} format={(x) => fmt(x, 0)} tone="c3" />
+              <Slider label="Consulta Y" value={query.y} min={2} max={98} step={1} onChange={(y) => setQuery((q) => ({ ...q, y }))} format={(y) => fmt(y, 0)} tone="c4" />
+              <Button pressed={showRegions} onClick={() => setShowRegions((s) => !s)}>Regiones de decisión</Button>
+            </Panel>
+            <Callout eyebrow="Predicción local" title={decisionText} tone={result.label === 1 ? 'pos' : 'neg'}>
+              {result.label === 1 ? result.positives : result.neighbors.length - result.positives} de {result.neighbors.length} vecinos votan por esta clase.
+            </Callout>
+            <StatGrid>
+              <Stat label="Votos clase 1" value={result.positives} tone="pos" />
+              <Stat label="Votos clase 0" value={result.neighbors.length - result.positives} tone="neg" />
+            </StatGrid>
+            <Legend items={[{ kind: 'pos', label: 'Clase 1' }, { kind: 'neg', label: 'Clase 0' }, { kind: 'ring', label: 'Vecino usado' }]} />
+            <Notes items={[
+              'k = 1 memoriza el ruido: la frontera es muy irregular.',
+              'k grande suaviza, pero en el anillo termina borrando el patrón.',
+              'Solo los vecinos con anillo influyen en la predicción.',
+            ]} />
+          </>
+        }
+      />
+    </VizFrame>
   );
 };
 
