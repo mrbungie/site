@@ -6,7 +6,7 @@ import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
 import { projects } from '../../data/projects';
-import { profile, copy, contact, cvHref } from '../../data/profile';
+import { profile, copy, contact } from '../../data/profile';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -21,7 +21,6 @@ const featuredConcepts = (await getCollection('concepts'))
 
 const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
 const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es));
-const aboutHref = routePath(lang, 'about');
 ---
 
 <BaseLayout title={t('site.title')} description={profile.hero.valueProp[lang]} lang={lang}>
@@ -91,25 +90,6 @@ const aboutHref = routePath(lang, 'about');
       </div>
     </section>
   )}
-
-  <section id="resume" class="home-section">
-    <div class="section-label section-label--split">
-      <span>{copy.experience[lang]}</span>
-      <a class="section-more" href={aboutHref}>{copy.readMore[lang]}</a>
-    </div>
-    <div class="resume-section">
-      {profile.experience.map(e => (
-        <div class="resume-item">
-          <div class="resume-period">{e.period[lang]}</div>
-          <div>
-            <div class="resume-org">{e.org}</div>
-            <div class="resume-title-role">{e.role[lang]}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-    <a class="cv-download" href={cvHref[lang]} download>{copy.downloadCvFull[lang]}</a>
-  </section>
 
   <section id="contact" class="home-section home-section--last">
     <div class="section-label">{copy.contact[lang]}</div>
