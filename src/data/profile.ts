@@ -35,33 +35,30 @@ export interface SkillGroup {
 export const profile = {
   name: 'Germán Oviedo',
   photoAlt: { es: 'Retrato de Germán Oviedo', en: 'Portrait of Germán Oviedo' } as L10n<string>,
-  photoCaption: 'Trieste, 2025',
 
   hero: {
-    kicker: { es: 'Ejecutivo de Datos e IA · Docente de ML', en: 'Data & AI Executive · ML Lecturer' } as L10n<string>,
     headline: {
-      es: { before: 'Convierto IA y datos en', em: 'resultados de negocio', after: 'medibles.' },
-      en: { before: 'I turn AI and data into', em: 'measurable business', after: 'results.' },
+      es: { before: 'Dirijo equipos de', em: 'datos e IA', after: 'en banca y fintech.' },
+      en: { before: 'I lead', em: 'data and AI', after: 'teams in banking and fintech.' },
     } as L10n<{ before: string; em: string; after: string }>,
-    valueProp: {
-      es: 'He liderado equipos de datos e IA en Bci, MACH y Tenpo. Llevo modelos de ML y GenAI a producción y los mido en resultados de negocio. Hago clases de Machine Learning en la universidad desde 2016.',
-      en: "I've led data and AI teams at Bci, MACH and Tenpo. I take ML and GenAI models to production and measure them in business results. I've taught Machine Learning at university since 2016.",
+    lead: {
+      es: 'Fui Subgerente de IA Generativa en Bci, Head of Analytics & Data Science en MACH y armé desde cero el área de datos de Tenpo. Antes pasé casi seis años como data scientist en Bci. Desde 2016 hago clases de machine learning, y en este sitio publico versiones interactivas de esas clases.',
+      en: "I was Head of Generative AI at Bci and Head of Analytics & Data Science at MACH, and I built Tenpo's data team from scratch. Before that I spent almost six years as a data scientist at Bci. I've taught machine learning since 2016, and this site hosts interactive versions of those classes.",
     } as L10n<string>,
-    stats: [
-      { value: '10+', label: { es: 'años de experiencia en banca y fintech', en: 'years in banking & fintech' } },
-      { value: '4+', label: { es: 'años liderando equipos de datos e IA', en: 'years leading data & AI teams' } },
-      { value: '10', label: { es: 'años enseñando ML y estadística', en: 'years teaching ML & statistics' } },
-    ] as { value: string; label: L10n<string> }[],
+    now: {
+      es: 'Terminé un MBA en Trieste y volví a Santiago. Disponible para roles en Chile, remotos o presenciales.',
+      en: 'I just finished an MBA in Trieste and moved back to Santiago. Open to roles in Chile, remote or on-site.',
+    } as L10n<string>,
   },
 
   bio: {
     es: [
-      'Especializado en convertir capacidades de ML, GenAI y analítica avanzada en productos financieros escalables, automatización operativa y decisiones comerciales medibles. Trayectoria en banca y fintech en Chile.',
-      'MBA en International Business por MIB Trieste School of Management (2026). De vuelta en Chile e instructor universitario de Machine Learning y Estadística desde 2016.',
+      'Llevo más de diez años trabajando con datos en banca y fintech en Chile. Empecé como data scientist en Bci, construyendo modelos de comportamiento y motores de CRM. Después armé el área de datos de Tenpo, dirigí analítica y ciencia de datos en MACH y volví a Bci a liderar IA generativa.',
+      'Desde 2016 hago clases de data mining y machine learning en la UNAB, la UAI y la UDP. En 2026 terminé un MBA en International Business en MIB Trieste y volví a Santiago.',
     ],
     en: [
-      'Specialized in turning ML, GenAI, and advanced analytics into scalable financial products, operational automation, and measurable business outcomes. Track record across banking and fintech in Chile.',
-      'MBA in International Business from MIB Trieste School of Management (2026). Back in Chile; university lecturer in Machine Learning and Statistics since 2016.',
+      "I've worked with data in Chilean banking and fintech for more than ten years. I started as a data scientist at Bci, building behavioral models and CRM engines. Then I built Tenpo's data team, ran analytics and data science at MACH, and went back to Bci to lead generative AI.",
+      "I've taught data mining and machine learning at UNAB, UAI and UDP since 2016. In 2026 I finished an MBA in International Business at MIB Trieste and moved back to Santiago.",
     ],
   } as L10n<string[]>,
 
@@ -145,10 +142,10 @@ export const profile = {
   ] as SkillGroup[],
 
   contact: {
-    headline: { es: 'Trabajemos en algo que importe.', en: "Let's work on something that matters." } as L10n<string>,
+    headline: { es: 'Conversemos.', en: 'Get in touch.' } as L10n<string>,
     body: {
-      es: 'Abierto a roles de liderazgo en datos e IA, consultoría, proyectos de ML, docencia e invitaciones a hablar. Me muevo entre Europa y Latinoamérica: primero remoto, presencial cuando vale la pena.',
-      en: 'Open to data & AI leadership roles, advisory work, ML contractor projects, teaching, and speaking. I move between Europe and Latin America: remote-first, in-person when it counts.',
+      es: 'Si buscas a alguien para liderar datos o IA, una asesoría o un curso, escríbeme.',
+      en: "If you're looking for someone to lead data or AI, for advice, or for a course, email me.",
     } as L10n<string>,
   },
 };
@@ -166,10 +163,9 @@ export const copy = {
   contact: { es: 'Contacto', en: 'Contact' },
   viewAll: { es: 'Ver todos →', en: 'All posts →' },
   browseAll: { es: 'Ver todos →', en: 'Browse all →' },
-  downloadCv: { es: 'Descargar CV', en: 'Download résumé' },
+  downloadCv: { es: 'CV (PDF)', en: 'Résumé (PDF)' },
   downloadCvFull: { es: 'Descargar CV completo ↓', en: 'Download full résumé ↓' },
-  exploreConcepts: { es: 'Explorar conceptos', en: 'Explore concepts' },
-  getInTouch: { es: 'Contacto', en: 'Get in touch' },
+  emailMe: { es: 'Escríbeme', en: 'Email me' },
   aboutTitle: { es: 'Acerca de Germán Oviedo', en: 'About Germán Oviedo' },
   aboutDesc: {
     es: 'Trayectoria, experiencia, docencia y educación de Germán Oviedo, ejecutivo de Datos e IA.',

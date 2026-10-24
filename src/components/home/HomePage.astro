@@ -23,7 +23,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
 const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es));
 ---
 
-<BaseLayout title={t('site.title')} description={profile.hero.valueProp[lang]} lang={lang}>
+<BaseLayout title={t('site.title')} description={t('site.description')} lang={lang}>
 
   <Hero lang={lang} />
 
