@@ -1,56 +1,27 @@
-# Development Guide
+# Development
 
-This document outlines how to set up and develop the Astro website locally.
-
-## Prerequisites
-
-- Node.js version `22.12.0` or higher
-- npm (Node Package Manager)
-
-## Local Setup
-
-1. **Clone the repository** to your local machine.
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-   *We use `npm` for this project based on the lockfile configuration.*
-
-## Running the Application
-
-To start the local development server:
+Requires Node >= 22.12 and npm.
 
 ```bash
-npm run dev
+npm install
+npm run dev      # http://localhost:4321
+npm run check    # astro check (types for .astro/.mdx/.ts)
+npm run build    # output in dist/
 ```
 
-The application will be available at [http://localhost:4321](http://localhost:4321) by default. The Astro development server also provides Hot Module Replacement (HMR), so it will automatically update as you make changes to files.
+## Conventions
 
-## Project Structure Overview
+- **CSS**: shared structural classes (BEM) live in `src/styles/global.css`; component styles go in a co-located `*.module.css` or a scoped `<style>` in `.astro` files. No hardcoded colors or type in JSX; use the CSS variables (`--bg`, `--ink`, `--accent`, ...).
+- **Hydration**: use `client:load` or `client:visible` for React islands, never `client:only="react"` (it stops Astro from linking the island's CSS). Guard browser APIs with `useEffect`.
+- **i18n**: add UI strings to both locales in `src/i18n/ui.ts`; build links with `routePath()` / `localePath()`.
 
-- `src/`: Contains all source files for the application.
-  - `pages/`: File-based routing for Astro.
-  - `components/`: Reusable UI components (React, Astro).
-  - `layouts/`: Common page layout templates.
-  - `i18n/`: Internationalization utilities and configuration.
-- `public/`: Static assets (images, fonts) served directly at the root.
-- `astro.config.mjs`: The core Astro configuration file.
-- `package.json`: Project dependencies and command scripts.
-- `docs/`: Documentation describing the project workflow.
+## Blog
 
-## Building for Production Locally
+Posts are MDX files in `src/content/blog/` (frontmatter: `title`, `description`, `pubDate`, optional `updatedDate`, `heroImage`, `tags`, `draft`). Posts are Spanish only. They are served at `/blog/<id>/`, and also at `/en/blog/<id>/` so the English sidebar link works; the English index says so. Reading time, prev/next and tags are derived automatically (`src/utils/blog.ts`). Code blocks use Shiki (`github-dark`, set in `astro.config.mjs`). Math written as `$...$` is typeset client-side by MathJax (loaded in `BaseLayout`).
 
-To test the production build locally before deploying:
+The RSS feed (`/rss.xml`) is a single Spanish feed.
 
-1. **Create a production build**:
-   ```bash
-   npm run build
-   ```
-   *This outputs your compiled static site into the `dist/` directory.*
+## Config notes
 
-2. **Preview the generated build**:
-   ```bash
-   npm run preview
-   ```
-   *This will run a local web server to serve the contents of the `dist/` directory, allowing you to catch any production-specific issues early.*
+- `astro.config.mjs`: sitemap with `es-CL` / `en-US` hreflang, hover prefetch, `compressHTML`.
+- `@types/*` and `@astrojs/check` are dev dependencies.

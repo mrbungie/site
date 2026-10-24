@@ -1,0 +1,47 @@
+---
+interface Props {
+	type?: 'tip' | 'warning';
+	label?: string;
+}
+const { type = 'tip', label } = Astro.props;
+const text = label ?? (type === 'warning' ? 'Cuidado' : 'Consejo');
+---
+
+<aside class={`callout callout--${type} not-prose`}>
+	<p class="callout__label">{text}</p>
+	<div class="callout__body"><slot /></div>
+</aside>
+
+<style>
+	.callout {
+		margin: 2rem 0;
+		padding: 16px 20px;
+		border: 1px solid var(--rule);
+		border-left: 3px solid var(--accent);
+		background: var(--accent-light);
+	}
+	.callout--warning {
+		border-left-color: #b4572f;
+	}
+	.callout__label {
+		margin: 0 0 6px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+	.callout--warning .callout__label {
+		color: #b4572f;
+	}
+	.callout__body {
+		font-size: 15px;
+		line-height: 1.7;
+		color: var(--ink);
+	}
+	.callout__body :global(p) {
+		margin: 0;
+		font-size: inherit;
+		color: inherit;
+	}
+</style>

@@ -1,0 +1,566 @@
+/* ── Shared visualizer design system ─────────────────────────────
+   Theme-aware: reads the site tokens (--bg, --ink, --ink-muted, --rule, --accent)
+   and falls back to the light palette. Dark mode follows html[data-theme="dark"]. */
+
+.frame {
+  --v-bg: var(--bg, #f5f3f0);
+  --v-ink: var(--ink, #1a1a18);
+  --v-muted: var(--ink-muted, #5f5c55);
+  --v-rule: var(--rule, #d8d5ce);
+  --v-accent: var(--accent, #8b7355);
+  --v-surface: color-mix(in srgb, var(--v-ink) 4%, var(--v-bg));
+  --v-raised: color-mix(in srgb, var(--v-ink) 7%, var(--v-bg));
+  --v-grid: color-mix(in srgb, var(--v-ink) 9%, transparent);
+  --v-pos: #1d5fd1;
+  --v-neg: #c2410c;
+  --v-c3: #15803d;
+  --v-c4: #7c3aed;
+  --v-c5: #a16207;
+  --v-focus: #1d5fd1;
+
+  container-type: inline-size;
+  margin: 2rem 0;
+  border: 1px solid var(--v-rule);
+  border-radius: 1rem;
+  background: var(--v-bg);
+  color: var(--v-ink);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+:global([data-theme='dark']) .frame {
+  --v-pos: #7aa7ff;
+  --v-neg: #ffa266;
+  --v-c3: #6ee7a0;
+  --v-c4: #b79bff;
+  --v-c5: #f5c451;
+  --v-focus: #9db9ff;
+}
+
+.frame *,
+.frame *::before,
+.frame *::after {
+  box-sizing: border-box;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--v-rule);
+}
+
+.titleBlock {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--v-ink);
+}
+
+.subtitle {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Layout ── */
+.body {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+@container (min-width: 640px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+    align-items: start;
+  }
+}
+
+/* ── Plot ── */
+.plotWrap {
+  min-width: 0;
+}
+
+.plot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 80vh;
+  border: 1px solid var(--v-rule);
+  border-radius: 0.75rem;
+  background: var(--v-surface);
+  overflow: hidden;
+}
+
+.plotWide {
+  aspect-ratio: 4 / 3;
+}
+
+.plotCaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.5rem 0.25rem 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  color: var(--v-muted);
+}
+
+.overlay {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 1;
+  max-width: calc(100% - 1.2rem);
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--v-rule);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--v-bg) 88%, transparent);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--v-ink);
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.gridLine {
+  stroke: var(--v-grid);
+  stroke-width: 0.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.axisLine {
+  stroke: var(--v-muted);
+  stroke-width: 0.4;
+  opacity: 0.6;
+}
+
+.svgText {
+  fill: var(--v-muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 3px;
+}
+
+/* Marks: class 1 = circle (blue), class 0 = square (orange) so color is never the only cue. */
+.markPos {
+  fill: var(--v-pos);
+}
+.markNeg {
+  fill: var(--v-neg);
+}
+.markWrong {
+  stroke: var(--v-ink);
+  stroke-width: 0.5;
+}
+.markRing {
+  fill: none;
+  stroke: var(--v-ink);
+  stroke-width: 0.55;
+}
+.markIn {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: markIn 0.35s ease-out both;
+}
+@keyframes markIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+.regionPos {
+  fill: var(--v-pos);
+  opacity: 0.16;
+}
+.regionNeg {
+  fill: var(--v-neg);
+  opacity: 0.16;
+}
+
+.lineMain {
+  fill: none;
+  stroke: var(--v-ink);
+  vector-effect: non-scaling-stroke;
+  stroke-width: 2px;
+}
+.lineAccent {
+  fill: none;
+  stroke: var(--v-accent);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+.lineDashed {
+  fill: none;
+  stroke: var(--v-muted);
+  stroke-width: 1.25px;
+  stroke-dasharray: 5 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.handle {
+  cursor: grab;
+  fill: var(--v-bg);
+  stroke: var(--v-ink);
+  stroke-width: 0.9;
+  touch-action: none;
+}
+.handle:active {
+  cursor: grabbing;
+}
+.handle:focus-visible,
+.focusable:focus-visible {
+  outline: none;
+  stroke: var(--v-focus);
+  stroke-width: 1.4;
+}
+
+/* ── Panels ── */
+.panel {
+  padding: 1rem;
+  border: 1px solid var(--v-rule);
+  border-radius: 0.75rem;
+  background: var(--v-surface);
+}
+
+.panelTitle {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v-muted);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* ── Slider ── */
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.controlMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  color: var(--v-ink);
+}
+
+.controlValue {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  color: var(--tone, var(--v-accent));
+  font-variant-numeric: tabular-nums;
+}
+
+.slider {
+  width: 100%;
+  min-height: 1.5rem;
+  margin: 0;
+  accent-color: var(--tone, var(--v-accent));
+  cursor: pointer;
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--v-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--v-muted);
+}
+
+.tonePos { --tone: var(--v-pos); }
+.toneNeg { --tone: var(--v-neg); }
+.toneC3 { --tone: var(--v-c3); }
+.toneC4 { --tone: var(--v-c4); }
+.toneC5 { --tone: var(--v-c5); }
+.toneInk { --tone: var(--v-ink); }
+
+/* ── Buttons ── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--v-rule);
+  border-radius: 999px;
+  background: var(--v-bg);
+  color: var(--v-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.button:hover {
+  border-color: var(--v-accent);
+  background: var(--v-raised);
+}
+.button:focus-visible {
+  outline: 2px solid var(--v-focus);
+  outline-offset: 2px;
+}
+.button[aria-pressed='true'],
+.buttonPrimary {
+  background: var(--v-ink);
+  border-color: var(--v-ink);
+  color: var(--v-bg);
+}
+.button[aria-pressed='true']:hover,
+.buttonPrimary:hover {
+  background: var(--v-ink);
+  opacity: 0.88;
+}
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.segmented {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  margin: 0;
+  padding: 0.2rem;
+  border: 1px solid var(--v-rule);
+  border-radius: 999px;
+  background: var(--v-bg);
+}
+.segmented legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.segment {
+  position: relative;
+  display: flex;
+}
+.segment input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.segment span {
+  flex: 1;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--v-muted);
+  transition: background-color 0.15s, color 0.15s;
+}
+.segment input:checked + span {
+  background: var(--v-ink);
+  color: var(--v-bg);
+}
+.segment input:focus-visible + span {
+  outline: 2px solid var(--v-focus);
+  outline-offset: 2px;
+}
+
+/* ── Callout / readouts ── */
+.callout {
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--tone, var(--v-accent)) 45%, var(--v-rule));
+  border-left-width: 4px;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--tone, var(--v-accent)) 9%, var(--v-bg));
+}
+.calloutEyebrow {
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v-muted);
+}
+.calloutTitle {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.6rem;
+  line-height: 1.15;
+  color: var(--v-ink);
+}
+.calloutBody {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: var(--v-muted);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.6rem;
+}
+.stat {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--v-rule);
+  border-radius: 0.6rem;
+  background: var(--v-bg);
+}
+.statLabel {
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v-muted);
+}
+.statValue {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1rem;
+  color: var(--tone, var(--v-ink));
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--v-raised);
+  overflow: hidden;
+}
+.barFill {
+  height: 100%;
+  width: var(--w, 0%);
+  border-radius: inherit;
+  background: var(--tone, var(--v-accent));
+  transition: width 0.25s ease-out;
+}
+
+/* ── Legend & notes ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  color: var(--v-muted);
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.legendSwatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--tone, var(--v-muted));
+  flex: none;
+}
+.swatchCircle {
+  border-radius: 50%;
+}
+.swatchRing {
+  background: transparent;
+  border: 2px solid var(--v-ink);
+  border-radius: 50%;
+}
+.swatchDash {
+  height: 0;
+  width: 1rem;
+  background: none;
+  border-top: 2px dashed var(--tone, var(--v-muted));
+}
+.swatchLine {
+  height: 0;
+  width: 1rem;
+  background: none;
+  border-top: 2px solid var(--tone, var(--v-ink));
+}
+
+.notes {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--v-muted);
+}
+.notes li::marker {
+  color: var(--v-accent);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .markIn {
+    animation: none;
+  }
+  .barFill,
+  .button,
+  .segment span {
+    transition: none;
+  }
+}

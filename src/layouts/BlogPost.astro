@@ -1,65 +1,130 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import BaseLayout from './BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import { getTranslations } from '../i18n/utils';
+import { routePath } from '../i18n/routes';
+import type { Locale } from '../i18n/ui';
+import { postHref } from '../utils/blog';
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Props {
+	post: CollectionEntry<'blog'>;
+	minutes: number;
+	lang?: Locale;
+	prev?: CollectionEntry<'blog'>;
+	next?: CollectionEntry<'blog'>;
+}
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { post, minutes, lang = 'es', prev, next } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, heroImage } = post.data;
+const t = getTranslations(lang);
 ---
 
-<html lang="es">
-	<head>
-		<BaseHead title={title} description={description} />
-	</head>
+<BaseLayout
+	title={title}
+	description={description}
+	lang={lang}
+	type="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+	canonical={`/blog/${post.id}/`}
+	alternates={lang === 'es' ? { es: `/blog/${post.id}/` } : undefined}
+>
+	<article class="post">
+		<a class="post-back" href={routePath(lang, 'blog')}>← {t('blog.all')}</a>
+		<header class="post-header">
+			<p class="post-meta">
+				<FormattedDate date={pubDate} lang={lang} />
+				<span aria-hidden="true">·</span>
+				<span>{minutes} {t('blog.min')}</span>
+				{updatedDate && (
+					<>
+						<span aria-hidden="true">·</span>
+						<span>{t('blog.updated')} <FormattedDate date={updatedDate} lang={lang} /></span>
+					</>
+				)}
+			</p>
+			<h1 class="post-title">{title}</h1>
+			<p class="post-lede">{description}</p>
+			{tags.length > 0 && (
+				<p class="post-tags">{tags.map((tag) => <span>#{tag}</span>)}</p>
+			)}
+		</header>
 
-	<body class="bg-slate-50 antialiased">
-		<Header />
-		<main class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-			<article class="overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-xl">
-				{/* Hero Image */}
-				<div class="relative aspect-[21/9] w-full overflow-hidden bg-slate-100">
-					{heroImage && (
-						<Image 
-							width={1200} 
-							height={600} 
-							src={heroImage} 
-							alt="" 
-							class="h-full w-full object-cover"
-						/>
-					)}
-					<div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
-				</div>
+		{heroImage && (
+			<Image src={heroImage} alt="" width={1344} class="post-hero" loading="eager" />
+		)}
 
-				{/* Content Container */}
-				<div class="px-6 py-12 sm:px-12 lg:px-16">
-					{/* Header Metadata */}
-					<header class="mb-12 border-b border-slate-100 pb-12 text-center">
-						<div class="mb-6 flex flex-wrap items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-400">
-							<FormattedDate date={pubDate} />
-							{updatedDate && (
-								<span class="flex items-center gap-2 italic text-teal-600">
-									<span class="h-1 w-1 rounded-full bg-slate-300"></span>
-									Actualizado el <FormattedDate date={updatedDate} />
-								</span>
-							)}
-						</div>
-						
-						<h1 class="mx-auto max-w-2xl text-4xl font-black leading-tight text-slate-900 sm:text-5xl">
-							{title}
-						</h1>
-					</header>
+		<div class="prose post-body">
+			<slot />
+		</div>
 
-					{/* Article Body */}
-					<div class="prose prose-slate prose-lg max-w-none">
-						<slot />
-					</div>
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+		{(prev || next) && (
+			<nav class="post-pager" aria-label="Posts">
+				{prev ? (
+					<a href={postHref(lang, prev.id)} rel="prev">
+						<span>← {t('blog.prev')}</span>
+						{prev.data.title}
+					</a>
+				) : <span />}
+				{next ? (
+					<a href={postHref(lang, next.id)} rel="next" class="next">
+						<span>{t('blog.next')} →</span>
+						{next.data.title}
+					</a>
+				) : <span />}
+			</nav>
+		)}
+	</article>
+</BaseLayout>
+
+<style>
+	.post { max-width: 42rem; }
+	.post-back {
+		display: inline-block; margin-bottom: 2rem;
+		font-family: var(--font-mono); font-size: 0.75rem;
+		color: var(--ink-muted); text-decoration: none;
+	}
+	.post-back:hover { color: var(--accent); }
+	.post-hero { width: 100%; height: auto; border-radius: 0.75rem; margin: 0 0 2.5rem; }
+	.post-header { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--rule); }
+	.post-meta {
+		display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1rem;
+		font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-muted);
+	}
+	.post-title {
+		margin: 0 0 1rem; font-family: var(--font-serif); font-weight: 400;
+		font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; color: var(--ink);
+	}
+	.post-lede { margin: 0; font-size: 1.125rem; color: var(--ink-muted); }
+	.post-tags {
+		display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0 0;
+		font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent);
+	}
+	/* Prose extras not covered by the shared .prose rules */
+	.post-body :global(.prose > :first-child) { margin-top: 0; }
+	.post-body :global(table) {
+		display: block; width: 100%; overflow-x: auto; margin: 2rem 0;
+		border-collapse: collapse; font-size: 0.9rem;
+	}
+	.post-body :global(th), .post-body :global(td) {
+		padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--rule); text-align: left;
+	}
+	.post-body :global(th) { font-weight: 500; color: var(--ink); border-bottom-color: var(--ink-faint); }
+	.post-body :global(hr) { border: 0; border-top: 1px solid var(--rule); margin: 3rem 0; }
+	.post-body :global(h2), .post-body :global(h3) { font-family: var(--font-serif); font-weight: 400; line-height: 1.2; }
+	.post-body :global(pre) { font-size: 0.85rem; line-height: 1.6; }
+	.post-pager {
+		display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+		margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule);
+	}
+	.post-pager a { color: var(--ink); text-decoration: none; font-family: var(--font-serif); font-size: 1.15rem; }
+	.post-pager a:hover { color: var(--accent); }
+	.post-pager a span {
+		display: block; margin-bottom: 0.25rem;
+		font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-muted);
+	}
+	.post-pager .next { text-align: right; }
+	@media (max-width: 600px) { .post-pager { grid-template-columns: 1fr; } .post-pager .next { text-align: left; } }
+</style>

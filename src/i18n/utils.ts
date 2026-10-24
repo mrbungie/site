@@ -1,4 +1,5 @@
 import { ui, defaultLocale, type Locale } from './ui';
+export type { Locale };
 
 export type TranslationKey = keyof (typeof ui)[typeof defaultLocale];
 export type Level = 'beginner' | 'intermediate' | 'advanced';
@@ -8,7 +9,7 @@ export const getLevelTranslationKey = (level: Level): LevelTranslationKey => `le
 
 export function getLangFromUrl(url: URL): Locale {
   const [, lang] = url.pathname.split('/');
-  if (lang in ui) return lang as Locale;
+  if (lang && lang in ui) return lang as Locale;
   return defaultLocale;
 }
 

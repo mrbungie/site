@@ -1,0 +1,84 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+	title: string;
+}
+const { headings, title } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{items.length > 1 && (
+	<nav class="toc" aria-label={title}>
+		<h2 class="toc__title">{title}</h2>
+		<ol class="toc__list">
+			{items.map((h) => (
+				<li class={`toc__item toc__item--${h.depth}`}>
+					<a href={`#${h.slug}`} data-toc-link={h.slug}>{h.text}</a>
+				</li>
+			))}
+		</ol>
+	</nav>
+)}
+
+<script>
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+	const targets = links
+		.map((a) => document.getElementById(a.dataset.tocLink ?? ''))
+		.filter((el): el is HTMLElement => !!el);
+	if (targets.length && 'IntersectionObserver' in window) {
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const e of entries) {
+					if (!e.isIntersecting) continue;
+					links.forEach((a) =>
+						a.classList.toggle('is-active', a.dataset.tocLink === e.target.id),
+					);
+				}
+			},
+			{ rootMargin: '0px 0px -70% 0px' },
+		);
+		targets.forEach((el) => io.observe(el));
+	}
+</script>
+
+<style>
+	.toc__title {
+		margin: 0 0 10px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 400;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.toc__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-left: 1px solid var(--rule);
+	}
+	.toc__item a {
+		display: block;
+		padding: 4px 0 4px 14px;
+		margin-left: -1px;
+		border-left: 1px solid transparent;
+		font-size: 13px;
+		line-height: 1.4;
+		color: var(--ink-muted);
+		text-decoration: none;
+		transition: color 0.2s, border-color 0.2s;
+	}
+	.toc__item--3 a {
+		padding-left: 28px;
+		font-size: 12px;
+	}
+	.toc__item a:hover {
+		color: var(--ink);
+	}
+	.toc__item a.is-active {
+		color: var(--accent);
+		border-left-color: var(--accent);
+	}
+</style>

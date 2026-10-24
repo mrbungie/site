@@ -1,89 +1,109 @@
-import { useMemo, useState } from 'react';
-import { Activity, SlidersHorizontal, Sparkles, Target } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import { bootstrap, buildTree, predictProbability, type TreeNode } from './shared/cart';
+import { creditSample } from './shared/datasets';
+import { createRng, pct } from './shared/math';
+import {
+  Button, Callout, Legend, Mark, Meter, Notes, Panel, Plot, PlotSvg, QueryHandle, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v,
+} from './shared/ui';
+import styles from './RandomForestVisualizer.module.css';
 
-interface TreeVote {
-  id: number;
-  vote: 0 | 1;
-  rule: string;
-}
+const GRID = 28;
+const forestProbability = (forest: TreeNode[], x: number, y: number) =>
+  forest.reduce((sum, tree) => sum + (predictProbability(tree, x, y) >= 0.5 ? 1 : 0), 0) / forest.length;
 
 const RandomForestVisualizer = () => {
-  const [income, setIncome] = useState(58);
-  const [debt, setDebt] = useState(26);
-  const [score, setScore] = useState(77);
-  const [tenure, setTenure] = useState(4);
+  const [version, setVersion] = useState(0);
+  const [treeCount, setTreeCount] = useState(15);
+  const [depth, setDepth] = useState(4);
+  const [query, setQuery] = useState({ x: 55, y: 40 });
+  const svgRef = useRef<SVGSVGElement>(null);
 
-  const votes = useMemo<TreeVote[]>(() => {
-    const trees = [
-      { id: 1, vote: income > 52 && debt < 38 ? 1 : 0, rule: 'Ingreso alto + deuda controlada' },
-      { id: 2, vote: score > 74 || tenure > 5 ? 1 : 0, rule: 'Buen score o antigüedad' },
-      { id: 3, vote: income > 60 || (score > 80 && debt < 32) ? 1 : 0, rule: 'Ingreso muy alto o score fuerte' },
-      { id: 4, vote: debt < 24 && tenure > 2 ? 1 : 0, rule: 'Deuda baja + cierta estabilidad' },
-      { id: 5, vote: score > 70 && income > 48 && debt < 45 ? 1 : 0, rule: 'Perfil equilibrado' },
-    ];
+  const train = useMemo(() => creditSample(90, 500 + version), [version]);
+  const test = useMemo(() => creditSample(400, 9000 + version), [version]);
 
-    return trees.map((tree) => ({ ...tree, vote: tree.vote as 0 | 1 }));
-  }, [debt, income, score, tenure]);
+  // Bagging: every tree sees a bootstrap resample and one random feature candidate per split (mtry = 1).
+  // Built once at the maximum size so the slider just takes a prefix (stable, comparable forests).
+  const allTrees = useMemo(() => {
+    const rng = createRng(77 + version);
+    return Array.from({ length: 40 }, () => buildTree(bootstrap(train, rng), { maxDepth: depth, minLeaf: 2, maxFeatures: 1, rng }));
+  }, [depth, train, version]);
+  const forest = useMemo(() => allTrees.slice(0, treeCount), [allTrees, treeCount]);
+  const single = useMemo(() => buildTree(train, { maxDepth: depth, minLeaf: 2 }), [depth, train]);
 
-  const summary = useMemo(() => {
-    const positives = votes.filter((tree) => tree.vote === 1).length;
+  const accuracy = useMemo(() => {
+    const score = (predict: (x: number, y: number) => number) =>
+      test.filter((p) => (predict(p.x, p.y) >= 0.5 ? 1 : 0) === p.label).length / test.length;
     return {
-      positives,
-      negatives: votes.length - positives,
-      probability: positives / votes.length,
-      decision: positives >= 3 ? 'Aprobado' : 'Rechazado',
+      single: score((x, y) => predictProbability(single, x, y)),
+      forest: score((x, y) => forestProbability(forest, x, y)),
     };
-  }, [votes]);
+  }, [forest, single, test]);
+
+  const cells = useMemo(() => {
+    const size = 100 / GRID;
+    return Array.from({ length: GRID * GRID }, (_, i) => {
+      const x = (i % GRID) * size;
+      const y = Math.floor(i / GRID) * size;
+      return { x, y, size, p: forestProbability(forest, x + size / 2, y + size / 2) };
+    });
+  }, [forest]);
+
+  const votes = useMemo(() => forest.map((tree) => (predictProbability(tree, query.x, query.y) >= 0.5 ? 1 : 0)), [forest, query]);
+  const positives = votes.reduce<number>((a, b) => a + b, 0);
+  const share = positives / votes.length;
+  const approved = share >= 0.5;
 
   return (
-    <div className="rf-visualizer">
-      <div className="rf-visualizer__header">
-        <h3 className="rf-visualizer__title"><Activity className="rf-visualizer__title-icon" size={20} /> Laboratorio Random Forest</h3>
-        <p className="rf-visualizer__subtitle">Votación de árboles del ensamble</p>
-      </div>
-
-      <div className="rf-visualizer__layout">
-        <div className="rf-panel">
-          <div className="rf-panel__header"><SlidersHorizontal size={14} className="rf-panel__header-icon" /> Caso evaluado</div>
-          <div className="rf-controls">
-            <label className="rf-control"><div className="rf-control__meta"><span>Ingreso</span><span className="rf-control__value--income">{income}</span></div><input type="range" min="20" max="100" step="1" value={income} onChange={(event) => setIncome(parseInt(event.target.value, 10))} className="rf-control__slider rf-control__slider--income" /></label>
-            <label className="rf-control"><div className="rf-control__meta"><span>Deuda</span><span className="rf-control__value--debt">{debt}%</span></div><input type="range" min="5" max="80" step="1" value={debt} onChange={(event) => setDebt(parseInt(event.target.value, 10))} className="rf-control__slider rf-control__slider--debt" /></label>
-            <label className="rf-control"><div className="rf-control__meta"><span>Score</span><span className="rf-control__value--score">{score}</span></div><input type="range" min="40" max="100" step="1" value={score} onChange={(event) => setScore(parseInt(event.target.value, 10))} className="rf-control__slider rf-control__slider--score" /></label>
-            <label className="rf-control"><div className="rf-control__meta"><span>Antigüedad</span><span className="rf-control__value--tenure">{tenure} años</span></div><input type="range" min="0" max="10" step="1" value={tenure} onChange={(event) => setTenure(parseInt(event.target.value, 10))} className="rf-control__slider rf-control__slider--tenure" /></label>
-          </div>
-        </div>
-
-        <div className="rf-results">
-          <div className="rf-tree-grid">
-            {votes.map((tree) => (
-              <div key={tree.id} className={`rf-tree-card ${tree.vote === 1 ? 'rf-tree-card--positive' : 'rf-tree-card--negative'}`}>
-                <p className="rf-tree-card__eyebrow">Árbol {tree.id}</p>
-                <p className={`rf-tree-card__vote ${tree.vote === 1 ? 'rf-tree-card__vote--positive' : 'rf-tree-card__vote--negative'}`}>{tree.vote === 1 ? 'Sí' : 'No'}</p>
-                <p className="rf-tree-card__rule">{tree.rule}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rf-summary">
-            <div className="rf-summary__eyebrow"><Target size={14} /> Resultado agregado</div>
-            <p className="rf-summary__title">{summary.decision}</p>
-            <p className="rf-summary__body">{summary.positives} votos positivos de {votes.length}. Probabilidad por voto: {(summary.probability * 100).toFixed(0)}%.</p>
-            <div className="rf-summary__meter">
-              <div className="rf-summary__meter-bar" style={{ width: `${summary.probability * 100}%` }} />
-            </div>
-          </div>
-
-          <div className="rf-notes">
-            <div className="rf-notes__eyebrow"><Sparkles size={14} className="rf-panel__header-icon" /> Qué mirar</div>
-            <ul className="rf-notes__list">
-              <li>Cada árbol ve el problema con reglas algo distintas.</li>
-              <li>La votación reduce la varianza respecto a un único árbol sensible.</li>
-              <li>El bosque gana robustez aunque pierda interpretabilidad global.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+    <VizFrame
+      title="Laboratorio Random Forest"
+      subtitle="Bagging y votación de árboles"
+      actions={<Button onClick={() => setVersion((n) => n + 1)}>Nueva muestra</Button>}
+    >
+      <VizBody
+        plot={
+          <Plot caption={<><span>X: ingreso</span><span>Y: deuda / ingreso</span></>}>
+            <PlotSvg svgRef={svgRef} label={`Probabilidad de aprobación del bosque de ${treeCount} árboles`}>
+              {cells.map((c) => (
+                <rect key={`${c.x}-${c.y}`} className={c.p >= 0.5 ? v.markPos : v.markNeg} style={{ opacity: 0.06 + 0.3 * Math.abs(2 * c.p - 1) }} x={c.x} y={flipY(c.y + c.size)} width={c.size + 0.05} height={c.size + 0.05} />
+              ))}
+              {train.map((p) => (
+                <Mark key={`${version}-${p.id}`} x={p.x} y={p.y} label={p.label} size={1.35} delay={p.id * 0.004} />
+              ))}
+              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label="Cliente a evaluar" onMove={(x, y) => setQuery({ x, y })} />
+            </PlotSvg>
+          </Plot>
+        }
+        side={
+          <>
+            <Panel title="Ensamble">
+              <Slider label="Número de árboles" value={treeCount} min={1} max={40} step={1} onChange={setTreeCount} tone="pos" />
+              <Slider label="Profundidad máxima" value={depth} min={1} max={7} step={1} onChange={setDepth} tone="c3" />
+            </Panel>
+            <Callout eyebrow="Votación" title={approved ? 'Aprobado' : 'Rechazado'} tone={approved ? 'pos' : 'neg'}>
+              {positives} de {votes.length} árboles votan “aprobado” ({pct(share, 0)}).
+            </Callout>
+            <Panel title="Voto de cada árbol">
+              <ul className={styles.votes} aria-label="Votos individuales">
+                {votes.map((vote, i) => (
+                  <li key={i} className={`${styles.vote} ${vote ? styles.votePos : styles.voteNeg}`} title={`Árbol ${i + 1}: ${vote ? 'aprobado' : 'rechazado'}`}>{vote ? '+' : '−'}</li>
+                ))}
+              </ul>
+              <Meter value={share} tone="pos" label="Proporción de votos a favor" />
+            </Panel>
+            <StatGrid>
+              <Stat label="Árbol único (prueba)" value={pct(accuracy.single)} tone="neg" />
+              <Stat label={`Bosque (${treeCount})`} value={pct(accuracy.forest)} tone="pos" />
+            </StatGrid>
+            <Legend items={[{ kind: 'pos', label: 'Aprobado' }, { kind: 'neg', label: 'Rechazado' }]} />
+            <Notes items={[
+              'Cada árbol entrena con una muestra bootstrap y un solo atributo candidato por corte.',
+              'Un árbol único tiene una frontera escalonada; promediar muchos árboles la suaviza y reduce la varianza.',
+              'La exactitud se mide en 400 casos nuevos que ningún árbol vio.',
+            ]} />
+          </>
+        }
+      />
+    </VizFrame>
   );
 };
 

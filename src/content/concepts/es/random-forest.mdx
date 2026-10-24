@@ -1,9 +1,10 @@
 ---
 title: "Random Forest"
 summary: "Un ensamble de árboles que votan juntos para ganar robustez y reducir la varianza."
-tags: ["machine-learning", "ensamble", "clasificación"]
-area: "statistics"
+area: "Árboles y ensambles"
 level: "intermediate"
+order: 10
+tags: ["ensamble", "bagging", "clasificación"]
 prerequisites: ["arbol-de-decision"]
 related: ["arbol-de-decision", "svm", "knn"]
 featured: false
@@ -12,6 +13,7 @@ draft: false
 
 import RandomForestVisualizer from '../../../components/visuals/RandomForestVisualizer';
 import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
 
 **Random Forest** combina muchos árboles de decisión entrenados sobre muestras y subconjuntos de variables distintos. En lugar de confiar en una sola rama, agrega muchas voces pequeñas y decide por mayoría.
 
@@ -28,13 +30,18 @@ import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 ## Mira cómo vota el bosque
 
-<div class="my-10 not-prose">
-  <RandomForestVisualizer client:load />
-</div>
+<VizFrame>
+  <RandomForestVisualizer client:visible />
+</VizFrame>
 
 ## Intuición clave
 
-Un árbol individual puede ser inestable: un pequeño cambio en los datos puede alterar mucho su estructura. El bosque reduce ese problema porque promedia decisiones diversas.
+Un árbol individual es inestable: un cambio pequeño en los datos puede alterar mucho su estructura (alta varianza). El bosque reduce ese problema promediando árboles distintos entre sí. Para lograrlo, cada árbol se entrena con:
+
+- una muestra **bootstrap** de las filas (con reemplazo), y
+- un subconjunto aleatorio de variables en cada división.
+
+Promediar árboles poco correlacionados baja la varianza sin aumentar mucho el sesgo. Además, las filas que quedan fuera de cada muestra bootstrap (*out-of-bag*) sirven como validación gratuita.
 
 ## Qué observar
 

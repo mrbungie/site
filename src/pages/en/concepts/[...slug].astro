@@ -1,21 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content';
-import ConceptLayout from '../../../layouts/ConceptLayout.astro';
+import ConceptPage from '../../../components/concept/ConceptPage.astro';
+import { getConceptPaths } from '../../../components/concept/conceptRoutes';
 
 export async function getStaticPaths() {
-	const concepts = await getCollection('concepts');
-	const enConcepts = concepts.filter(c => c.id.startsWith('en/'));
-	
-	return enConcepts.map((concept) => ({
-		params: { slug: concept.id.replace('en/', '').replace(/\.(mdx|md)$/, '') },
-		props: { concept },
-	}));
+	// No English translations yet: falls back to the Spanish entries (flagged on the page).
+	return getConceptPaths('en');
 }
 
 const { concept } = Astro.props;
-const { Content } = await render(concept);
 ---
 
-<ConceptLayout concept={concept}>
-	<Content />
-</ConceptLayout>
+<ConceptPage concept={concept} lang="en" />

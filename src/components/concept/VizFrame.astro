@@ -1,0 +1,28 @@
+---
+interface Props {
+	caption?: string;
+}
+const { caption } = Astro.props;
+---
+
+<figure class="viz-frame not-prose">
+	<div class="viz-frame__stage"><slot /></div>
+	{caption && <figcaption class="viz-frame__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+	.viz-frame {
+		margin: 2.5rem 0;
+	}
+	.viz-frame__stage {
+		min-height: 320px;
+		overflow-x: auto;
+	}
+	.viz-frame__caption {
+		margin-top: 10px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		color: var(--ink-muted);
+	}
+</style>

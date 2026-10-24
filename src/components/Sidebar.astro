@@ -1,119 +1,165 @@
 ---
-import { getLangFromUrl, getTranslations, type Locale } from '../i18n/utils';
-import { routePath } from '../i18n/routes';
+// The single site navigation: fixed rail on desktop, collapsible top bar on mobile.
+import { languages, locales, type Locale } from '../i18n/ui';
+import { getLangFromUrl, getTranslations } from '../i18n/utils';
+import { routePath, switchLocalePath } from '../i18n/routes';
+import { AUTHOR, THEME_STORAGE_KEY } from '../consts';
+import { projects } from '../data/projects';
 
 interface Props {
-  lang?: Locale;
+	lang?: Locale;
+	/** Explicit equivalent paths per locale (used by the language switcher). */
+	alternates?: Partial<Record<Locale, string>>;
 }
 
-const { lang = getLangFromUrl(Astro.url) } = Astro.props;
+const { lang = getLangFromUrl(Astro.url), alternates } = Astro.props;
 const t = getTranslations(lang);
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
-
 const homeHref = lang === 'es' ? '' : `/${lang}`;
 const conceptsHref = routePath(lang, 'concepts');
 const blogHref = routePath(lang, 'blog');
+const startsWith = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-function isConceptsPage(): boolean {
-  return pathname.startsWith(conceptsHref.replace(/\/$/, ''));
-}
-function isBlogPage(): boolean {
-  return pathname.startsWith(blogHref.replace(/\/$/, ''));
-}
-function isHomePage(): boolean {
-  return pathname === homeHref || pathname === `${homeHref}/` || pathname === '/';
-}
+const sections = [
+	...(projects.length > 0 ? [{ id: 'work', label: t('nav.work') }] : []),
+	{ id: 'writing', label: t('nav.writing') },
+];
+const pages = [
+	{ href: routePath(lang, 'about'), label: t('nav.about') },
+	{ href: conceptsHref, label: t('nav.concepts') },
+	{ href: blogHref, label: t('nav.blog') },
+];
+
+const langLinks = locales.map((l) => ({
+	l,
+	href: alternates?.[l] ?? switchLocalePath(Astro.url.pathname, l).path,
+}));
 ---
 
-<aside class="sidebar">
-  <div class="sidebar-monogram">G.O.</div>
-  <div class="sidebar-name">Germán<br/>Oviedo</div>
-  <div class="sidebar-role">
-    Data &amp; AI Executive<br/>MBA · MIB Trieste
-  </div>
-  <div class="sidebar-status">
-    <span class="status-dot"></span>
-    <span>{lang === 'es' ? 'Disponible para oportunidades' : 'Available for opportunities'}</span>
-  </div>
+<header class="sidebar" id="site-sidebar" data-theme-key={THEME_STORAGE_KEY}>
+	<div class="sidebar__bar">
+		<a class="sidebar__brand" href={`${homeHref}/`} aria-label={`${AUTHOR.name}, ${t('nav.home')}`}>
+			<span class="sidebar-monogram">G.O.</span>
+		</a>
+		<button
+			type="button"
+			class="ctrl-btn sidebar__toggle"
+			aria-expanded="false"
+			aria-controls="site-nav"
+			data-label-open={t('nav.menu')}
+			data-label-close={t('nav.close')}
+		>
+			{t('nav.menu')}
+		</button>
+	</div>
 
-  <nav>
-    <ul>
-      <li><a href={`${homeHref}/#about`} data-section="about">{t('nav.about-section')}</a></li>
-      <li><a href={`${homeHref}/#work`} data-section="work">{t('nav.work')}</a></li>
-      <li><a href={`${homeHref}/#writing`} data-section="writing">{t('nav.writing')}</a></li>
-      <li><a href={`${homeHref}/#speaking`} data-section="speaking">{t('nav.speaking')}</a></li>
-      <li><a href={`${homeHref}/#resume`} data-section="resume">{t('nav.resume')}</a></li>
-      <li class="nav-divider"></li>
-      <li><a href={conceptsHref} class:list={[{ active: isConceptsPage() }]}>{t('nav.concepts')}</a></li>
-      <li><a href={blogHref} class:list={[{ active: isBlogPage() }]}>{t('nav.blog')}</a></li>
-      <li class="nav-divider"></li>
-      <li><a href={`${homeHref}/#contact`} data-section="contact">{t('nav.contact')}</a></li>
-    </ul>
-  </nav>
+	<div class="sidebar__body" id="site-nav">
+		<div class="sidebar-identity">
+			<a class="sidebar-name" href={`${homeHref}/`}>Germán<br />Oviedo</a>
+			<p class="sidebar-role">{t('site.role')}<br />Santiago, Chile</p>
+			<p class="sidebar-status"><span class="status-dot" aria-hidden="true"></span>{t('site.available')}</p>
+		</div>
 
-  <div class="sidebar-controls">
-    <a href="/" class:list={['ctrl-btn', { active: lang === 'es' }]}>ES</a>
-    <a href="/en" class:list={['ctrl-btn', { active: lang === 'en' }]}>EN</a>
-    <div class="ctrl-divider"></div>
-    <button class="ctrl-btn" id="btn-dark" onclick="toggleDark()">
-      <span id="dark-label">Dark</span>
-    </button>
-  </div>
+		<nav class="sidebar-nav" aria-label={t('nav.primary')}>
+			<ul>
+				{sections.map((s) => (
+					<li><a href={`${homeHref}/#${s.id}`} data-section={s.id}>{s.label}</a></li>
+				))}
+				<li class="nav-divider" aria-hidden="true"></li>
+				{pages.map((p) => (
+					<li><a href={p.href} aria-current={startsWith(p.href) ? 'page' : undefined}>{p.label}</a></li>
+				))}
+			</ul>
+		</nav>
 
-  <div class="sidebar-footer">
-    <a href="mailto:german.oviedo.b@gmail.com">german.oviedo.b@gmail.com</a><br/>
-    <a href="https://linkedin.com/in/goviedb" target="_blank">LinkedIn</a>
-    &nbsp;·&nbsp;
-    <a href="https://github.com/mrbungie" target="_blank">GitHub</a>
-  </div>
-</aside>
+		<div class="sidebar-controls">
+			<div class="ctrl-group" role="group" aria-label={t('nav.language')}>
+				{langLinks.map(({ l, href }) => (
+					<a
+						href={href}
+						class:list={['ctrl-btn', { active: lang === l }]}
+						lang={l}
+						hreflang={l}
+						title={languages[l]}
+						aria-current={lang === l ? 'true' : undefined}
+					>{l.toUpperCase()}</a>
+				))}
+			</div>
+			<button
+				type="button"
+				class="ctrl-btn"
+				data-theme-toggle
+				aria-label={t('nav.theme.label')}
+				data-to-dark={t('nav.theme.dark')}
+				data-to-light={t('nav.theme.light')}
+			>
+				<span data-theme-label>{t('nav.theme.dark')}</span>
+			</button>
+		</div>
 
-<script is:inline>
-  (function () {
-    const isDark = () => localStorage.getItem('go-dark') === 'true';
+		<address class="sidebar-footer">
+			<a href={`mailto:${AUTHOR.email}`}>{AUTHOR.email}</a><br />
+			<a href={AUTHOR.sameAs[0]} target="_blank" rel="me noopener">LinkedIn</a>
+			<span aria-hidden="true"> · </span>
+			<a href={AUTHOR.sameAs[1]} target="_blank" rel="me noopener">GitHub</a>
+		</address>
+	</div>
+</header>
 
-    function applyDark(dark) {
-      localStorage.setItem('go-dark', String(dark));
-      document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
-      const label = document.getElementById('dark-label');
-      if (label) label.textContent = dark ? 'Light' : 'Dark';
-      const btn = document.getElementById('btn-dark');
-      if (btn) btn.classList.toggle('active', dark);
-    }
+<script>
+	const root = document.documentElement;
+	const sidebar = document.getElementById('site-sidebar')!;
+	const key = sidebar.dataset.themeKey || 'go-theme';
 
-    window.toggleDark = function () { applyDark(!isDark()); };
+	// Theme toggle (explicit choice persists; default follows the OS)
+	const toggle = sidebar.querySelector<HTMLButtonElement>('[data-theme-toggle]')!;
+	const label = toggle.querySelector<HTMLElement>('[data-theme-label]')!;
+	const mq = matchMedia('(prefers-color-scheme: dark)');
+	const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches);
+	const paint = () => {
+		label.textContent = isDark() ? toggle.dataset.toLight! : toggle.dataset.toDark!;
+		toggle.setAttribute('aria-pressed', String(isDark()));
+	};
+	toggle.addEventListener('click', () => {
+		const next = isDark() ? 'light' : 'dark';
+		root.dataset.theme = next;
+		try { localStorage.setItem(key, next); } catch {}
+		paint();
+	});
+	mq.addEventListener('change', paint);
+	paint();
 
-    if (isDark()) document.documentElement.setAttribute('data-theme', 'dark');
+	// Mobile menu
+	const menuBtn = sidebar.querySelector<HTMLButtonElement>('.sidebar__toggle')!;
+	const setOpen = (open: boolean) => {
+		sidebar.dataset.open = String(open);
+		menuBtn.setAttribute('aria-expanded', String(open));
+		menuBtn.textContent = open ? menuBtn.dataset.labelClose! : menuBtn.dataset.labelOpen!;
+	};
+	menuBtn.addEventListener('click', () => setOpen(sidebar.dataset.open !== 'true'));
+	sidebar.querySelectorAll('nav a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && sidebar.dataset.open === 'true') { setOpen(false); menuBtn.focus(); }
+	});
 
-    document.addEventListener('DOMContentLoaded', function () {
-      applyDark(isDark());
-
-      // Scroll spy — only on home page (has anchor sections)
-      const sections = document.querySelectorAll('section[id]');
-      if (sections.length === 0) return;
-
-      const navLinks = document.querySelectorAll('.sidebar nav a[data-section]');
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            navLinks.forEach(link => {
-              link.classList.toggle('active', link.dataset.section === entry.target.id);
-            });
-          }
-        });
-      }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
-
-      sections.forEach(s => observer.observe(s));
-    });
-  })();
+	// Scroll spy for in-page sections (home only)
+	const links = sidebar.querySelectorAll<HTMLAnchorElement>('nav a[data-section]');
+	const sections = [...document.querySelectorAll('main section[id]')];
+	if (sections.length) {
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const e of entries) {
+					if (!e.isIntersecting) continue;
+					links.forEach((l) => {
+						const on = l.dataset.section === e.target.id;
+						l.classList.toggle('active', on);
+						if (on) l.setAttribute('aria-current', 'location'); else l.removeAttribute('aria-current');
+					});
+				}
+			},
+			{ rootMargin: '-30% 0px -60% 0px', threshold: 0 },
+		);
+		sections.forEach((s) => io.observe(s));
+	}
 </script>
-
-<style>
-  .nav-divider {
-    height: 1px;
-    background: var(--rule);
-    margin: 8px 0;
-    list-style: none;
-  }
-</style>

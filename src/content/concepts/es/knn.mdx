@@ -1,17 +1,19 @@
 ---
 title: "k-Vecinos Cercanos (k-NN)"
-summary: "Un modelo perezoso que clasifica según la mayoría entre los ejemplos más cercanos."
-tags: ["machine-learning", "vecindad", "clasificación"]
-area: "statistics"
+summary: "Clasifica un caso nuevo por mayoría entre los ejemplos más cercanos, sin entrenar un modelo explícito."
+area: "Clasificación"
 level: "beginner"
-prerequisites: ["correlacion", "regresion-logistica"]
-related: ["svm", "random-forest", "naive-bayes"]
+order: 6
+tags: ["clasificación", "basado en instancias", "distancia"]
+prerequisites: []
+related: ["naive-bayes", "svm", "random-forest"]
 featured: false
 draft: false
 ---
 
 import KNNVisualizer from '../../../components/visuals/KNNVisualizer';
 import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
 
 **k-NN** no aprende una fórmula global: guarda los datos y, cuando llega un caso nuevo, mira cuáles son sus vecinos más cercanos para decidir por mayoría.
 
@@ -28,20 +30,21 @@ import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
 
 ## Explora una decisión local
 
-<div class="my-10 not-prose">
-  <KNNVisualizer client:load />
-</div>
+<VizFrame>
+  <KNNVisualizer client:visible />
+</VizFrame>
 
-## Intuición básica
+## La idea
 
 La decisión depende del vecindario inmediato. Si alrededor del nuevo punto predominan ejemplos positivos, la predicción será positiva; si predominan negativos, ocurrirá lo contrario.
 
 ## Qué observar
 
-- Con un `k` pequeño, el modelo reacciona mucho al ruido local.
-- Con un `k` grande, la frontera se suaviza y pierde detalle.
-- La escala de las variables importa porque la distancia manda toda la decisión.
+- Con un $k$ pequeño, el modelo reacciona mucho al ruido local.
+- Con un $k$ grande, la frontera se suaviza y pierde detalle.
+- La escala de las variables importa: la distancia (normalmente euclidiana) decide todo, así que conviene estandarizar.
+- En muchas dimensiones las distancias pierden poder discriminante (la "maldición de la dimensionalidad").
 
 ## Aplicaciones
 
-Es útil para prototipos, reconocimiento de patrones locales y escenarios donde se prefiere una regla intuitiva basada en cercanía antes que un modelo paramétrico complejo.
+Es útil para prototipos, reconocimiento de patrones locales y escenarios donde se prefiere una regla intuitiva basada en cercanía antes que un modelo paramétrico complejo. Su costo está en la predicción: hay que comparar cada caso nuevo con toda la muestra.

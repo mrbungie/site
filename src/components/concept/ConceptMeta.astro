@@ -1,56 +1,102 @@
 ---
-import { getLevelTranslationKey, getTranslations, localePath, type Level, type Locale } from '../../i18n/utils';
+import { getLevelTranslationKey, getTranslations, type Level, type Locale } from '../../i18n/utils';
 
+interface Link {
+	title: string;
+	href: string;
+}
 interface Props {
 	level: Level;
 	area: string;
-	prerequisites?: string[];
-	related?: string[];
+	minutes: number;
+	prerequisites?: Link[];
+	related?: Link[];
 	lang: Locale;
 }
 
-const { level, area, prerequisites = [], related = [], lang } = Astro.props;
+const { level, area, minutes, prerequisites = [], related = [], lang } = Astro.props;
 const t = getTranslations(lang);
 ---
 
-<div style="border: 1px solid var(--rule); padding: 24px; display: flex; flex-direction: column; gap: 20px;">
-	<div>
-		<div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">{t('concepts.level')}</div>
-		<span class="concept-badge">{t(getLevelTranslationKey(level))}</span>
-	</div>
-
-	<div>
-		<div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">{t('concepts.area')}</div>
-		<span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em;">{area}</span>
-	</div>
+<div class="concept-meta">
+	<dl class="concept-meta__facts">
+		<div>
+			<dt>{t('concepts.area')}</dt>
+			<dd>{area}</dd>
+		</div>
+		<div>
+			<dt>{t('concepts.level')}</dt>
+			<dd>{t(getLevelTranslationKey(level))}</dd>
+		</div>
+		<div>
+			<dt>{minutes} {t('concepts.minRead')}</dt>
+		</div>
+	</dl>
 
 	{prerequisites.length > 0 && (
 		<div>
-			<div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">{t('concepts.prerequisites')}</div>
-			<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px;">
-				{prerequisites.map((p: string) => (
-					<li>
-						<a href={localePath(lang, `/conceptos/${p}`)} style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
-							→ {p.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-						</a>
-					</li>
-				))}
+			<h2 class="concept-meta__heading">{t('concepts.prerequisites')}</h2>
+			<ul class="concept-meta__links">
+				{prerequisites.map((p) => <li><a href={p.href}>{p.title}</a></li>)}
 			</ul>
 		</div>
 	)}
 
 	{related.length > 0 && (
 		<div>
-			<div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;">{t('concepts.related')}</div>
-			<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px;">
-				{related.map((r: string) => (
-					<li>
-						<a href={localePath(lang, `/conceptos/${r}`)} style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">
-							→ {r.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-						</a>
-					</li>
-				))}
+			<h2 class="concept-meta__heading">{t('concepts.related')}</h2>
+			<ul class="concept-meta__links">
+				{related.map((r) => <li><a href={r.href}>{r.title}</a></li>)}
 			</ul>
 		</div>
 	)}
 </div>
+
+<style>
+	.concept-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+	.concept-meta__facts {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.concept-meta__facts dt,
+	.concept-meta__heading {
+		margin: 0 0 6px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 400;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--ink-muted);
+	}
+	.concept-meta__facts dd {
+		margin: 0;
+		font-size: 14px;
+		color: var(--ink);
+	}
+	.concept-meta__links {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.concept-meta__links a {
+		font-size: 14px;
+		color: var(--ink-muted);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	.concept-meta__links a::before {
+		content: '→ ';
+	}
+	.concept-meta__links a:hover {
+		color: var(--accent);
+	}
+</style>

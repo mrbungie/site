@@ -1,0 +1,20 @@
+---
+import { render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+import type { Locale } from '../../i18n/ui';
+import { getPosts, readingTime, type Post } from '../../utils/blog';
+
+interface Props {
+	post: Post;
+	lang: Locale;
+}
+
+const { post, lang } = Astro.props;
+const { Content } = await render(post);
+const posts = await getPosts();
+const i = posts.findIndex((p) => p.id === post.id);
+---
+
+<BlogPost post={post} lang={lang} minutes={readingTime(post.body)} prev={posts[i + 1]} next={posts[i - 1]}>
+	<Content />
+</BlogPost>

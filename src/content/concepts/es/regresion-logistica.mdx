@@ -1,67 +1,80 @@
 ---
 title: "Regresión Logística"
 summary: "El modelo clásico para estimar probabilidades y tomar decisiones binarias a partir de una combinación lineal."
-tags: ["machine-learning", "estadística", "clasificación"]
-area: "statistics"
+area: "Modelos lineales"
 level: "intermediate"
-prerequisites: ["regresion-lineal", "correlacion"]
-related: ["regresion-lineal", "correlacion", "svm", "naive-bayes"]
+order: 4
+tags: ["clasificación", "probabilidad", "sigmoide"]
+prerequisites: ["regresion-lineal"]
+related: ["regresion-lineal", "svm", "naive-bayes"]
 featured: true
 draft: false
 ---
 
 import LogisticRegressionVisualizer from '../../../components/visuals/LogisticRegressionVisualizer';
-import Math from '../../../components/Math';
 import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
 
-La **Regresión Logística** modela la probabilidad de que ocurra una clase positiva. Aunque parte de una combinación lineal de las variables de entrada, la salida final se comprime entre **0 y 1** mediante una función sigmoide.
+La **regresión logística** modela la probabilidad de que ocurra la clase positiva. Parte de una combinación lineal de las variables de entrada, pero comprime la salida entre **0 y 1** mediante una función sigmoide.
 
 <TaxonomyBox
   modelType="Una función lineal seguida de una sigmoide para producir probabilidades de clase en clasificación binaria."
   optimizationMethods={[
     "Descenso por gradiente, mini-batch o SGD",
     "Métodos de segundo orden como Newton-Raphson o IRLS",
-    "Optimizadores cuasi-Newton como LBFGS o variantes regularizadas tipo saga/liblinear",
+    "Optimizadores cuasi-Newton como L-BFGS o variantes regularizadas (saga, liblinear)",
   ]}
-  typicalOptimization="Máxima verosimilitud con gradiente o LBFGS"
-  typicalLoss="Log loss o entropía cruzada binaria"
+  typicalOptimization="Máxima verosimilitud con gradiente o L-BFGS"
+  typicalLoss="Log loss (entropía cruzada binaria)"
 />
 
 ## Experimenta con la frontera de decisión
 
-Mueve la pendiente, el intercepto y el umbral para ver cómo cambia la curva logística, la frontera de decisión y la matriz de confusión sobre una muestra binaria simulada. Aquí los controles redefinen el proceso que genera los datos, así que no estás reentrenando un modelo sobre una muestra fija: estás explorando distintos escenarios.
+Mueve la pendiente, el intercepto y el umbral para ver cómo cambian la curva logística, la frontera de decisión y la matriz de confusión sobre una muestra binaria simulada. Los controles redefinen el proceso que genera los datos: no estás reentrenando un modelo sobre una muestra fija, sino explorando escenarios distintos.
 
-<div class="my-10 not-prose">
-  <LogisticRegressionVisualizer client:load />
-</div>
+<VizFrame>
+  <LogisticRegressionVisualizer client:visible />
+</VizFrame>
 
 ## La ecuación fundamental
 
-La probabilidad estimada de pertenecer a la clase positiva viene dada por:
+La probabilidad estimada de pertenecer a la clase positiva es
 
-<Math formula={"P(y=1|x) = \\sigma(\\beta_0 + \\beta_1 x) = \\frac{1}{1 + e^{-(\\beta_0 + \\beta_1 x)}}"} block />
+$$
+P(y=1 \mid x) = \sigma(\beta_0 + \beta_1 x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}}
+$$
 
-En vez de predecir una recta sin límite, el modelo transforma la combinación lineal en una curva en forma de **S**.
+En vez de predecir una recta sin límites, el modelo transforma la combinación lineal en una curva en forma de **S**.
 
 ## Del logit a la clasificación
 
-Otra forma de escribirlo es mediante el **logit**:
+Despejando la combinación lineal se obtiene el **logit** (log de los odds):
 
-<Math formula={"\\log\\left(\\frac{p}{1-p}\\right) = \\beta_0 + \\beta_1 x"} block />
+$$
+\log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1 x
+$$
 
-Eso significa que:
+De ahí se leen los parámetros:
 
-- <Math formula={"\\beta_0"} /> desplaza la curva hacia la izquierda o la derecha.
-- <Math formula={"\\beta_1"} /> controla qué tan abrupta es la transición entre las clases.
-- El **umbral** convierte la probabilidad en una decisión final: si <Math formula={"p \\ge t"} />, el modelo predice clase 1.
+- $\beta_0$ desplaza la curva hacia la izquierda o la derecha.
+- $\beta_1$ controla qué tan abrupta es la transición entre clases; además, $e^{\beta_1}$ es el factor por el que se multiplican los odds al aumentar $x$ en una unidad.
+- El **umbral** $t$ convierte la probabilidad en decisión: si $p \ge t$, el modelo predice la clase 1. Con $t = 0.5$ la frontera está en $x = -\beta_0/\beta_1$.
 
-## Qué observar en la simulación
+## Cómo se ajusta
 
-- Si subes el umbral, el modelo se vuelve más conservador para etiquetar positivos.
-- Si aumentas la pendiente, la frontera de decisión se vuelve más nítida.
+Los coeficientes se estiman maximizando la verosimilitud, que equivale a minimizar la **log loss**:
+
+$$
+\mathcal{L} = -\frac{1}{n}\sum_{i=1}^{n} \Big[ y_i \log p_i + (1-y_i)\log(1-p_i) \Big]
+$$
+
+## Qué observar
+
+- Si subes el umbral, el modelo se vuelve más conservador al etiquetar positivos.
+- Si aumentas la pendiente, la transición entre clases se vuelve más nítida.
 - La **accuracy** puede mejorar o empeorar según el equilibrio entre falsos positivos y falsos negativos.
-- La **log loss** penaliza con más fuerza las probabilidades muy seguras pero equivocadas.
+- La **log loss** penaliza con más fuerza las predicciones muy seguras pero equivocadas.
 
 ## Aplicaciones
 
-Se usa para detectar fraude, predecir abandono de clientes, estimar la probabilidad de una enfermedad y, en general, para cualquier problema donde la salida sea **sí/no**, **éxito/fracaso** o **compra/no compra**.
+Detección de fraude, predicción de abandono de clientes, estimación del riesgo de una enfermedad y, en general, cualquier problema con respuesta **sí/no**, **éxito/fracaso** o **compra/no compra**.
