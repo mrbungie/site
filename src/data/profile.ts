@@ -45,7 +45,7 @@ export const profile = {
     } as L10n<{ before: string; em: string; after: string }>,
     valueProp: {
       es: 'He liderado equipos de datos e IA en Bci, MACH y Tenpo. Llevo modelos de ML y GenAI a producción y los mido en resultados de negocio. Hago clases de Machine Learning en la universidad desde 2016.',
-      en: 'I've led data and AI teams at Bci, MACH and Tenpo. I take ML and GenAI models to production and measure them in business results. I've taught Machine Learning at university since 2016.',
+      en: "I've led data and AI teams at Bci, MACH and Tenpo. I take ML and GenAI models to production and measure them in business results. I've taught Machine Learning at university since 2016.",
     } as L10n<string>,
     stats: [
       { value: '10+', label: { es: 'años de experiencia en banca y fintech', en: 'years in banking & fintech' } },
