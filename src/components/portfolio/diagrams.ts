@@ -255,7 +255,7 @@ const builders: Record<string, Builder> = {
       { id: 'risk', x: 716, y: 16, w: 88, h: 72, title: tr('Riesgo', 'Risk'), sub: tr('decisiones', 'decisions') },
     ],
     edges: chain('use', 'ts', 'cyc', 'liq', 'risk'),
-    base: tr('Bci · 2020 · monitoreo durante la pandemia', 'Bci · 2020 · monitoring during the pandemic'),
+    base: tr('Bci · 2020 · Teradata, Spark y Airflow', 'Bci · 2020 · Teradata, Spark and Airflow'),
   }),
 
   'datax-tax-data': (tr) => ({
@@ -276,13 +276,14 @@ const builders: Record<string, Builder> = {
   'bci-experience-lighthouse': (tr) => ({
     label: tr('Flujo del Faro de experiencia', 'Experience Lighthouse flow'),
     width: 820,
-    height: 270,
+    height: 300,
     nodes: [
       { id: 'mail', x: 16, y: 16, w: 140, title: 'Emails', sub: tr('clientes', 'customers') },
       { id: 'calls', x: 16, y: 86, w: 140, title: tr('Llamados', 'Calls'), sub: tr('transcritos', 'transcribed') },
       { id: 'cases', x: 16, y: 156, w: 140, title: tr('Casos de soporte', 'Support cases'), sub: tr('y reclamos', 'and complaints') },
-      { id: 'feat', x: 196, y: 78, w: 160, h: 72, title: tr('Text mining clásico', 'Classic text mining'), sub: tr('conteos, TF-IDF\ny SVD truncado', 'counts, TF-IDF\nand truncated SVD'), accent: true },
-      { id: 'cls', x: 386, y: 78, w: 170, h: 72, title: tr('Clasificación', 'Classification'), sub: tr('servicio, producto\ny sentimiento', 'service, product\nand sentiment') },
+      { id: 'feat', x: 196, y: 78, w: 160, h: 72, title: tr('Text mining clásico', 'Classic text mining'), sub: tr('conteos, TF-IDF\ny SVD truncado', 'counts, TF-IDF\nand truncated SVD') },
+      { id: 'labels', x: 386, y: 172, w: 170, h: 66, title: tr('10.000+ etiquetas', '10,000+ labels'), sub: tr('con equipos\nde experiencia', 'with experience\nteams'), accent: true },
+      { id: 'cls', x: 386, y: 78, w: 170, h: 72, title: tr('XGBoost multi-label', 'Multi-label XGBoost'), sub: tr('servicio, producto\ny sentimiento', 'service, product\nand sentiment'), accent: true },
       { id: 'bi', x: 586, y: 78, w: 110, h: 72, title: 'Power BI', sub: tr('cruces', 'cross-analysis') },
       { id: 'cs', x: 716, y: 78, w: 88, h: 72, title: 'Customer', sub: 'success' },
     ],
@@ -291,8 +292,9 @@ const builders: Record<string, Builder> = {
       { from: 'calls', to: 'feat' },
       { from: 'cases', to: 'feat' },
       ...chain('feat', 'cls', 'bi', 'cs'),
+      { from: 'labels', to: 'cls' },
     ],
-    base: tr('Bci · 2018 · una vista de todos los canales de experiencia', 'Bci · 2018 · one view across every experience channel'),
+    base: tr('Bci · 2018 · Python y XGBoost, agendado con Airflow', 'Bci · 2018 · Python and XGBoost, scheduled with Airflow'),
   }),
 
   'healthcare-chatbot': (tr) => ({

@@ -399,16 +399,16 @@ const allProjects: Project[] = [
     did: {
       es: [
         'Armamos series de tiempo por empresa con datos propios del banco: el uso de sus distintos productos.',
-        'Implementamos un marco de monitoreo estilo NBER para fechar puntos de giro y separar recesión de crecimiento en cada serie.',
+        'Implementamos un marco de monitoreo estilo NBER para fechar puntos de giro y separar recesión de crecimiento en cada serie, procesando los datos desde Teradata con Spark y orquestado con Airflow.',
         'Tradujimos esas señales en indicadores de liquidez y capacidad de pago para el área de riesgo.',
       ],
       en: [
         "We built per-company time series from the bank's own data: usage across its different products.",
-        'We implemented an NBER-style monitoring framework to date turning points and separate recession from growth in each series.',
+        'We implemented an NBER-style monitoring framework to date turning points and separate recession from growth in each series, processing data from Teradata with Spark and orchestrating it with Airflow.',
         'We turned those signals into liquidity and payment-capacity indicators for the risk team.',
       ],
     },
-    stack: ['Python', 'Series de tiempo', 'Ciclos económicos', 'Riesgo de crédito'],
+    stack: ['Python', 'Spark', 'Teradata', 'Airflow', 'Series de tiempo'],
   },
   {
     slug: 'datax-tax-data',
@@ -466,17 +466,22 @@ const allProjects: Project[] = [
       es: [
         'Juntamos experiencias de distintos canales: emails, llamados transcritos y casos de soporte.',
         'Usamos text mining clásico: conteo de palabras, TF-IDF y reducción con SVD truncado.',
-        'Clasificamos cada experiencia por servicio, producto y sentimiento.',
+        'Coordiné la clasificación manual con los equipos de experiencia: más de 10.000 interacciones etiquetadas para entrenar los modelos.',
+        'Entrenamos modelos multi-label con XGBoost en Python para clasificar cada experiencia por servicio, producto y sentimiento, con ejecuciones agendadas en Airflow.',
         'Dejamos los resultados en Power BI para que el equipo cruzara canales, productos y tono.',
       ],
       en: [
         'We brought together experiences from several channels: emails, transcribed calls and support cases.',
         'We used classic text mining: word counts, TF-IDF and truncated SVD.',
-        'We classified each experience by service, product and sentiment.',
+        'I coordinated manual labeling with the experience teams: more than 10,000 labeled interactions to train the models.',
+        'We trained multi-label XGBoost models in Python to classify each experience by service, product and sentiment, with runs scheduled in Airflow.',
         'We put the results in Power BI so the team could cross channels, products and tone.',
       ],
     },
-    stack: ['Python', 'TF-IDF', 'Truncated SVD', 'Power BI'],
+    results: [
+      { value: '10.000+', label: { es: 'interacciones etiquetadas con los equipos de experiencia', en: 'interactions labeled with the experience teams' } },
+    ],
+    stack: ['Python', 'TF-IDF', 'XGBoost', 'Airflow', 'Power BI'],
   },
   {
     slug: 'healthcare-chatbot',
