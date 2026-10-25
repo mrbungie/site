@@ -185,6 +185,28 @@ const builders: Record<string, Builder> = {
     base: tr('Un solo Dockerfile para CPU y GPU · drivers CUDA montados en runtime', 'One Dockerfile for CPU and GPU · CUDA drivers mounted at runtime'),
   }),
 
+  'healthcare-chatbot': (tr) => ({
+    label: tr('Arquitectura de la plataforma de chatbots', 'Chatbot platform architecture'),
+    width: 820,
+    height: 340,
+    nodes: [
+      { id: 'ch', x: 16, y: 40, w: 120, h: 66, title: tr('Canales', 'Channels'), sub: 'WebChat React\nAPI REST' },
+      { id: 'bf', x: 168, y: 48, w: 130, title: 'Bot Framework', sub: tr('conector de canales', 'channel connector') },
+      { id: 'bs', x: 330, y: 40, w: 150, h: 66, title: 'Bot Service', sub: tr('librería común\n+ plugins por bot', 'shared library\n+ per-bot plugins'), accent: true },
+      { id: 'nlu', x: 512, y: 16, w: 150, title: 'DialogFlow', sub: tr('intents y entidades', 'intents and entities') },
+      { id: 'mods', x: 512, y: 110, w: 150, h: 66, title: tr('Módulos cognitivos', 'Cognitive modules'), sub: tr('tickets · Q&A\nsobre Elasticsearch', 'tickets · Q&A\non Elasticsearch') },
+      { id: 'agents', x: 16, y: 208, w: 120, title: tr('Agentes', 'Agents'), sub: tr('equipo de soporte', 'support team') },
+      { id: 'sheets', x: 168, y: 200, w: 130, h: 66, title: 'Google Sheets', sub: tr('intents, sinónimos\nfallbacks', 'intents, synonyms\nfallbacks') },
+      { id: 'airflow', x: 330, y: 200, w: 150, h: 66, title: 'Airflow', sub: tr('DAGs de\nreentrenamiento', 'retraining\nDAGs'), accent: true },
+    ],
+    edges: [
+      ...chain('ch', 'bf', 'bs', 'nlu'),
+      { from: 'bs', to: 'mods' },
+      ...chain('agents', 'sheets', 'airflow', 'nlu'),
+    ],
+    base: tr('Azure · Kubernetes · Docker · CD con Jenkins: desarrollo → QA → UAT → producción', 'Azure · Kubernetes · Docker · Jenkins CD: dev → QA → UAT → production'),
+  }),
+
   'kinect-gestures': (tr) => ({
     label: tr('Pipeline de reconocimiento de gestos', 'Gesture recognition pipeline'),
     width: 820,

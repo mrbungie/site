@@ -272,6 +272,41 @@ const allProjects: Project[] = [
     repo: 'https://github.com/mrbungie/vastai-datascience-runtime',
   },
   {
+    slug: 'healthcare-chatbot',
+    kind: 'proprietary',
+    period: '2018',
+    end: '2018-12',
+    industry: { es: 'Salud', en: 'Healthcare' },
+    workType: { es: 'Arquitectura de chatbots y MLOps', en: 'Chatbot architecture & MLOps' },
+    title: {
+      es: 'Plataforma de chatbots para un prestador de salud',
+      en: 'Chatbot platform for a healthcare provider',
+    },
+    summary: {
+      es: 'Arquitectura para construir y operar varios chatbots en paralelo, con despliegue continuo y reentrenamiento con humanos en el loop.',
+      en: 'Architecture to build and run several chatbots in parallel, with continuous delivery and human-in-the-loop retraining.',
+    },
+    goal: {
+      es: 'Que un integrador TI pudiera desarrollar y vender chatbots para una clínica y otros clientes sin rehacer cada uno desde cero, y mantenerlos entrenados sin depender de desarrolladores.',
+      en: 'Let an IT integrator build and sell chatbots for a clinic and other clients without rebuilding each one from scratch, and keep them trained without relying on developers.',
+    },
+    did: {
+      es: [
+        'Diseñé la arquitectura del chatbot: Bot Framework para los canales, DialogFlow para entender lenguaje, y una librería común con plugins por bot.',
+        'Diseñé los módulos cognitivos de tickets y de preguntas y respuestas sobre Elasticsearch.',
+        'Diseñé el pipeline de continuous delivery con Jenkins, que promueve cada bot por desarrollo, QA, UAT y producción en Kubernetes sobre Azure.',
+        'Diseñé la operación recurrente: Airflow reentrena y carga intents nuevos a partir de una planilla que editan los agentes.',
+      ],
+      en: [
+        'Designed the chatbot architecture: Bot Framework for channels, DialogFlow for language understanding, and a shared library with per-bot plugins.',
+        'Designed the cognitive modules for tickets and for Q&A on Elasticsearch.',
+        'Designed the continuous delivery pipeline with Jenkins, promoting each bot through dev, QA, UAT and production on Kubernetes on Azure.',
+        'Designed the recurring operations: Airflow retrains and loads new intents from a spreadsheet that agents edit.',
+      ],
+    },
+    stack: ['Bot Framework', 'DialogFlow', 'Elasticsearch', 'Airflow', 'Jenkins', 'Azure'],
+  },
+  {
     slug: 'kinect-gestures',
     kind: 'oss',
     period: '2012',
