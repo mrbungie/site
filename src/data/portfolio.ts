@@ -307,6 +307,72 @@ const allProjects: Project[] = [
     stack: ['Bot Framework', 'DialogFlow', 'Elasticsearch', 'Airflow', 'Jenkins', 'Azure'],
   },
   {
+    slug: 'cloud-tco-openstack',
+    kind: 'proprietary',
+    period: '2014',
+    end: '2014-11',
+    industry: { es: 'Servicios TI · cloud', en: 'IT services · cloud' },
+    workType: { es: 'Memoria de título: costos e infraestructura', en: 'Thesis: costing and infrastructure' },
+    title: {
+      es: 'TCO de zonas cloud: VMware contra OpenStack',
+      en: 'Cloud zone TCO: VMware versus OpenStack',
+    },
+    summary: {
+      es: 'Modelo de costo total de propiedad para un proveedor cloud, validado con una nube OpenStack de 50 nodos montada en la universidad.',
+      en: 'Total cost of ownership model for a cloud provider, validated with a 50-node OpenStack cloud built at the university.',
+    },
+    goal: {
+      es: 'Evaluar si SONDA podía ofrecer zonas cloud más baratas sobre OpenStack, para clientes con exigencias de disponibilidad menores que las de su plataforma VMware vCloud. Memoria de Ingeniería Civil Industrial en la UAI, junto a Reynaldo Araya y guiada por Jorge Villalón.',
+      en: "Assess whether SONDA could offer cheaper cloud zones on OpenStack, for clients with lower availability needs than its VMware vCloud platform. Industrial Engineering thesis at UAI, with Reynaldo Araya and advised by Jorge Villalón.",
+    },
+    did: {
+      es: [
+        'Lo más interesante técnicamente: montar una nube universitaria de 50 nodos con Mirantis OpenStack (la versión de 2014), sobre servidores que originalmente corrían ESXi.',
+        'Construimos un modelo de TCO basado en Gartner, alimentado con precios lista y mediciones de laboratorio: hardware, espacio, energía, licencias y soporte.',
+        'Comparamos la solución incumbente, vCloud Suite, contra alternativas OpenStack para distintos niveles de disponibilidad.',
+      ],
+      en: [
+        'The most interesting technical part: building a 50-node university cloud with Mirantis OpenStack (the 2014 release), on servers that originally ran ESXi.',
+        'We built a Gartner-based TCO model, fed with list prices and lab measurements: hardware, space, power, licenses and support.',
+        'We compared the incumbent, vCloud Suite, against OpenStack alternatives across availability levels.',
+      ],
+    },
+    stack: ['Mirantis OpenStack', 'VMware ESXi', 'vCloud Suite', 'TCO'],
+  },
+  {
+    slug: 'vcloud-elk-monitoring',
+    kind: 'proprietary',
+    period: '2013 – 2014',
+    end: '2014-06',
+    industry: { es: 'Servicios TI · cloud', en: 'IT services · cloud' },
+    workType: { es: 'Observabilidad de infraestructura', en: 'Infrastructure observability' },
+    title: {
+      es: 'Monitoreo de una nube vCloud Director con ELK',
+      en: 'Monitoring a vCloud Director cloud with ELK',
+    },
+    summary: {
+      es: 'Stack ELK customizado para monitorear un despliegue de vCloud Director con más de 1.000 VMs en SONDA.',
+      en: 'Custom ELK stack to monitor a vCloud Director deployment with more than 1,000 VMs at SONDA.',
+    },
+    goal: {
+      es: 'Dar visibilidad operacional sobre la nube empresarial de SONDA, basada en VMware vCloud Director y con más de 1.000 máquinas virtuales.',
+      en: "Give operational visibility over SONDA's enterprise cloud, built on VMware vCloud Director with more than 1,000 virtual machines.",
+    },
+    did: {
+      es: [
+        'Construí un stack de monitoreo con Elasticsearch, Logstash y Kibana, customizado para vCloud Director.',
+        'Configuré en Logstash la ingesta y el parseo de logs y eventos de la plataforma.',
+        'Armé dashboards en Kibana para seguir el estado de más de 1.000 VMs.',
+      ],
+      en: [
+        'Built a monitoring stack with Elasticsearch, Logstash and Kibana, customized for vCloud Director.',
+        'Set up Logstash ingestion and parsing for platform logs and events.',
+        'Built Kibana dashboards to track the state of more than 1,000 VMs.',
+      ],
+    },
+    stack: ['Elasticsearch', 'Logstash', 'Kibana', 'VMware vCloud'],
+  },
+  {
     slug: 'kinect-gestures',
     kind: 'oss',
     period: '2012',

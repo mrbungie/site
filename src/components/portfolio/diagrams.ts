@@ -207,6 +207,52 @@ const builders: Record<string, Builder> = {
     base: tr('Azure · Kubernetes · Docker · CD con Jenkins: desarrollo → QA → UAT → producción', 'Azure · Kubernetes · Docker · Jenkins CD: dev → QA → UAT → production'),
   }),
 
+  'cloud-tco-openstack': (tr) => ({
+    label: tr('Modelo de TCO y laboratorio OpenStack', 'TCO model and OpenStack lab'),
+    width: 820,
+    height: 380,
+    nodes: [
+      { id: 'hw', x: 16, y: 16, w: 150, title: 'Hardware', sub: tr('blades, storage, red', 'blades, storage, network') },
+      { id: 'infra', x: 16, y: 84, w: 150, title: tr('Infraestructura', 'Facilities'), sub: tr('espacio y energía', 'space and power') },
+      { id: 'sw', x: 16, y: 152, w: 150, title: tr('Licencias y soporte', 'Licenses and support'), sub: tr('instalación y operación', 'install and operations') },
+      { id: 'tco', x: 220, y: 76, w: 170, h: 72, title: tr('Modelo TCO', 'TCO model'), sub: tr('Gartner, por zona\ny disponibilidad', 'Gartner, per zone\nand availability'), accent: true },
+      { id: 'cmp', x: 440, y: 76, w: 190, h: 72, title: tr('Comparación', 'Comparison'), sub: tr('vCloud Suite contra\nalternativas OpenStack', 'vCloud Suite against\nOpenStack alternatives') },
+      { id: 'esxi', x: 16, y: 252, w: 150, h: 66, title: tr('50 servidores', '50 servers'), sub: tr('originalmente\ncon ESXi', 'originally\nrunning ESXi') },
+      { id: 'fuel', x: 220, y: 252, w: 170, h: 66, title: 'Mirantis OpenStack', sub: tr('versión 2014', '2014 release') },
+      { id: 'os', x: 440, y: 252, w: 190, h: 66, title: tr('Nube universitaria', 'University cloud'), sub: tr('50 nodos', '50 nodes'), accent: true },
+      { id: 'meas', x: 664, y: 166, w: 140, h: 66, title: tr('Mediciones', 'Measurements'), sub: tr('instalación\ny operación', 'installation\nand operations') },
+    ],
+    edges: [
+      { from: 'hw', to: 'tco' },
+      { from: 'infra', to: 'tco' },
+      { from: 'sw', to: 'tco' },
+      { from: 'tco', to: 'cmp' },
+      ...chain('esxi', 'fuel', 'os', 'meas'),
+      { from: 'meas', to: 'cmp' },
+    ],
+    base: tr('Memoria de Ingeniería Civil Industrial · UAI · 2014', 'Industrial Engineering thesis · UAI · 2014'),
+  }),
+
+  'vcloud-elk-monitoring': (tr) => ({
+    label: tr('Arquitectura de monitoreo con ELK', 'ELK monitoring architecture'),
+    width: 820,
+    height: 236,
+    nodes: [
+      { id: 'vcd', x: 16, y: 16, w: 140, title: 'vCloud Director', sub: tr('celdas y API', 'cells and API') },
+      { id: 'hosts', x: 16, y: 116, w: 140, title: 'vCenter · ESXi', sub: tr('más de 1.000 VMs', '1,000+ VMs') },
+      { id: 'ls', x: 196, y: 58, w: 150, h: 72, title: 'Logstash', sub: tr('ingesta y parseo\ncustomizado', 'custom ingestion\nand parsing'), accent: true },
+      { id: 'es', x: 380, y: 66, w: 140, title: 'Elasticsearch', sub: tr('búsqueda y agregación', 'search and aggregation') },
+      { id: 'kb', x: 554, y: 66, w: 130, title: 'Kibana', sub: tr('dashboards', 'dashboards'), accent: true },
+      { id: 'ops', x: 714, y: 66, w: 90, title: tr('Operación', 'Ops'), sub: tr('equipo cloud', 'cloud team') },
+    ],
+    edges: [
+      { from: 'vcd', to: 'ls' },
+      { from: 'hosts', to: 'ls' },
+      ...chain('ls', 'es', 'kb', 'ops'),
+    ],
+    base: tr('SONDA · stack ELK customizado sobre VMware vCloud Director', 'SONDA · custom ELK stack on VMware vCloud Director'),
+  }),
+
   'kinect-gestures': (tr) => ({
     label: tr('Pipeline de reconocimiento de gestos', 'Gesture recognition pipeline'),
     width: 820,
