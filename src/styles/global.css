@@ -682,3 +682,10 @@ img, svg, video { max-width: 100%; }
   .taxonomy-box__grid { grid-template-columns: 1fr; }
   .taxonomy-box__card + .taxonomy-box__card { border-left: none; border-top: 1px solid var(--rule); }
 }
+
+/* Build-time math (rehype-mathjax SVG): keep inline formulas in the text flow.
+   Tailwind preflight sets svg { display: block }, which breaks lines around them. */
+mjx-container { display: inline-block; line-height: 0; }
+mjx-container > svg { display: inline; }
+mjx-container[display='true'] { display: block; line-height: normal; }
+mjx-container[display='true'] > svg { display: inline-block; }
