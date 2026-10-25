@@ -7,12 +7,14 @@
 @font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/dmsans-500.woff2') format('woff2'); }
 @font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 600; font-display: swap; src: url('/fonts/dmsans-600.woff2') format('woff2'); }
 @font-face { font-family: 'DM Sans'; font-style: italic; font-weight: 400; font-display: swap; src: url('/fonts/dmsans-400-italic.woff2') format('woff2'); }
-@font-face { font-family: 'DM Serif Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dmserifdisplay-400.woff2') format('woff2'); }
-@font-face { font-family: 'DM Serif Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('/fonts/dmserifdisplay-400-italic.woff2') format('woff2'); }
+@font-face { font-family: 'DM Serif Display'; font-style: normal; font-weight: 400; font-display: optional; src: url('/fonts/dmserifdisplay-400.woff2') format('woff2'); }
+@font-face { font-family: 'DM Serif Display'; font-style: italic; font-weight: 400; font-display: optional; src: url('/fonts/dmserifdisplay-400-italic.woff2') format('woff2'); }
 @font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dmmono-400.woff2') format('woff2'); }
 @font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/dmmono-500.woff2') format('woff2'); }
 
-/* Metric-matched fallbacks (Capsize): system fonts sized like the DM faces, so swapping
+/* The serif headings use font-display: optional (preloaded, so it is almost always ready):
+   swapping a large heading's font re-wraps lines and shifts the page.
+   Metric-matched fallbacks (Capsize): system fonts sized like the DM faces, so swapping
    to the web font doesn't move the layout (CLS). */
 @font-face { font-family: 'DM Serif Display Fallback'; src: local('Georgia'); ascent-override: 103.5537%; descent-override: 33.485%; size-adjust: 100.0447%; }
 @font-face { font-family: 'DM Sans Fallback'; src: local('Arial'), local('ArialMT'); ascent-override: 94.9001%; descent-override: 29.6563%; line-gap-override: 0%; size-adjust: 104.531%; }
