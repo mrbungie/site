@@ -119,7 +119,7 @@ export const services: Service[] = [
         'Data team design and training.',
       ],
     },
-    projects: ['optical-data-platform', 'mach-nba-lighthouse', 'bci-propensity-models', 'sales-pipeline-model'],
+    projects: ['optical-data-platform', 'tenpo-realtime-fraud', 'mach-nba-lighthouse', 'bci-propensity-models'],
     faqs: [
       {
         q: { es: '¿Trabajas con la nube que ya tenemos?', en: 'Do you work with the cloud we already have?' },

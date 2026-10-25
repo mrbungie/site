@@ -131,6 +131,24 @@ const builders: Record<string, Builder> = {
     base: tr('MACH · Spark sobre AWS · un mismo framework para monitorear y predecir', 'MACH · Spark on AWS · one framework to monitor and predict'),
   }),
 
+  'tenpo-realtime-fraud': (tr) => ({
+    label: tr('Arquitectura de revisión de fraude en tiempo real', 'Real-time fraud review architecture'),
+    width: 820,
+    height: 240,
+    nodes: [
+      { id: 'tx', x: 16, y: 62, w: 140, h: 66, title: tr('Transacciones', 'Transactions'), sub: tr('tarjetas,\nen línea', 'cards,\nonline') },
+      { id: 'kafka', x: 188, y: 62, w: 150, h: 66, title: 'Kafka', sub: tr('eventos en\nConfluent', 'events on\nConfluent') },
+      { id: 'flink', x: 370, y: 54, w: 180, h: 82, title: 'Apache Flink', sub: tr('señales en ventanas\nde tiempo + reglas\nde revisión', 'time-window signals\n+ review rules'), accent: true },
+      { id: 'flag', x: 582, y: 16, w: 222, h: 66, title: tr('Sospechosas', 'Suspicious'), sub: tr('marcadas para\nrevisión', 'flagged for\nreview') },
+      { id: 'team', x: 582, y: 112, w: 222, h: 66, title: tr('Equipo de fraude', 'Fraud team'), sub: tr('actúa mientras\nocurre', 'acts while\nit happens') },
+    ],
+    edges: [
+      ...chain('tx', 'kafka', 'flink', 'flag'),
+      { from: 'flink', to: 'team' },
+    ],
+    base: tr('Tenpo · streaming con Kafka (Confluent) y Apache Flink', 'Tenpo · streaming with Kafka (Confluent) and Apache Flink'),
+  }),
+
   'covid-art-color-emotion': (tr) => ({
     label: tr('Método del paper: emociones y color en paralelo', 'Paper method: emotion and color in parallel'),
     width: 820,

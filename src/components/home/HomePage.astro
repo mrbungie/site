@@ -29,6 +29,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
       <span>{t('nav.services')}</span>
       <a class="section-more" href={`${routePath(lang, 'services')}/`}>{copy.browseServices[lang]}</a>
     </div>
+    <p class="services-lead">{copy.servicesLead[lang]}</p>
     <div class="concept-list">
       {services.map((s, i) => (
         <a href={serviceHref(lang, s.slug)} class="concept-item">
@@ -67,6 +68,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
 
 <style>
   .home-section { padding-top: clamp(64px, 9vw, 100px); }
+  .services-lead { max-width: 62ch; margin: 0 0 var(--space-5); color: var(--ink-muted); line-height: var(--leading-body); }
   .home-section:last-of-type { padding-bottom: 120px; }
   .plain-link { text-decoration: none; color: inherit; }
   .section-label--split { justify-content: space-between; }

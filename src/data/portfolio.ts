@@ -170,6 +170,39 @@ const allProjects: Project[] = [
     stack: ['Spark', 'Python', 'AWS', 'Next Best Action'],
   },
   {
+    slug: 'tenpo-realtime-fraud',
+    kind: 'proprietary',
+    period: '2021',
+    end: '2021-12',
+    industry: { es: 'Fintech · tarjetas', en: 'Fintech · cards' },
+    workType: { es: 'Streaming y detección de fraude', en: 'Streaming & fraud detection' },
+    title: {
+      es: 'Revisión de fraude en tiempo real para tarjetas en Tenpo',
+      en: 'Real-time card fraud review at Tenpo',
+    },
+    summary: {
+      es: 'Transacciones de tarjeta evaluadas en tiempo real con Apache Flink sobre eventos de Kafka en Confluent.',
+      en: 'Card transactions evaluated in real time with Apache Flink over Kafka events on Confluent.',
+    },
+    goal: {
+      es: 'Detectar transacciones sospechosas de tarjeta mientras ocurren, y no al día siguiente, para que el equipo de fraude pueda actuar a tiempo.',
+      en: 'Catch suspicious card transactions as they happen, not the next day, so the fraud team can act in time.',
+    },
+    did: {
+      es: [
+        'Diseñé el servicio de revisión de fraude en tiempo real sobre Apache Flink.',
+        'Los eventos de transacciones llegaban por Kafka, gestionado en Confluent.',
+        'Flink calculaba señales en ventanas de tiempo y aplicaba las reglas de revisión, marcando las transacciones sospechosas para el equipo de fraude.',
+      ],
+      en: [
+        'Designed the real-time fraud review service on Apache Flink.',
+        'Transaction events arrived through Kafka, managed on Confluent.',
+        'Flink computed signals over time windows and applied the review rules, flagging suspicious transactions for the fraud team.',
+      ],
+    },
+    stack: ['Apache Flink', 'Kafka', 'Confluent', 'Streaming'],
+  },
+  {
     slug: 'covid-art-color-emotion',
     kind: 'paper',
     period: '2021 – 2022',
