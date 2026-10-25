@@ -5,7 +5,7 @@ export const serviceLabels = {
   es: {
     title: 'Servicios',
     indexTitle: 'Servicios de datos, IA y software',
-    indexDesc: 'Consultoría e implementación de inteligencia artificial, datos, arquitectura cloud y software a medida para empresas en Santiago y Chile.',
+    indexDesc: 'Consultoría e implementación de inteligencia artificial, datos, arquitectura cloud y software a medida para empresas en Chile y el extranjero.',
     indexIntro: 'Además de liderar equipos, tomo proyectos de consultoría e implementación. Estas son las áreas donde tengo experiencia comprobable, con proyectos reales detrás.',
     problems: 'Problemas que resuelvo',
     offer: 'Qué hago',
@@ -22,7 +22,7 @@ export const serviceLabels = {
   en: {
     title: 'Services',
     indexTitle: 'Data, AI and software services',
-    indexDesc: 'AI, data, cloud architecture and custom software consulting and implementation for companies in Santiago and Chile.',
+    indexDesc: 'AI, data, cloud architecture and custom software consulting and implementation for companies in Chile and abroad.',
     indexIntro: 'Besides leading teams, I take on consulting and implementation projects. These are the areas where I have proven experience, with real projects behind them.',
     problems: 'Problems I solve',
     offer: 'What I do',
@@ -39,4 +39,4 @@ export const serviceLabels = {
 } satisfies Record<Locale, Record<string, string>>;
 
 export const serviceHref = (lang: Locale, slug: string) => `${routePath(lang, 'services', slug)}/`;
-export const contactHref = (lang: Locale) => `${lang === 'es' ? '/' : `/${lang}/`}?motivo=project#contact`;
+export const contactHref = (lang: Locale) => `${routePath(lang, 'contact')}/?motivo=project`;

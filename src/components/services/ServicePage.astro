@@ -49,7 +49,7 @@ const schema = [
 <BaseLayout title={s.seoTitle[lang]} description={s.description[lang]} lang={lang} alternates={alternates} schema={schema}>
   <article class="service">
     <a class="service__back" href={`${routePath(lang, 'services')}/`}>{t.back}</a>
-    <p class="service__kicker">{s.name[lang]}</p>
+    <p class="service__kicker">{t.title}</p>
     <h1 class="service__title">{s.seoTitle[lang]}</h1>
     <p class="service__intro">{s.intro[lang]}</p>
 

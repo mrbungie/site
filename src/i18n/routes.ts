@@ -7,6 +7,7 @@ export const routeSegments: Record<Locale, Record<string, string>> = {
     about: 'acerca',
     services: 'servicios',
     portfolio: 'portafolio',
+    contact: 'contacto',
   },
   en: {
     concepts: 'concepts',
@@ -14,6 +15,7 @@ export const routeSegments: Record<Locale, Record<string, string>> = {
     about: 'about',
     services: 'services',
     portfolio: 'portfolio',
+    contact: 'contact',
   },
 };
 

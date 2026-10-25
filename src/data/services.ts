@@ -19,12 +19,12 @@ export const services: Service[] = [
     slug: 'inteligencia-artificial',
     name: { es: 'Inteligencia artificial y GenAI', en: 'AI and GenAI' },
     seoTitle: {
-      es: 'Consultor de inteligencia artificial para empresas en Chile',
-      en: 'AI consultant for companies in Chile',
+      es: 'Consultoría e implementación de inteligencia artificial',
+      en: 'AI consulting and implementation',
     },
     description: {
-      es: 'Consultoría e implementación de IA y GenAI para empresas en Santiago y Chile: casos de uso, asistentes con LLMs, automatización y medición de impacto.',
-      en: 'AI and GenAI consulting and implementation for companies in Santiago and Chile: use cases, LLM assistants, automation and impact measurement.',
+      es: 'Consultoría e implementación de IA y GenAI para empresas: casos de uso, asistentes con LLMs, automatización y medición de impacto.',
+      en: 'AI and GenAI consulting and implementation for companies: use cases, LLM assistants, automation and impact measurement.',
     },
     intro: {
       es: 'Ayudo a empresas a llevar IA y GenAI desde la idea hasta producción: elegir los casos de uso que valen la pena, construirlos y medir si de verdad mueven el negocio. Lo he hecho en banca, fintech, salud y agencias, incluida la adopción de Gemini en una organización de más de 9.000 personas.',
@@ -80,12 +80,12 @@ export const services: Service[] = [
     slug: 'datos-analytics',
     name: { es: 'Datos y ciencia de datos', en: 'Data and data science' },
     seoTitle: {
-      es: 'Consultoría en datos, ingeniería de datos y data science en Chile',
-      en: 'Data, data engineering and data science consulting in Chile',
+      es: 'Ingeniería de datos y data science para empresas',
+      en: 'Data engineering and data science for companies',
     },
     description: {
-      es: 'Plataformas de datos, modelos predictivos, inferencia causal y equipos de datos para empresas en Chile. Experiencia en Bci, MACH y Tenpo.',
-      en: 'Data platforms, predictive models, causal inference and data teams for companies in Chile. Experience at Bci, MACH and Tenpo.',
+      es: 'Plataformas de datos, modelos predictivos, inferencia causal y equipos de datos para empresas. Experiencia en Bci, MACH y Tenpo.',
+      en: 'Data platforms, predictive models, causal inference and data teams for companies. Experience at Bci, MACH and Tenpo.',
     },
     intro: {
       es: 'Armo áreas y plataformas de datos y las conecto con decisiones: pipelines confiables, modelos predictivos, experimentación y dashboards que la gente usa. Armé desde cero el área de datos de Tenpo y dirigí analítica y ciencia de datos en MACH.',
@@ -141,12 +141,12 @@ export const services: Service[] = [
     slug: 'arquitectura-tecnologica',
     name: { es: 'Arquitectura cloud y MLOps', en: 'Cloud architecture and MLOps' },
     seoTitle: {
-      es: 'Arquitecto cloud y MLOps en Chile: AWS, GCP y Azure',
-      en: 'Cloud and MLOps architect in Chile: AWS, GCP and Azure',
+      es: 'Arquitectura cloud y MLOps en AWS, GCP y Azure',
+      en: 'Cloud architecture and MLOps on AWS, GCP and Azure',
     },
     description: {
-      es: 'Arquitectura cloud, Kubernetes, infraestructura como código y MLOps para empresas en Chile. Ambientes reproducibles y costos bajo control.',
-      en: 'Cloud architecture, Kubernetes, infrastructure as code and MLOps for companies in Chile. Reproducible environments and costs under control.',
+      es: 'Arquitectura cloud, Kubernetes, infraestructura como código y MLOps para empresas. Ambientes reproducibles y costos bajo control.',
+      en: 'Cloud architecture, Kubernetes, infrastructure as code and MLOps for companies. Reproducible environments and costs under control.',
     },
     intro: {
       es: 'Diseño la infraestructura donde corren datos y modelos: Kubernetes, infraestructura como código, CI/CD y ambientes que se comportan igual en desarrollo y en producción. Empecé en infraestructura cloud en 2013, así que también sé leer la cuenta.',
@@ -202,12 +202,12 @@ export const services: Service[] = [
     slug: 'desarrollo-software',
     name: { es: 'Desarrollo de software a medida', en: 'Custom software development' },
     seoTitle: {
-      es: 'Desarrollo de software a medida y plataformas web en Chile',
-      en: 'Custom software and web platform development in Chile',
+      es: 'Desarrollo de software a medida y plataformas web',
+      en: 'Custom software and web platform development',
     },
     description: {
-      es: 'Desarrollo de plataformas web, backends, integraciones y herramientas internas a medida para empresas en Chile, con foco en datos e IA.',
-      en: 'Custom web platforms, backends, integrations and internal tools for companies in Chile, with a focus on data and AI.',
+      es: 'Desarrollo de plataformas web, backends, integraciones y herramientas internas a medida para empresas, con foco en datos e IA.',
+      en: 'Custom web platforms, backends, integrations and internal tools for companies, with a focus on data and AI.',
     },
     intro: {
       es: 'Diseño y construyo plataformas cuando lo que existe en el mercado no calza con tu proceso: desde el modelo de datos y la API hasta la interfaz y la infraestructura. Mi especialidad son los productos donde los datos y la IA son parte del núcleo.',

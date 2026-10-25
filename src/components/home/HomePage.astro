@@ -2,11 +2,10 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from './Hero.astro';
-import ContactForm from './ContactForm.astro';
 import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
-import { profile, copy, contact } from '../../data/profile';
+import { copy } from '../../data/profile';
 import { services } from '../../data/services';
 import { serviceHref } from '../services/labels';
 import { profilePage } from '../../lib/schema';
@@ -31,11 +30,11 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
       <a class="section-more" href={`${routePath(lang, 'services')}/`}>{copy.browseServices[lang]}</a>
     </div>
     <div class="concept-list">
-      {services.map((s) => (
+      {services.map((s, i) => (
         <a href={serviceHref(lang, s.slug)} class="concept-item">
-          <div class="concept-area">{s.name[lang]}</div>
+          <div class="concept-area">0{i + 1}</div>
           <div>
-            <div class="concept-title">{s.seoTitle[lang]}</div>
+            <div class="concept-title">{s.name[lang]}</div>
             <p class="concept-summary">{s.description[lang]}</p>
           </div>
           <div class="work-arrow">↗</div>
@@ -64,32 +63,11 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
     </section>
   )}
 
-  <section id="contact" class="home-section home-section--last">
-    <div class="section-label">{copy.contact[lang]}</div>
-    <h2 class="contact-headline">{profile.contact.headline[lang]}</h2>
-    <p class="contact-body">{profile.contact.body[lang]}</p>
-    <ContactForm lang={lang} />
-    <div class="contact-links">
-      <a class="contact-link-row" href={`mailto:${contact.email}`}>
-        <span class="contact-link-label">Email</span>
-        <span class="contact-link-value">{contact.email}</span>
-      </a>
-      <a class="contact-link-row" href={contact.linkedin.url} target="_blank" rel="noopener">
-        <span class="contact-link-label">LinkedIn</span>
-        <span class="contact-link-value">{contact.linkedin.label}</span>
-      </a>
-      <a class="contact-link-row" href={contact.github.url} target="_blank" rel="noopener">
-        <span class="contact-link-label">GitHub</span>
-        <span class="contact-link-value">{contact.github.label}</span>
-      </a>
-    </div>
-  </section>
-
 </BaseLayout>
 
 <style>
   .home-section { padding-top: clamp(64px, 9vw, 100px); }
-  .home-section--last { padding-bottom: 120px; }
+  .home-section:last-of-type { padding-bottom: 120px; }
   .plain-link { text-decoration: none; color: inherit; }
   .section-label--split { justify-content: space-between; }
   .section-label--split::after { display: none; }

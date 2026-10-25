@@ -45,6 +45,7 @@ export const GET: APIRoute = async ({ site }) => {
     ...posts.map((post) => `- [${post.data.title}](${abs(`/blog/${post.id}/`)}): ${post.data.description}`),
     '',
     '## Contact',
+    `- [Contact form](${abs(`${routePath('en', 'contact')}/`)}): for roles or projects`,
     `- Email: ${AUTHOR.email}`,
     '',
   ];

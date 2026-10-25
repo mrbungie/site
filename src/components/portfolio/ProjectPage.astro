@@ -9,6 +9,7 @@ import { routePath } from '../../i18n/routes';
 import type { Project } from '../../data/portfolio';
 import { profile } from '../../data/profile';
 import { labels, projectHref } from './labels';
+import { contactHref } from '../services/labels';
 import { breadcrumbs, personRef } from '../../lib/schema';
 
 interface Props { project: Project; lang: Locale }
@@ -103,7 +104,7 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
         <p class="project__cta-title">{t.ctaTitle}</p>
         <p class="project__cta-body">{t.ctaBody}</p>
       </div>
-      <a class="project__repo" href={`${lang === 'es' ? '/' : `/${lang}/`}?motivo=project#contact`}>{t.ctaLink}</a>
+      <a class="project__repo" href={contactHref(lang)}>{t.ctaLink}</a>
     </aside>
   </article>
 </BaseLayout>
