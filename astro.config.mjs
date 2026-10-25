@@ -36,6 +36,8 @@ export default defineConfig({
   site: SITE,
   trailingSlash: 'ignore',
   compressHTML: true,
+  // Small site: inline CSS so first paint doesn't wait on a stylesheet request.
+  build: { inlineStylesheets: 'always' },
 
   integrations: [
     // Math in MDX ($...$ / $$...$$) is rendered to SVG at build time

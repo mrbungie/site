@@ -34,6 +34,7 @@ const t = getTranslations(lang);
 		<slot name="head" />
 	</head>
 	<body>
+		<Fragment set:html="<!--email_off-->" />
 		<a class="skip-link" href="#main">{t('nav.skip')}</a>
 		<Sidebar lang={lang} alternates={head.alternates} />
 		<div class="site-shell">
@@ -42,5 +43,6 @@ const t = getTranslations(lang);
 			</main>
 			<Footer lang={lang} />
 		</div>
+		<Fragment set:html="<!--/email_off-->" />
 	</body>
 </html>

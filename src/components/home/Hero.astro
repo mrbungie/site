@@ -27,7 +27,7 @@ const h = hero.headline[lang];
       src={me}
       alt={profile.photoAlt[lang]}
       formats={['avif', 'webp']}
-      widths={[220, 440]}
+      widths={[140, 220, 280, 440]}
       sizes="(max-width: 860px) 140px, 220px"
       width={220}
       height={220}
@@ -65,8 +65,8 @@ const h = hero.headline[lang];
     margin: 0 0 20px;
     text-wrap: pretty;
   }
-  .hero__more { color: var(--accent); text-decoration: none; white-space: nowrap; }
-  .hero__more:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .hero__more { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; white-space: nowrap; }
+  .hero__more:hover { text-decoration-thickness: 2px; }
   .hero__now {
     font-size: 15px;
     line-height: 1.6;

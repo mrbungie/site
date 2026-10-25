@@ -130,7 +130,7 @@ const gscToken = import.meta.env.PUBLIC_GSC_VERIFICATION;
 <!-- Self-hosted fonts (declared in global.css); preload the critical faces -->
 <link rel="preload" href="/fonts/dmsans-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/dmserifdisplay-400.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="/fonts/dmmono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/dmserifdisplay-400-italic.woff2" as="font" type="font/woff2" crossorigin />
 
 <!-- Language alternates -->
 {hasAlternates && hreflangs.map(([l, href]) => <link rel="alternate" hreflang={l} href={href} />)}
@@ -161,12 +161,20 @@ const gscToken = import.meta.env.PUBLIC_GSC_VERIFICATION;
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
 <!-- Google Analytics 4 (only when PUBLIC_GA4_ID is set at build time) -->
-{gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
 {gaId && (
 	<script is:inline define:vars={{ gaId }}>
+		// gtag queues calls right away; the 180 KB library loads once the page is idle.
 		window.dataLayer = window.dataLayer || [];
 		window.gtag = function () { dataLayer.push(arguments); };
 		gtag('js', new Date());
 		gtag('config', gaId);
+		addEventListener('load', function () {
+			(window.requestIdleCallback || setTimeout)(function () {
+				var s = document.createElement('script');
+				s.async = true;
+				s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+				document.head.appendChild(s);
+			}, { timeout: 3000 });
+		});
 	</script>
 )}
