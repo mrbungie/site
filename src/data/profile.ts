@@ -113,7 +113,7 @@ export const profile = {
 
   education: [
     {
-      period: '2024 – 2026',
+      period: '2025 – 2026',
       org: 'MIB Trieste School of Management',
       degree: { es: 'MBA in International Business', en: 'MBA in International Business' },
       note: { es: 'En colaboración con la Universidad de Trieste.', en: 'In collaboration with University of Trieste.' },
