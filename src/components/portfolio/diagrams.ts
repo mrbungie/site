@@ -217,6 +217,42 @@ const builders: Record<string, Builder> = {
     note: tr('Un plugin que usan varios bots se promueve a módulo general de la librería.', 'A plugin used by several bots gets promoted to a shared library module.'),
   }),
 
+  'bci-hybrid-crm': (tr) => ({
+    label: tr('Arquitectura del motor CRM híbrido', 'Hybrid CRM engine architecture'),
+    width: 820,
+    height: 300,
+    nodes: [
+      { id: 'rules', x: 16, y: 24, w: 140, title: tr('Reglas', 'Rules'), sub: tr('criterio experto', 'expert judgment') },
+      { id: 'scores', x: 16, y: 124, w: 140, title: tr('Scores ML', 'ML scores'), sub: tr('modelos de propensión', 'propensity models') },
+      { id: 'engine', x: 196, y: 66, w: 170, h: 72, title: tr('Motor híbrido', 'Hybrid engine'), sub: tr('reglas + umbrales\nsobre los scores', 'rules + thresholds\non the scores'), accent: true },
+      { id: 'dw', x: 406, y: 74, w: 170, title: 'Teradata DW', sub: tr('ofertas por cliente', 'offers per customer') },
+      { id: 'out', x: 616, y: 74, w: 188, title: tr('400K+ clientes', '400K+ customers'), sub: tr('evaluados cada día', 'evaluated daily') },
+      { id: 'shiny', x: 196, y: 186, w: 170, title: 'Shiny', sub: tr('optimización de umbrales', 'threshold tuning'), accent: true },
+    ],
+    edges: [
+      { from: 'rules', to: 'engine' },
+      { from: 'scores', to: 'engine' },
+      { from: 'shiny', to: 'engine' },
+      ...chain('engine', 'dw', 'out'),
+    ],
+    base: tr('Bci · 2017 · diseño y primera implementación', 'Bci · 2017 · design and first implementation'),
+  }),
+
+  'bci-propensity-models': (tr) => ({
+    label: tr('Flujo de modelos de propensión', 'Propensity model workflow'),
+    width: 820,
+    height: 150,
+    nodes: [
+      { id: 'td', x: 16, y: 24, w: 130, title: 'Teradata', sub: tr('datos de clientes', 'customer data') },
+      { id: 'train', x: 178, y: 16, w: 150, h: 72, title: tr('Entrenamiento', 'Training'), sub: tr('Python + XGBoost\nen PCs del equipo', 'Python + XGBoost\non team laptops'), accent: true },
+      { id: 'models', x: 360, y: 16, w: 160, h: 72, title: tr('20+ modelos', '20+ models'), sub: tr('cross/upsell,\nactivación, reactivación', 'cross/upsell,\nactivation, reactivation') },
+      { id: 'score', x: 552, y: 16, w: 130, h: 72, title: 'Scoring', sub: tr('scripts Python\nen Airflow', 'Python scripts\non Airflow'), accent: true },
+      { id: 'out', x: 714, y: 24, w: 90, title: 'Teradata', sub: 'scores' },
+    ],
+    edges: chain('td', 'train', 'models', 'score', 'out'),
+    base: tr('Antes: SPSS Modeler · desde 2016: Python, XGBoost y Airflow', 'Before: SPSS Modeler · from 2016: Python, XGBoost and Airflow'),
+  }),
+
   'cloud-tco-openstack': (tr) => ({
     type: 'stack',
     label: tr('Capas de la nube OpenStack de laboratorio', 'OpenStack lab cloud layers'),

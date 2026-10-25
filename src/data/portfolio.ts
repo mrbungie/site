@@ -342,6 +342,81 @@ const allProjects: Project[] = [
     stack: ['Bot Framework', 'DialogFlow', 'Elasticsearch', 'Airflow', 'Jenkins', 'Azure'],
   },
   {
+    slug: 'bci-hybrid-crm',
+    kind: 'proprietary',
+    period: '2017',
+    end: '2017-12',
+    industry: { es: 'Banca', en: 'Banking' },
+    workType: { es: 'Diseño de motor de decisiones', en: 'Decision engine design' },
+    title: {
+      es: 'Motor CRM híbrido de ofertas en Bci',
+      en: 'Hybrid CRM offer engine at Bci',
+    },
+    summary: {
+      es: 'Reglas de experto y modelos de propensión combinados para decidir ofertas personalizadas para más de 400 mil clientes al día.',
+      en: 'Expert rules and propensity models combined to decide personalized offers for more than 400k customers a day.',
+    },
+    goal: {
+      es: 'Decidir cada día qué oferta mostrarle a cada cliente, combinando el criterio comercial del negocio con los modelos de propensión que ya existían.',
+      en: "Decide every day which offer to show each customer, combining the business's commercial judgment with the propensity models that already existed.",
+    },
+    did: {
+      es: [
+        'Diseñé el motor e hice su primera implementación.',
+        'Las reglas se programaban directamente desde el criterio experto; el ML aportaba los scores de los modelos de propensión existentes.',
+        'Las ofertas se extraían desde el data warehouse en Teradata.',
+        'Los umbrales de decisión se optimizaban con una aplicación en Shiny.',
+      ],
+      en: [
+        'Designed the engine and built its first implementation.',
+        'Rules were coded directly from expert judgment; ML contributed scores from the existing propensity models.',
+        'Offers were pulled from the Teradata data warehouse.',
+        'Decision thresholds were tuned with a Shiny application.',
+      ],
+    },
+    results: [
+      { value: '400K+', label: { es: 'clientes evaluados cada día', en: 'customers evaluated daily' } },
+    ],
+    stack: ['Teradata', 'SQL', 'R Shiny', 'XGBoost'],
+  },
+  {
+    slug: 'bci-propensity-models',
+    kind: 'proprietary',
+    period: '2016',
+    end: '2016-12',
+    industry: { es: 'Banca · seguros y tarjetas', en: 'Banking · insurance and cards' },
+    workType: { es: 'Modelamiento predictivo y migración', en: 'Predictive modeling & migration' },
+    title: {
+      es: 'De SPSS Modeler a Python: modelos de propensión en Bci',
+      en: 'From SPSS Modeler to Python: propensity models at Bci',
+    },
+    summary: {
+      es: 'Migración del modelamiento a Python y más de 20 modelos XGBoost de cross/upsell, activación y reactivación.',
+      en: 'Modeling migrated to Python and more than 20 XGBoost models for cross/upsell, activation and reactivation.',
+    },
+    goal: {
+      es: 'Sacar el modelamiento de SPSS Modeler y pasarlo a Python, para construir más modelos de propensión, más rápido, para seguros y tarjetas.',
+      en: 'Move modeling off SPSS Modeler and onto Python, to build more propensity models, faster, for insurance and cards.',
+    },
+    did: {
+      es: [
+        'Mostré cómo hacer la migración desde SPSS Modeler a Python y definí las bases iniciales del nuevo flujo.',
+        'Con el equipo desarrollamos más de 20 modelos XGBoost de cross/upsell, activación y reactivación.',
+        'El scoring quedó en scripts Python orquestados con Airflow, leyendo y escribiendo en Teradata.',
+      ],
+      en: [
+        'Showed how to migrate from SPSS Modeler to Python and set the initial foundations of the new workflow.',
+        'With the team we built more than 20 XGBoost models for cross/upsell, activation and reactivation.',
+        'Scoring ran as Python scripts orchestrated by Airflow, reading from and writing to Teradata.',
+      ],
+    },
+    results: [
+      { value: '20+', label: { es: 'modelos de propensión', en: 'propensity models' } },
+      { value: '> 0,70', label: { es: 'AUC habitual de los modelos', en: 'typical model AUC' } },
+    ],
+    stack: ['Python', 'XGBoost', 'Airflow', 'Teradata'],
+  },
+  {
     slug: 'cloud-tco-openstack',
     kind: 'proprietary',
     period: '2014',
