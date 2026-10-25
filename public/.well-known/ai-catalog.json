@@ -1,0 +1,37 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Germán Oviedo",
+    "identifier": "www.govieworks.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:govieworks.com:knowledge:llms-txt",
+      "displayName": "Germán Oviedo: site index for AI assistants (llms.txt)",
+      "type": "text/plain",
+      "url": "https://www.govieworks.com/llms.txt",
+      "description": "Plain-text map of the site: profile, services, portfolio projects, interactive ML concepts, blog posts and contact."
+    },
+    {
+      "identifier": "urn:air:govieworks.com:feed:blog-rss",
+      "displayName": "Germán Oviedo blog (RSS)",
+      "type": "application/rss+xml",
+      "url": "https://www.govieworks.com/rss.xml",
+      "description": "Feed of blog posts on data, AI and statistics (Spanish)."
+    },
+    {
+      "identifier": "urn:air:govieworks.com:profile:resume-en",
+      "displayName": "Germán Oviedo résumé (English)",
+      "type": "application/pdf",
+      "url": "https://www.govieworks.com/GermanOviedo_CV_EN.pdf",
+      "description": "Résumé of Germán Oviedo, data and AI executive and machine learning lecturer based in Santiago, Chile."
+    },
+    {
+      "identifier": "urn:air:govieworks.com:profile:resume-es",
+      "displayName": "Germán Oviedo CV (Spanish)",
+      "type": "application/pdf",
+      "url": "https://www.govieworks.com/GermanOviedo_CV_ES.pdf",
+      "description": "CV de Germán Oviedo, ejecutivo de datos e IA y docente de machine learning en Santiago, Chile."
+    }
+  ]
+}
