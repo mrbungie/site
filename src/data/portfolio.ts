@@ -386,8 +386,8 @@ const allProjects: Project[] = [
       en: 'Hybrid CRM offer engine at Bci',
     },
     summary: {
-      es: 'Reglas de experto y modelos de propensión combinados para decidir ofertas personalizadas para más de 400 mil clientes al día.',
-      en: 'Expert rules and propensity models combined to decide personalized offers for more than 400k customers a day.',
+      es: 'Reglas de experto, triggers por eventos y modelos de propensión combinados para decidir ofertas personalizadas para más de 400 mil clientes al día.',
+      en: 'Expert rules, event triggers and propensity models combined to decide personalized offers for more than 400k customers a day.',
     },
     goal: {
       es: 'Decidir cada día qué oferta mostrarle a cada cliente, combinando el criterio comercial del negocio con los modelos de propensión que ya existían.',
@@ -397,12 +397,14 @@ const allProjects: Project[] = [
       es: [
         'Diseñé el motor e hice su primera implementación.',
         'Las reglas se programaban directamente desde el criterio experto; el ML aportaba los scores de los modelos de propensión existentes.',
+        'Agregué triggers por eventos del cliente, como su cumpleaños o el vencimiento de un seguro, para ofrecer en el momento justo.',
         'Las ofertas se extraían desde el data warehouse en Teradata.',
         'Los umbrales de decisión se optimizaban con una aplicación en Shiny.',
       ],
       en: [
         'Designed the engine and built its first implementation.',
         'Rules were coded directly from expert judgment; ML contributed scores from the existing propensity models.',
+        'Added triggers on customer events, such as a birthday or an insurance policy expiring, to make offers at the right moment.',
         'Offers were pulled from the Teradata data warehouse.',
         'Decision thresholds were tuned with a Shiny application.',
       ],

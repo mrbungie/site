@@ -237,8 +237,9 @@ const builders: Record<string, Builder> = {
     width: 820,
     height: 300,
     nodes: [
-      { id: 'rules', x: 16, y: 24, w: 140, title: tr('Reglas', 'Rules'), sub: tr('criterio experto', 'expert judgment') },
-      { id: 'scores', x: 16, y: 124, w: 140, title: tr('Scores ML', 'ML scores'), sub: tr('modelos de propensión', 'propensity models') },
+      { id: 'rules', x: 16, y: 8, w: 140, title: tr('Reglas', 'Rules'), sub: tr('criterio experto', 'expert judgment') },
+      { id: 'triggers', x: 16, y: 74, w: 140, h: 66, title: 'Triggers', sub: tr('cumpleaños, venc.\nde seguros, etc.', 'birthdays, policy\nexpiry, etc.'), accent: true },
+      { id: 'scores', x: 16, y: 150, w: 140, title: tr('Scores ML', 'ML scores'), sub: tr('modelos de propensión', 'propensity models') },
       { id: 'engine', x: 196, y: 66, w: 170, h: 72, title: tr('Motor híbrido', 'Hybrid engine'), sub: tr('reglas + umbrales\nsobre los scores', 'rules + thresholds\non the scores'), accent: true },
       { id: 'dw', x: 406, y: 74, w: 170, title: 'Teradata DW', sub: tr('ofertas por cliente', 'offers per customer') },
       { id: 'out', x: 616, y: 74, w: 188, title: tr('400K+ clientes', '400K+ customers'), sub: tr('evaluados cada día', 'evaluated daily') },
@@ -246,6 +247,7 @@ const builders: Record<string, Builder> = {
     ],
     edges: [
       { from: 'rules', to: 'engine' },
+      { from: 'triggers', to: 'engine' },
       { from: 'scores', to: 'engine' },
       { from: 'shiny', to: 'engine' },
       ...chain('engine', 'dw', 'out'),

@@ -23,9 +23,9 @@ const startsWith = (href: string) => pathname === href || pathname.startsWith(`$
 const pages = [
 	{ href: routePath(lang, 'about'), label: t('nav.about') },
 	{ href: routePath(lang, 'portfolio'), label: t('nav.portfolio') },
-	{ href: conceptsHref, label: t('nav.concepts') },
 	{ href: blogHref, label: t('nav.blog') },
 ];
+const learning = [{ href: conceptsHref, label: t('nav.mlConcepts') }];
 
 const langLinks = locales.map((l) => ({
 	l,
@@ -60,6 +60,10 @@ const langLinks = locales.map((l) => ({
 		<nav class="sidebar-nav" aria-label={t('nav.primary')}>
 			<ul>
 				{pages.map((p) => (
+					<li><a href={p.href} aria-current={startsWith(p.href) ? 'page' : undefined}>{p.label}</a></li>
+				))}
+				<li class="nav-divider" aria-hidden="true"></li>
+				{learning.map((p) => (
 					<li><a href={p.href} aria-current={startsWith(p.href) ? 'page' : undefined}>{p.label}</a></li>
 				))}
 			</ul>
