@@ -14,16 +14,7 @@ const h = hero.headline[lang];
 <section id="about" class="hero">
   <div class="hero__text">
     <h1 class="hero__title">{h.before} <em>{h.em}</em> {h.after}</h1>
-    <p class="hero__lead">{hero.lead[lang]}</p>
-    <ol class="hero__track">
-      {hero.track.map((item) => (
-        <li>
-          <span class="hero__org">{item.org}</span>
-          <span class="hero__role">{item.role[lang]}</span>
-        </li>
-      ))}
-    </ol>
-    <p class="hero__teaching">{hero.teaching[lang]}</p>
+    <p class="hero__lead">{hero.lead[lang]} <a class="hero__more" href={`${routePath(lang, 'about')}/`}>{hero.more[lang]}</a></p>
     <p class="hero__now">{hero.now[lang]}</p>
     <div class="hero__cta">
       <a class="hero__btn hero__btn--primary" href={`${routePath(lang, 'contact')}/`}>{copy.emailMe[lang]}</a>
@@ -74,24 +65,8 @@ const h = hero.headline[lang];
     margin: 0 0 20px;
     text-wrap: pretty;
   }
-  .hero__track { list-style: none; margin: 0 0 20px; padding: 0; max-width: 58ch; border-top: 1px solid var(--rule); }
-  .hero__track li {
-    display: grid;
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 16px;
-    align-items: baseline;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-  .hero__org {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .hero__role { font-size: 16px; color: var(--ink); }
-  .hero__teaching { font-size: 15px; line-height: 1.6; color: var(--ink-muted); max-width: 58ch; margin: 0 0 20px; }
+  .hero__more { color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .hero__more:hover { text-decoration: underline; text-underline-offset: 3px; }
   .hero__now {
     font-size: 15px;
     line-height: 1.6;

@@ -42,19 +42,10 @@ export const profile = {
       en: { before: "I've spent ten years in", em: 'data and AI', after: 'for banking and fintech.' },
     } as L10n<{ before: string; em: string; after: string }>,
     lead: {
-      es: 'Pongo modelos y productos de IA en producción, y armo los equipos que los sostienen.',
-      en: 'I take AI models and products to production, and build the teams that keep them running.',
+      es: 'Lideré IA generativa en Bci y ciencia de datos en MACH, y armé desde cero el área de datos de Tenpo. Hoy ayudo a empresas a llevar IA a producción, y enseño machine learning desde 2016.',
+      en: "I led generative AI at Bci and data science at MACH, and built Tenpo's data team from scratch. Today I help companies take AI to production, and I've taught machine learning since 2016.",
     } as L10n<string>,
-    track: [
-      { org: 'Bci', role: { es: 'Subgerente de IA Generativa', en: 'Head of Generative AI' } },
-      { org: 'MACH', role: { es: 'Head of Analytics & Data Science', en: 'Head of Analytics & Data Science' } },
-      { org: 'Tenpo', role: { es: 'Armé el área de datos desde cero', en: 'Built the data team from scratch' } },
-      { org: 'Bci', role: { es: 'Principal Data Scientist, casi seis años', en: 'Principal Data Scientist, almost six years' } },
-    ] as { org: string; role: L10n<string> }[],
-    teaching: {
-      es: 'Desde 2016 enseño machine learning en la universidad. Aquí publico versiones interactivas de esas clases.',
-      en: "I've taught machine learning at university since 2016. This site hosts interactive versions of those classes.",
-    } as L10n<string>,
+    more: { es: 'Mi trayectoria →', en: 'My background →' } as L10n<string>,
     now: {
       es: 'Terminé un MBA en Trieste y volví a Santiago. Tomo roles de liderazgo y proyectos de consultoría, remotos o presenciales.',
       en: 'I just finished an MBA in Trieste and moved back to Santiago. I take leadership roles and consulting projects, remote or on-site.',
