@@ -5,6 +5,7 @@ import me from '../../assets/me.png';
 import type { Locale } from '../../i18n/ui';
 import { profile, copy, contact, cvHref } from '../../data/profile';
 import { profilePage } from '../../lib/schema';
+import { routePath } from '../../i18n/routes';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -20,6 +21,7 @@ const t = profile.teaching;
         <h1 class="about-headline">{profile.name}</h1>
         {profile.bio[lang].map(p => <p class="about-body">{p}</p>)}
         <div class="about-actions">
+          <a class="cv-download about-talk" href={`${routePath(lang, 'contact')}/`}>{lang === 'es' ? 'Conversemos →' : "Let's talk →"}</a>
           <a class="cv-download" href={cvHref[lang]} download>{copy.downloadCvFull[lang]}</a>
           <a class="cv-download" href={cvHref[other]} download>{lang === 'es' ? 'CV in English ↓' : 'CV en español ↓'}</a>
         </div>
@@ -101,6 +103,8 @@ const t = profile.teaching;
   .about-headline { font-size: clamp(36px, 5vw, 56px); letter-spacing: -0.02em; }
   .about-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
   .about-actions .cv-download { margin-top: 12px; }
+  .about-actions .about-talk { background: var(--ink); color: var(--bg); }
+  .about-actions .about-talk:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
   .about-block { margin-top: 64px; }
   .skills { margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 13px; line-height: 1.7; }
   .skills__row { display: grid; grid-template-columns: 160px 1fr; gap: 20px; }
