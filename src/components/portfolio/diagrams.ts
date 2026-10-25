@@ -203,6 +203,21 @@ const builders: Record<string, Builder> = {
     note: tr('Un solo Dockerfile parametrizado por BASE_IMAGE; GitHub Actions publica ambas variantes en GHCR.', 'One Dockerfile parameterized by BASE_IMAGE; GitHub Actions publishes both variants to GHCR.'),
   }),
 
+  'datax-tax-data': (tr) => ({
+    label: tr('Arquitectura de DataX', 'DataX architecture'),
+    width: 820,
+    height: 150,
+    nodes: [
+      { id: 'sii', x: 16, y: 16, w: 140, h: 66, title: 'SII', sub: tr('formularios y\ndatos tributarios', 'forms and\ntax data') },
+      { id: 'scr', x: 188, y: 16, w: 160, h: 66, title: tr('Scrapers', 'Scrapers'), sub: tr('Puppeteer\nnavegador headless', 'Puppeteer\nheadless browser'), accent: true },
+      { id: 'api', x: 380, y: 16, w: 130, h: 66, title: 'API', sub: 'Node · Express' },
+      { id: 'fe', x: 542, y: 16, w: 110, h: 66, title: 'Frontend', sub: 'React' },
+      { id: 'users', x: 684, y: 16, w: 120, h: 66, title: tr('Equipos', 'Teams'), sub: tr('tax, accounting\ny compliance', 'tax, accounting\nand compliance') },
+    ],
+    edges: chain('sii', 'scr', 'api', 'fe', 'users'),
+    base: tr('Firma Big Four · 2018 – 2019', 'Big Four firm · 2018 – 2019'),
+  }),
+
   'healthcare-chatbot': (tr) => ({
     type: 'stack',
     label: tr('Capas de la plataforma de chatbots', 'Chatbot platform layers'),

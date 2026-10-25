@@ -307,6 +307,39 @@ const allProjects: Project[] = [
     repo: 'https://github.com/mrbungie/vastai-datascience-runtime',
   },
   {
+    slug: 'datax-tax-data',
+    kind: 'proprietary',
+    period: '2018 – 2019',
+    end: '2019-12',
+    industry: { es: 'Impuestos y cumplimiento', en: 'Tax and compliance' },
+    workType: { es: 'Producto de datos y scraping', en: 'Data product & scraping' },
+    title: {
+      es: 'DataX: datos tributarios para una firma Big Four',
+      en: 'DataX: tax data for a Big Four firm',
+    },
+    summary: {
+      es: 'Plataforma que extraía información tributaria desde el SII y la mostraba a equipos de impuestos, contabilidad y compliance.',
+      en: "Platform that pulled tax information from Chile's IRS (SII) and presented it to tax, accounting and compliance teams.",
+    },
+    goal: {
+      es: 'Darles a los equipos de tax, corporate accounting y compliance de una firma Big Four acceso ordenado a la información tributaria de sus clientes, sin sacarla a mano del SII.',
+      en: "Give a Big Four firm's tax, corporate accounting and compliance teams organized access to their clients' tax information, without pulling it by hand from the SII.",
+    },
+    did: {
+      es: [
+        'Fui socio inicial del proyecto.',
+        'Hice los diseños iniciales, en especial los de los scrapers con Puppeteer sobre el sitio del SII.',
+        'La plataforma usaba React en el frontend y Express en el backend.',
+      ],
+      en: [
+        'I was an initial partner in the project.',
+        'Did the initial designs, especially for the Puppeteer scrapers on the SII website.',
+        'The platform used React on the frontend and Express on the backend.',
+      ],
+    },
+    stack: ['Node.js', 'Puppeteer', 'Express', 'React'],
+  },
+  {
     slug: 'healthcare-chatbot',
     kind: 'proprietary',
     period: '2018',
