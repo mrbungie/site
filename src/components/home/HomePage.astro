@@ -6,7 +6,6 @@ import ContactForm from './ContactForm.astro';
 import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
-import { projects } from '../../data/projects';
 import { profile, copy, contact } from '../../data/profile';
 
 interface Props { lang: Locale }
@@ -17,35 +16,11 @@ const allPosts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
-const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es));
 ---
 
 <BaseLayout title={t('site.title')} description={t('site.description')} lang={lang}>
 
   <Hero lang={lang} />
-
-  {projects.length > 0 && (
-    <section id="work" class="home-section">
-      <div class="section-label">{copy.work[lang]}</div>
-      <div class="work-list">
-        {projects.map(p => (
-          <div class="work-item">
-            <div class="work-year">{p.year}</div>
-            <div>
-              <div class="work-title">
-                {p.href
-                  ? <a class="plain-link" href={p.href} target="_blank" rel="noopener">{localized(p.title, p.titleEN)}</a>
-                  : localized(p.title, p.titleEN)}
-              </div>
-              <p class="work-desc">{localized(p.desc, p.descEN)}</p>
-              <div class="work-tags">{p.tags.map(tag => <span class="tag">{tag}</span>)}</div>
-            </div>
-            {p.href && <div class="work-arrow"><a class="plain-link" href={p.href} target="_blank" rel="noopener" aria-label={localized(p.title, p.titleEN)}>↗</a></div>}
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
 
   {allPosts.length > 0 && (
     <section id="writing" class="home-section">

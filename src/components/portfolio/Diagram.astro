@@ -1,0 +1,81 @@
+---
+// Minimal box-and-arrow architecture diagram, drawn as inline SVG with theme tokens.
+import type { DiagramEdge, DiagramNode } from './diagrams';
+
+interface Props {
+  label: string;
+  width: number;
+  height: number;
+  nodes: DiagramNode[];
+  edges: DiagramEdge[];
+  base?: string; // platform strip at the bottom
+}
+
+const { label, width, height, nodes, edges, base } = Astro.props;
+const H = 56;
+const byId = new Map(nodes.map((n) => [n.id, { ...n, h: n.h ?? H }]));
+const id = `arrow-${Math.random().toString(36).slice(2, 8)}`;
+
+// Horizontal link when B sits to the right of A, vertical otherwise.
+const paths = edges.map(({ from, to }) => {
+  const a = byId.get(from)!;
+  const b = byId.get(to)!;
+  if (b.x >= a.x + a.w - 4) {
+    const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x - 4, y2 = b.y + b.h / 2;
+    const mx = (x1 + x2) / 2;
+    return `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
+  }
+  const down = b.y > a.y;
+  const x1 = a.x + a.w / 2, y1 = down ? a.y + a.h : a.y;
+  const x2 = b.x + b.w / 2, y2 = down ? b.y - 4 : b.y + b.h + 4;
+  const my = (y1 + y2) / 2;
+  return `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`;
+});
+const baseY = height - 44;
+---
+
+<figure class="diagram">
+  <div class="diagram__scroll">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label}>
+      <defs>
+        <marker id={id} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L8,4 L0,8 z" class="diagram__arrowhead" />
+        </marker>
+      </defs>
+
+      {paths.map((d) => <path d={d} class="diagram__edge" marker-end={`url(#${id})`} />)}
+
+      {[...byId.values()].map((n) => (
+        <g class:list={['diagram__node', { 'diagram__node--accent': n.accent }]}>
+          <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="6" />
+          <text x={n.x + 12} y={n.y + 22} class="diagram__title">{n.title}</text>
+          {n.sub?.split('\n').map((line, i) => (
+            <text x={n.x + 12} y={n.y + 40 + i * 15} class="diagram__sub">{line}</text>
+          ))}
+        </g>
+      ))}
+
+      {base && (
+        <g class="diagram__base">
+          <rect x="16" y={baseY} width={width - 32} height="30" rx="6" />
+          <text x={width / 2} y={baseY + 19} text-anchor="middle">{base}</text>
+        </g>
+      )}
+    </svg>
+  </div>
+</figure>
+
+<style>
+  .diagram { margin: 0; }
+  .diagram__scroll { overflow-x: auto; }
+  .diagram svg { display: block; width: 100%; min-width: 600px; height: auto; }
+  .diagram__edge { fill: none; stroke: var(--ink-faint); stroke-width: 1.25; }
+  .diagram__arrowhead { fill: var(--ink-faint); }
+  .diagram__node rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1; }
+  .diagram__node--accent rect { stroke: var(--accent); stroke-width: 1.5; }
+  .diagram__title { font-family: var(--font-sans); font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .diagram__node--accent .diagram__title { fill: var(--accent); }
+  .diagram__sub { font-family: var(--font-sans); font-size: 11px; fill: var(--ink-muted); }
+  .diagram__base rect { fill: var(--surface-sunken); stroke: none; }
+  .diagram__base text { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em; fill: var(--ink-muted); }
+</style>

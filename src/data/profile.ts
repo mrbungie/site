@@ -153,7 +153,6 @@ export const profile = {
 // UI copy used only by the home/about pages
 export const copy = {
   about: { es: 'Sobre mí', en: 'About' },
-  work: { es: 'Trabajo', en: 'Work' },
   writing: { es: 'Escritura', en: 'Writing' },
   experience: { es: 'Experiencia', en: 'Experience' },
   education: { es: 'Educación', en: 'Education' },

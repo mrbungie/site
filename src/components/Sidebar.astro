@@ -4,7 +4,6 @@ import { languages, locales, type Locale } from '../i18n/ui';
 import { getLangFromUrl, getTranslations } from '../i18n/utils';
 import { routePath, switchLocalePath } from '../i18n/routes';
 import { AUTHOR, THEME_STORAGE_KEY } from '../consts';
-import { projects } from '../data/projects';
 
 interface Props {
 	lang?: Locale;
@@ -21,11 +20,9 @@ const conceptsHref = routePath(lang, 'concepts');
 const blogHref = routePath(lang, 'blog');
 const startsWith = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-const sections = [
-	...(projects.length > 0 ? [{ id: 'work', label: t('nav.work') }] : []),
-];
 const pages = [
 	{ href: routePath(lang, 'about'), label: t('nav.about') },
+	{ href: routePath(lang, 'portfolio'), label: t('nav.portfolio') },
 	{ href: conceptsHref, label: t('nav.concepts') },
 	{ href: blogHref, label: t('nav.blog') },
 ];
@@ -62,10 +59,6 @@ const langLinks = locales.map((l) => ({
 
 		<nav class="sidebar-nav" aria-label={t('nav.primary')}>
 			<ul>
-				{sections.map((s) => (
-					<li><a href={`${homeHref}/#${s.id}`} data-section={s.id}>{s.label}</a></li>
-				))}
-				{sections.length > 0 && <li class="nav-divider" aria-hidden="true"></li>}
 				{pages.map((p) => (
 					<li><a href={p.href} aria-current={startsWith(p.href) ? 'page' : undefined}>{p.label}</a></li>
 				))}
@@ -141,24 +134,4 @@ const langLinks = locales.map((l) => ({
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Escape' && sidebar.dataset.open === 'true') { setOpen(false); menuBtn.focus(); }
 	});
-
-	// Scroll spy for in-page sections (home only)
-	const links = sidebar.querySelectorAll<HTMLAnchorElement>('nav a[data-section]');
-	const sections = [...document.querySelectorAll('main section[id]')];
-	if (sections.length) {
-		const io = new IntersectionObserver(
-			(entries) => {
-				for (const e of entries) {
-					if (!e.isIntersecting) continue;
-					links.forEach((l) => {
-						const on = l.dataset.section === e.target.id;
-						l.classList.toggle('active', on);
-						if (on) l.setAttribute('aria-current', 'location'); else l.removeAttribute('aria-current');
-					});
-				}
-			},
-			{ rootMargin: '-30% 0px -60% 0px', threshold: 0 },
-		);
-		sections.forEach((s) => io.observe(s));
-	}
 </script>
