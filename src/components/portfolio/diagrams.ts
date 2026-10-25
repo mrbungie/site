@@ -243,6 +243,21 @@ const builders: Record<string, Builder> = {
     note: tr('Un solo Dockerfile parametrizado por BASE_IMAGE; GitHub Actions publica ambas variantes en GHCR.', 'One Dockerfile parameterized by BASE_IMAGE; GitHub Actions publishes both variants to GHCR.'),
   }),
 
+  'bci-covid-business-cycles': (tr) => ({
+    label: tr('Flujo de detección de ciclos', 'Cycle detection flow'),
+    width: 820,
+    height: 160,
+    nodes: [
+      { id: 'use', x: 16, y: 16, w: 150, h: 72, title: tr('Uso de productos', 'Product usage'), sub: tr('datos propios del\nbanco, por empresa', "bank's own data,\nper company") },
+      { id: 'ts', x: 196, y: 16, w: 140, h: 72, title: tr('Series de tiempo', 'Time series'), sub: tr('por empresa\ny sector', 'per company\nand sector') },
+      { id: 'cyc', x: 366, y: 16, w: 160, h: 72, title: tr('Ciclos estilo NBER', 'NBER-style cycles'), sub: tr('puntos de giro:\nrecesión o crecimiento', 'turning points:\nrecession or growth'), accent: true },
+      { id: 'liq', x: 556, y: 16, w: 130, h: 72, title: tr('Liquidez', 'Liquidity'), sub: tr('y capacidad\nde pago', 'and payment\ncapacity') },
+      { id: 'risk', x: 716, y: 16, w: 88, h: 72, title: tr('Riesgo', 'Risk'), sub: tr('decisiones', 'decisions') },
+    ],
+    edges: chain('use', 'ts', 'cyc', 'liq', 'risk'),
+    base: tr('Bci · 2020 · monitoreo durante la pandemia', 'Bci · 2020 · monitoring during the pandemic'),
+  }),
+
   'datax-tax-data': (tr) => ({
     label: tr('Arquitectura de DataX', 'DataX architecture'),
     width: 820,

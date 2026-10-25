@@ -378,6 +378,39 @@ const allProjects: Project[] = [
     repo: 'https://github.com/mrbungie/vastai-datascience-runtime',
   },
   {
+    slug: 'bci-covid-business-cycles',
+    kind: 'proprietary',
+    period: '2020',
+    end: '2020-12',
+    industry: { es: 'Banca · riesgo de empresas', en: 'Banking · corporate risk' },
+    workType: { es: 'Series de tiempo y riesgo', en: 'Time series & risk' },
+    title: {
+      es: 'Recesión o crecimiento: ciclos de empresas en pandemia en Bci',
+      en: 'Recession or growth: company cycles during the pandemic at Bci',
+    },
+    summary: {
+      es: 'Detección de recesión y crecimiento en las series de uso de productos de empresas chilenas, para leer liquidez y capacidad de pago durante 2020.',
+      en: "Recession and growth detection on Chilean companies' product-usage series, to read liquidity and payment capacity during 2020.",
+    },
+    goal: {
+      es: 'En plena pandemia, sin datos macro a tiempo ni historia comparable, saber qué empresas clientes estaban entrando en recesión o seguían creciendo, para estimar su liquidez y capacidad de pago y usarlo en riesgo.',
+      en: 'In the middle of the pandemic, with no timely macro data and no comparable history, know which client companies were entering recession or still growing, to estimate their liquidity and payment capacity for risk.',
+    },
+    did: {
+      es: [
+        'Armamos series de tiempo por empresa con datos propios del banco: el uso de sus distintos productos.',
+        'Implementamos un marco de monitoreo estilo NBER para fechar puntos de giro y separar recesión de crecimiento en cada serie.',
+        'Tradujimos esas señales en indicadores de liquidez y capacidad de pago para el área de riesgo.',
+      ],
+      en: [
+        "We built per-company time series from the bank's own data: usage across its different products.",
+        'We implemented an NBER-style monitoring framework to date turning points and separate recession from growth in each series.',
+        'We turned those signals into liquidity and payment-capacity indicators for the risk team.',
+      ],
+    },
+    stack: ['Python', 'Series de tiempo', 'Ciclos económicos', 'Riesgo de crédito'],
+  },
+  {
     slug: 'datax-tax-data',
     kind: 'proprietary',
     period: '2018 – 2019',
