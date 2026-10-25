@@ -18,6 +18,8 @@ export default defineConfig({
     mdx({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeMathJaxSvg] }),
     react(),
     sitemap({
+      // /en concept and blog pages are Spanish fallbacks that canonicalize to the original.
+      filter: (page) => !/\/en\/(concepts|blog)\/[^/]+\/$/.test(new URL(page).pathname),
       i18n: {
         defaultLocale: 'es',
         locales: { es: 'es-CL', en: 'en-US' },

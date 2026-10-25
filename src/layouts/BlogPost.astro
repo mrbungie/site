@@ -7,6 +7,7 @@ import { getTranslations } from '../i18n/utils';
 import { routePath } from '../i18n/routes';
 import type { Locale } from '../i18n/ui';
 import { postHref } from '../utils/blog';
+import { breadcrumbs, personRef } from '../lib/schema';
 
 interface Props {
 	post: CollectionEntry<'blog'>;
@@ -19,6 +20,25 @@ interface Props {
 const { post, minutes, lang = 'es', prev, next } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, heroImage } = post.data;
 const t = getTranslations(lang);
+const site = Astro.site!;
+const schema = [
+	{
+		'@type': 'BlogPosting',
+		headline: title,
+		description,
+		datePublished: pubDate.toISOString(),
+		...(updatedDate && { dateModified: updatedDate.toISOString() }),
+		url: new URL(`/blog/${post.id}/`, site).href,
+		author: personRef(site),
+		publisher: personRef(site),
+		inLanguage: 'es',
+		keywords: tags?.join(', '),
+	},
+	breadcrumbs(site, [
+		{ name: 'Blog', path: `${routePath(lang, 'blog')}/` },
+		{ name: title, path: `/blog/${post.id}/` },
+	]),
+];
 ---
 
 <BaseLayout
@@ -30,6 +50,7 @@ const t = getTranslations(lang);
 	modifiedTime={updatedDate}
 	canonical={`/blog/${post.id}/`}
 	alternates={lang === 'es' ? { es: `/blog/${post.id}/` } : undefined}
+	schema={schema}
 >
 	<article class="post">
 		<a class="post-back" href={routePath(lang, 'blog')}>← {t('blog.all')}</a>

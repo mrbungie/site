@@ -7,6 +7,7 @@ import TableOfContents from '../components/concept/TableOfContents.astro';
 import { getTranslations, type Locale } from '../i18n/utils';
 import { routePath } from '../i18n/routes';
 import { conceptHref, type ConceptEntry } from '../components/concept/concepts';
+import { breadcrumbs, personRef } from '../lib/schema';
 
 interface Props {
 	concept: ConceptEntry;
@@ -28,9 +29,28 @@ const { title, summary, area, level, tags, order } = concept.data;
 const t = getTranslations(lang);
 const link = (e: ConceptEntry) => ({ title: e.data.title, href: conceptHref(lang, e) });
 const indexHref = routePath(lang, 'concepts');
+const site = Astro.site!;
+const schema = [
+	{
+		'@type': ['Article', 'LearningResource'],
+		headline: title,
+		description: summary,
+		url: new URL(`${conceptHref(lang, concept)}/`, site).href,
+		author: personRef(site),
+		educationalLevel: level,
+		learningResourceType: 'interactive explanation',
+		about: area,
+		keywords: tags?.join(', '),
+		inLanguage: 'es',
+	},
+	breadcrumbs(site, [
+		{ name: t('nav.mlConcepts'), path: `${indexHref}/` },
+		{ name: title, path: `${conceptHref(lang, concept)}/` },
+	]),
+];
 ---
 
-<BaseLayout title={title} description={summary} lang={lang}>
+<BaseLayout title={title} description={summary} lang={lang} schema={schema} canonical={fallback ? originalHref : undefined}>
 	<article class="concept-page">
 		<header class="concept-page__header">
 			<nav class="concept-page__crumbs" aria-label="breadcrumb">

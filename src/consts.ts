@@ -10,7 +10,13 @@ export const AUTHOR = {
 	name: 'Germán Oviedo',
 	jobTitle: 'Data & AI executive',
 	email: 'german.oviedo.b@gmail.com',
-	sameAs: ['https://linkedin.com/in/goviedb', 'https://github.com/mrbungie'],
+	description: {
+		es: 'Ejecutivo de datos e IA con más de diez años en banca y fintech en Chile, y docente universitario de machine learning desde 2016.',
+		en: 'Data and AI executive with more than ten years in Chilean banking and fintech, and university machine learning lecturer since 2016.',
+	},
+	alumniOf: ['Universidad Adolfo Ibáñez', 'MIB Trieste School of Management'],
+	knowsAbout: ['Machine learning', 'Generative AI', 'Data engineering', 'MLOps', 'Causal inference', 'Banking analytics'],
+	sameAs: ['https://www.linkedin.com/in/goviedb', 'https://github.com/mrbungie'],
 } as const;
 
 /** Default social share image, served from /public. */

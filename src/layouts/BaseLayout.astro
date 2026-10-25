@@ -19,6 +19,7 @@ interface Props {
 	modifiedTime?: Date;
 	/** Override the canonical URL (path or absolute URL), e.g. for Spanish fallbacks under /en. */
 	canonical?: string;
+	schema?: Record<string, unknown>[];
 }
 
 const { lang: langProp, ...head } = Astro.props;

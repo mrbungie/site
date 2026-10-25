@@ -74,6 +74,8 @@ const t = {
         form.reset();
         status.textContent = form.dataset.ok ?? '';
         status.dataset.state = 'ok';
+        // GA4 key event (no-op when analytics is not configured)
+        (window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'generate_lead', { method: 'contact_form' });
       } catch {
         status.textContent = form.dataset.error ?? '';
         status.dataset.state = 'error';

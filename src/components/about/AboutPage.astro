@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
 import { profile, copy, contact, cvHref } from '../../data/profile';
+import { profilePage } from '../../lib/schema';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -9,7 +10,7 @@ const other: Locale = lang === 'es' ? 'en' : 'es';
 const t = profile.teaching;
 ---
 
-<BaseLayout title={copy.aboutTitle[lang]} description={copy.aboutDesc[lang]} lang={lang}>
+<BaseLayout title={copy.aboutTitle[lang]} description={copy.aboutDesc[lang]} lang={lang} schema={[profilePage(Astro.site!, Astro.url.pathname)]}>
   <section class="about-page">
     <div class="section-label">{copy.about[lang]}</div>
     <div class="about-grid">

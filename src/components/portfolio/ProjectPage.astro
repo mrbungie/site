@@ -7,16 +7,40 @@ import { diagramFor } from './diagrams';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
 import type { Project } from '../../data/portfolio';
+import { profile } from '../../data/profile';
 import { labels, projectHref } from './labels';
+import { breadcrumbs, personRef } from '../../lib/schema';
 
 interface Props { project: Project; lang: Locale }
 const { project: p, lang } = Astro.props;
 const t = labels[lang];
 const spec = diagramFor(p.slug, lang);
+const site = Astro.site!;
+const work = {
+  name: p.title[lang],
+  headline: p.title[lang],
+  description: p.summary[lang],
+  url: new URL(projectHref(lang, p), site).href,
+  author: personRef(site),
+  keywords: p.stack.join(', '),
+  about: p.industry[lang],
+};
+const schema = [
+  p.kind === 'oss'
+    ? { '@type': 'SoftwareSourceCode', ...work, codeRepository: p.repo }
+    : p.kind === 'paper'
+      ? { '@type': 'ScholarlyArticle', ...work, sameAs: p.paper }
+      : { '@type': 'CreativeWork', ...work },
+  breadcrumbs(site, [
+    { name: profile.name, path: lang === 'es' ? '/' : `/${lang}/` },
+    { name: t.title, path: `${routePath(lang, 'portfolio')}/` },
+    { name: p.title[lang], path: projectHref(lang, p) },
+  ]),
+];
 const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
 ---
 
-<BaseLayout title={`${p.title[lang]} · Germán Oviedo`} description={p.summary[lang]} lang={lang} alternates={alternates} type="article">
+<BaseLayout title={`${p.title[lang]} · Germán Oviedo`} description={p.summary[lang]} lang={lang} alternates={alternates} type="article" schema={schema}>
   <article class="project">
     <a class="project__back" href={`${routePath(lang, 'portfolio')}/`}>{t.back}</a>
 

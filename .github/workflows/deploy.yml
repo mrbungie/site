@@ -39,6 +39,8 @@ jobs:
         run: npm run build
         env:
           PUBLIC_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_KEY }}
+          PUBLIC_GA4_ID: ${{ vars.GA4_ID }}
+          PUBLIC_GSC_VERIFICATION: ${{ vars.GSC_VERIFICATION }}
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

@@ -7,6 +7,7 @@ import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
 import { profile, copy, contact } from '../../data/profile';
+import { profilePage } from '../../lib/schema';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
@@ -18,7 +19,7 @@ const allPosts = (await getCollection('blog'))
 const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
 ---
 
-<BaseLayout title={t('site.title')} description={t('site.description')} lang={lang}>
+<BaseLayout title={t('site.title')} description={t('site.description')} lang={lang} schema={[profilePage(Astro.site!, Astro.url.pathname)]}>
 
   <Hero lang={lang} />
 
