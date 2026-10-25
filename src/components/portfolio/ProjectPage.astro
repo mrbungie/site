@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Diagram from './Diagram.astro';
+import { diagramFor } from './diagrams';
+import type { Locale } from '../../i18n/ui';
+import { routePath } from '../../i18n/routes';
+import type { Project } from '../../data/portfolio';
+import { labels, projectHref } from './labels';
+
+interface Props { project: Project; lang: Locale }
+const { project: p, lang } = Astro.props;
+const t = labels[lang];
+const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
+---
+
+<BaseLayout title={`${p.title[lang]} · Germán Oviedo`} description={p.summary[lang]} lang={lang} alternates={alternates} type="article">
+  <article class="project">
+    <a class="project__back" href={`${routePath(lang, 'portfolio')}/`}>{t.back}</a>
+
+    <header class="project__header">
+      <span class:list={['kind-badge', `kind-badge--${p.kind}`]}>{t[p.kind]}</span>
+      <h1 class="project__title">{p.title[lang]}</h1>
+      <dl class="project__facts">
+        <div><dt>{t.industry}</dt><dd>{p.industry[lang]}</dd></div>
+        <div><dt>{t.workType}</dt><dd>{p.workType[lang]}</dd></div>
+        <div><dt>{t.period}</dt><dd>{p.period}</dd></div>
+      </dl>
+      {p.repo
+        ? <a class="project__repo" href={p.repo} target="_blank" rel="noopener">{t.repo}</a>
+        : <p class="project__note">{t.confidential}</p>}
+    </header>
+
+    <section class="project__section">
+      <h2 class="project__label">{t.architecture}</h2>
+      <Diagram {...diagramFor(p.slug, lang)} />
+    </section>
+
+    <div class="project__body">
+      <section>
+        <h2 class="project__label">{t.goal}</h2>
+        <p class="project__text">{p.goal[lang]}</p>
+      </section>
+      <section>
+        <h2 class="project__label">{t.did}</h2>
+        <ul class="project__list">{p.did[lang].map((item) => <li>{item}</li>)}</ul>
+      </section>
+    </div>
+
+    <section class="project__section">
+      <h2 class="project__label">{t.stack}</h2>
+      <div class="tag-list">{p.stack.map((s) => <span class="tag">{s}</span>)}</div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .project { padding: clamp(40px, 7vw, 80px) 0 120px; max-width: 880px; }
+  .project__back {
+    display: inline-block;
+    margin-bottom: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  .project__back:hover { color: var(--accent); }
+  .project__header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); margin-bottom: var(--space-7); }
+  .project__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .project__facts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-6); margin: 0; }
+  .project__facts dt,
+  .project__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 var(--space-2);
+  }
+  .project__facts dd { margin: 0; font-size: var(--text-sm); color: var(--ink); }
+  .project__repo {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--ink);
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: background var(--dur-fast);
+  }
+  .project__repo:hover { background: var(--accent); }
+  .project__note { margin: 0; font-size: var(--text-sm); color: var(--ink-muted); }
+  .project__section { margin-bottom: var(--space-7); }
+  .project__body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-6); margin-bottom: var(--space-7); }
+  .project__text, .project__list { font-size: var(--text-base); line-height: var(--leading-body); color: var(--ink-muted); margin: 0; }
+  .project__list { padding-left: 1.1em; list-style: disc; display: flex; flex-direction: column; gap: var(--space-2); }
+  .project__list li::marker { color: var(--accent); }
+  @media (max-width: 760px) {
+    .project__body { grid-template-columns: 1fr; }
+  }
+</style>

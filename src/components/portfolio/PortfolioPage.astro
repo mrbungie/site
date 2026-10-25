@@ -1,36 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Diagram from './Diagram.astro';
-import { diagramFor } from './diagrams';
 import type { Locale } from '../../i18n/ui';
-import { caseStudies, repos } from '../../data/portfolio';
-import { contact } from '../../data/profile';
+import { projects } from '../../data/portfolio';
+import { labels, projectHref } from './labels';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
-
-const t = {
-  es: {
-    title: 'Portafolio',
-    desc: 'Proyectos de Germán Oviedo: plataformas de datos, ML y GenAI para clientes, y repositorios abiertos.',
-    intro: 'Dos tipos de trabajo. Los proyectos para clientes son confidenciales, así que solo muestro la arquitectura y lo que hice. El código abierto está en GitHub.',
-    clients: 'Proyectos para clientes',
-    goal: 'Objetivo',
-    did: 'Lo que hice',
-    code: 'Código abierto',
-    all: 'Todo en GitHub ↗',
-  },
-  en: {
-    title: 'Portfolio',
-    desc: 'Projects by Germán Oviedo: data, ML and GenAI platforms for clients, and open-source repositories.',
-    intro: 'Two kinds of work. Client projects are confidential, so I only show the architecture and what I did. Open-source code is on GitHub.',
-    clients: 'Client projects',
-    goal: 'Goal',
-    did: 'What I did',
-    code: 'Open source',
-    all: 'All on GitHub ↗',
-  },
-}[lang];
+const t = labels[lang];
 ---
 
 <BaseLayout title={`${t.title} · Germán Oviedo`} description={t.desc} lang={lang}>
@@ -39,46 +15,23 @@ const t = {
     <h1 class="portfolio__title">{t.title}</h1>
     <p class="portfolio__intro">{t.intro}</p>
 
-    <h2 class="portfolio__heading">{t.clients}</h2>
-    {caseStudies.map((c) => {
-      const d = diagramFor(c.id, lang);
-      return (
-        <article class="case" id={c.id}>
-          <header class="case__header">
-            <p class="case__meta">{c.context[lang]} · {c.period}</p>
-            <h3 class="case__title">{c.title[lang]}</h3>
-          </header>
-          <Diagram {...d} />
-          <div class="case__body">
-            <div>
-              <p class="case__label">{t.goal}</p>
-              <p class="case__text">{c.goal[lang]}</p>
-            </div>
-            <div>
-              <p class="case__label">{t.did}</p>
-              <ul class="case__list">{c.did[lang].map((item) => <li>{item}</li>)}</ul>
-            </div>
+    <div class="portfolio__grid">
+      {projects.map((p) => (
+        <article class="pcard">
+          <div class="pcard__top">
+            <span class:list={['kind-badge', `kind-badge--${p.kind}`]}>{t[p.kind]}</span>
+            <span class="pcard__period">{p.period}</span>
           </div>
-          <div class="tag-list">{c.stack.map((s) => <span class="tag">{s}</span>)}</div>
+          <h2 class="pcard__title">
+            <a class="pcard__link" href={projectHref(lang, p)}>{p.title[lang]}</a>
+          </h2>
+          <p class="pcard__meta">{p.industry[lang]} · {p.workType[lang]}</p>
+          <p class="pcard__summary">{p.summary[lang]}</p>
+          <div class="pcard__foot">
+            <div class="tag-list">{p.stack.slice(0, 4).map((s) => <span class="tag">{s}</span>)}</div>
+            {p.repo && <a class="pcard__repo" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>}
+          </div>
         </article>
-      );
-    })}
-
-    <div class="portfolio__split">
-      <h2 class="portfolio__heading">{t.code}</h2>
-      <a class="portfolio__more" href={contact.github.url} target="_blank" rel="noopener">{t.all}</a>
-    </div>
-    <div class="work-list">
-      {repos.map((r) => (
-        <a class="work-item repo" href={r.url} target="_blank" rel="noopener">
-          <div class="work-year">{r.year}</div>
-          <div>
-            <div class="work-title repo__name">{r.name}</div>
-            <p class="work-desc">{r.desc[lang]}</p>
-            <div class="work-tags">{r.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
-          </div>
-          <div class="work-arrow">↗</div>
-        </a>
       ))}
     </div>
   </section>
@@ -93,53 +46,48 @@ const t = {
     line-height: var(--leading-tight);
     margin: 0 0 var(--space-4);
   }
-  .portfolio__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-8); }
-  .portfolio__heading {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: var(--text-2xl);
-    margin: 0 0 var(--space-5);
+  .portfolio__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-7); }
+  .portfolio__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: var(--space-4); }
+
+  .pcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
   }
-  .portfolio__split { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); margin-top: var(--space-8); }
-  .portfolio__more {
+  .pcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .pcard:focus-within { border-color: var(--accent); }
+  .pcard__top { display: flex; justify-content: space-between; align-items: center; }
+  .pcard__period { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); }
+  .pcard__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); line-height: var(--leading-snug); margin: 0; }
+  .pcard__link { color: var(--ink); text-decoration: none; }
+  .pcard__link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .pcard__link:focus-visible { outline: none; }
+  .pcard__meta {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+  .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: 0; flex: 1; }
+  .pcard__foot { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
+  .pcard__repo {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-muted);
     text-decoration: none;
   }
-  .portfolio__more:hover { color: var(--ink); }
-
-  .case { padding: var(--space-6) 0; border-top: 1px solid var(--rule); }
-  .case + .case { margin-top: var(--space-4); }
-  .case__header { margin-bottom: var(--space-5); }
-  .case__meta {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0 0 var(--space-2);
-  }
-  .case__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); margin: 0; }
-  .case__body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-6); margin: var(--space-5) 0; }
-  .case__label {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin: 0 0 var(--space-2);
-  }
-  .case__text, .case__list { font-size: var(--text-sm); line-height: 1.65; color: var(--ink-muted); margin: 0; }
-  .case__list { padding-left: 1.1em; list-style: disc; display: flex; flex-direction: column; gap: var(--space-2); }
-  .case__list li::marker { color: var(--accent); }
-
-  .repo { text-decoration: none; color: inherit; }
-  .repo__name { font-family: var(--font-mono); font-size: var(--text-base); }
-
-  @media (max-width: 760px) {
-    .case__body { grid-template-columns: 1fr; gap: var(--space-4); }
-  }
+  .pcard__repo:hover { color: var(--accent); }
 </style>
