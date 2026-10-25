@@ -6,6 +6,7 @@ export interface Project {
   slug: string;
   kind: 'proprietary' | 'oss';
   period: string;
+  end: string; // YYYY-MM-DD (or YYYY-MM), used to sort newest first
   industry: L10n<string>;
   workType: L10n<string>;
   title: L10n<string>;
@@ -18,11 +19,12 @@ export interface Project {
   results?: { value: string; label: L10n<string> }[];
 }
 
-export const projects: Project[] = [
+const allProjects: Project[] = [
   {
     slug: 'agency-workflows',
     kind: 'proprietary',
     period: '2026',
+    end: '2026-10',
     industry: { es: 'Marketing', en: 'Marketing' },
     workType: { es: 'Plataforma full-stack con IA', en: 'Full-stack AI platform' },
     title: {
@@ -57,6 +59,7 @@ export const projects: Project[] = [
     slug: 'solar-forecasting-mlops',
     kind: 'proprietary',
     period: '2025 – 2026',
+    end: '2026-01',
     industry: { es: 'Energía solar', en: 'Solar energy' },
     workType: { es: 'Orquestación y plataforma MLOps', en: 'Orchestration & MLOps platform' },
     title: {
@@ -97,6 +100,7 @@ export const projects: Project[] = [
     slug: 'optical-data-platform',
     kind: 'proprietary',
     period: '2024 – 2026',
+    end: '2026-09-23',
     industry: { es: 'Retail óptico', en: 'Optical retail' },
     workType: { es: 'Ingeniería de datos y ML', en: 'Data engineering & ML' },
     title: {
@@ -131,6 +135,7 @@ export const projects: Project[] = [
     slug: 'rental-voucher-platform',
     kind: 'proprietary',
     period: '2020 – 2022',
+    end: '2022-01',
     industry: { es: 'Políticas públicas · vivienda', en: 'Public policy · housing' },
     workType: { es: 'Consultoría de diseño y crecimiento', en: 'Design consulting & growth' },
     title: {
@@ -162,6 +167,7 @@ export const projects: Project[] = [
     slug: 'ai-disclosure',
     kind: 'oss',
     period: '2026',
+    end: '2026-09-28',
     industry: { es: 'Finanzas', en: 'Finance' },
     workType: { es: 'Investigación y NLP', en: 'Research & NLP' },
     title: {
@@ -197,6 +203,7 @@ export const projects: Project[] = [
     slug: 'sales-pipeline-model',
     kind: 'oss',
     period: '2026',
+    end: '2026-04',
     industry: { es: 'Ventas', en: 'Sales' },
     workType: { es: 'Modelamiento predictivo', en: 'Predictive modeling' },
     title: {
@@ -232,6 +239,7 @@ export const projects: Project[] = [
     slug: 'gpu-data-runtime',
     kind: 'oss',
     period: '2026',
+    end: '2026-09-02',
     industry: { es: 'Infraestructura de datos', en: 'Data infrastructure' },
     workType: { es: 'DevOps / MLOps', en: 'DevOps / MLOps' },
     title: {
@@ -267,6 +275,7 @@ export const projects: Project[] = [
     slug: 'kinect-gestures',
     kind: 'oss',
     period: '2012',
+    end: '2012-12',
     industry: { es: 'Interacción humano-computador', en: 'Human-computer interaction' },
     workType: { es: 'Machine learning de secuencias', en: 'Sequence machine learning' },
     title: {
@@ -297,3 +306,6 @@ export const projects: Project[] = [
     repo: 'https://github.com/mrbungie/kinect-gesture-serialization',
   },
 ];
+
+// Newest first, by end date; ties keep the order above.
+export const projects = [...allProjects].sort((a, b) => b.end.localeCompare(a.end));
