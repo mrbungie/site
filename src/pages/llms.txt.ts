@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ site }) => {
     `- [CV PDF (ES)](${abs(cvHref.es)})`,
     ...AUTHOR.sameAs.map((url) => `- ${url}`),
     '',
-    '## Services (consulting and implementation, Santiago and remote)',
+    '## Services (consulting and implementation: on-site in Santiago and Antofagasta, remote elsewhere)',
     ...services.map((s) => `- [${s.seoTitle.en}](${abs(`${routePath('en', 'services', s.slug)}/`)}): ${s.description.en}`),
     '',
     '## Portfolio',

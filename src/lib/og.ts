@@ -50,7 +50,7 @@ async function buildCards(): Promise<OgCard[]> {
     cards.push({ key: keyOf(routePath(lang, 'contact')), lang, kicker: tr(lang, 'Contacto', 'Contact'), title: tr(lang, 'Conversemos: un rol o un proyecto', "Let's talk: a role or a project"), photo: true });
     cards.push({ key: keyOf(routePath(lang, 'services')), lang, kicker: tr(lang, 'Servicios', 'Services'), title: tr(lang, 'Datos, IA, cloud y software a medida', 'Data, AI, cloud and custom software') });
     for (const s of services) {
-      cards.push({ key: keyOf(routePath(lang, 'services', s.slug)), lang, kicker: tr(lang, 'Servicios · Santiago, Chile', 'Services · Santiago, Chile'), title: s.seoTitle[lang] });
+      cards.push({ key: keyOf(routePath(lang, 'services', s.slug)), lang, kicker: tr(lang, 'Servicios · Santiago y Antofagasta', 'Services · Santiago and Antofagasta'), title: s.seoTitle[lang] });
     }
     for (const p of projects) {
       cards.push({ key: keyOf(routePath(lang, 'portfolio', p.slug)), lang, kicker: `${p.industry[lang]} · ${p.period}`, title: p.title[lang] });

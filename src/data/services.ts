@@ -277,6 +277,6 @@ export const serviceProcess: L10n<{ title: string; body: string }[]> = {
 };
 
 export const serviceFormats: L10n<string> = {
-  es: 'Trabajo por proyecto, como asesoría mensual o como líder interino (fractional) de datos e IA. Presencial en Santiago y remoto para el resto de Chile y el extranjero.',
-  en: 'I work per project, as a monthly advisor or as an interim (fractional) data and AI lead. On-site in Santiago and remote for the rest of Chile and abroad.',
+  es: 'Trabajo por proyecto, como asesoría mensual o como líder interino (fractional) de datos e IA. Presencial en Santiago y Antofagasta, y remoto para el resto de Chile y el extranjero.',
+  en: 'I work per project, as a monthly advisor or as an interim (fractional) data and AI lead. On-site in Santiago and Antofagasta, and remote for the rest of Chile and abroad.',
 };

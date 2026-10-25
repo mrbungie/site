@@ -47,8 +47,8 @@ export const profile = {
     } as L10n<string>,
     more: { es: 'Mi trayectoria →', en: 'My background →' } as L10n<string>,
     now: {
-      es: 'Terminé un MBA en Trieste y volví a Santiago. Tomo roles de liderazgo y proyectos de consultoría, remotos o presenciales.',
-      en: 'I just finished an MBA in Trieste and moved back to Santiago. I take leadership roles and consulting projects, remote or on-site.',
+      es: 'Terminé un MBA en Trieste y volví a Chile; hoy trabajo entre Santiago y Antofagasta. Tomo roles de liderazgo y proyectos de consultoría, remotos o presenciales.',
+      en: 'I just finished an MBA in Trieste and moved back to Chile; I now work between Santiago and Antofagasta. I take leadership roles and consulting projects, remote or on-site.',
     } as L10n<string>,
   },
 
