@@ -322,8 +322,8 @@ const allProjects: Project[] = [
       en: 'Total cost of ownership model for a cloud provider, validated with a 50-node OpenStack cloud built at the university.',
     },
     goal: {
-      es: 'Evaluar si SONDA podía ofrecer zonas cloud más baratas sobre OpenStack, para clientes con exigencias de disponibilidad menores que las de su plataforma VMware vCloud. Memoria de Ingeniería Civil Industrial en la UAI, junto a Reynaldo Araya y guiada por Jorge Villalón.',
-      en: "Assess whether SONDA could offer cheaper cloud zones on OpenStack, for clients with lower availability needs than its VMware vCloud platform. Industrial Engineering thesis at UAI, with Reynaldo Araya and advised by Jorge Villalón.",
+      es: 'Evaluar si SONDA podía ofrecer zonas cloud más baratas sobre OpenStack, para clientes con exigencias de disponibilidad menores que las de su plataforma VMware vCloud. Memoria de Ingeniería Civil Industrial en la UAI.',
+      en: "Assess whether SONDA could offer cheaper cloud zones on OpenStack, for clients with lower availability needs than its VMware vCloud platform. Industrial Engineering thesis at UAI.",
     },
     did: {
       es: [
