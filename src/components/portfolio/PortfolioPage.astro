@@ -30,6 +30,7 @@ const t = labels[lang];
           <div class="pcard__foot">
             <div class="tag-list">{p.stack.slice(0, 4).map((s) => <span class="tag">{s}</span>)}</div>
             {p.repo && <a class="pcard__repo" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>}
+            {p.paper && <a class="pcard__repo" href={p.paper} target="_blank" rel="noopener">arXiv ↗</a>}
           </div>
         </article>
       ))}

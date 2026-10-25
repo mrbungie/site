@@ -109,6 +109,27 @@ const builders: Record<string, Builder> = {
     base: tr('Dagster orquesta todo · Kubernetes · Postgres · IaC · CI/CD', 'Dagster orchestrates everything · Kubernetes · Postgres · IaC · CI/CD'),
   }),
 
+  'covid-art-color-emotion': (tr) => ({
+    label: tr('Método del paper: emociones y color en paralelo', 'Paper method: emotion and color in parallel'),
+    width: 820,
+    height: 300,
+    nodes: [
+      { id: 'cam', x: 16, y: 92, w: 150, h: 66, title: 'COVID Art Museum', sub: tr('1.537 imágenes\nde Instagram', '1,537 Instagram\nimages') },
+      { id: 'emo', x: 206, y: 24, w: 170, h: 66, title: tr('Emociones', 'Emotions'), sub: tr('CNN entrenada\ncon ArtEmis', 'CNN trained\non ArtEmis'), accent: true },
+      { id: 'col', x: 206, y: 160, w: 170, h: 66, title: 'Color', sub: tr('clustering y paleta\nde Itten → armonías', 'clustering and Itten\npalette → harmonies'), accent: true },
+      { id: 'fuse', x: 416, y: 92, w: 170, h: 66, title: tr('Fusión', 'Fusion'), sub: tr('KDE por emoción\n+ reglas apriori', 'KDE per emotion\n+ apriori rules') },
+      { id: 'res', x: 626, y: 84, w: 178, h: 82, title: tr('Hallazgos', 'Findings'), sub: tr('colores cálidos,\narmonías análogas,\nemociones positivas', 'warm colors,\nanalogous harmonies,\npositive emotions') },
+    ],
+    edges: [
+      { from: 'cam', to: 'emo' },
+      { from: 'cam', to: 'col' },
+      { from: 'emo', to: 'fuse' },
+      { from: 'col', to: 'fuse' },
+      { from: 'fuse', to: 'res' },
+    ],
+    base: 'arXiv:2203.13770 · cs.CV · 2022',
+  }),
+
   'rental-voucher-platform': (tr) => ({
     label: tr('Arquitectura de Aprendo y Arriendo', 'Aprendo y Arriendo architecture'),
     width: 820,

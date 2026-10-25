@@ -30,6 +30,8 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
       </dl>
       {p.repo
         ? <a class="project__repo" href={p.repo} target="_blank" rel="noopener">{t.repo}</a>
+        : p.paper
+          ? <a class="project__repo" href={p.paper} target="_blank" rel="noopener">{t.arxiv}</a>
         : p.site
           ? <a class="project__repo" href={p.site} target="_blank" rel="noopener">{t.site}</a>
           : <p class="project__note">{t.confidential}</p>}

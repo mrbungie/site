@@ -4,7 +4,7 @@ import type { L10n } from './profile';
 // Proprietary work is anonymized: architecture and my role only, no client names or data.
 export interface Project {
   slug: string;
-  kind: 'proprietary' | 'oss';
+  kind: 'proprietary' | 'oss' | 'paper';
   period: string;
   end: string; // YYYY-MM-DD (or YYYY-MM), used to sort newest first
   industry: L10n<string>;
@@ -16,6 +16,7 @@ export interface Project {
   stack: string[];
   repo?: string;
   site?: string; // public page about the project (non-OSS)
+  paper?: string; // arXiv or publisher link
   results?: { value: string; label: L10n<string> }[];
 }
 
@@ -130,6 +131,40 @@ const allProjects: Project[] = [
       ],
     },
     stack: ['Dagster', 'dbt', 'Python', 'LLMs', 'MLflow', 'Kubernetes'],
+  },
+  {
+    slug: 'covid-art-color-emotion',
+    kind: 'paper',
+    period: '2021 – 2022',
+    end: '2022-03',
+    industry: { es: 'Arte y cultura · investigación', en: 'Art and culture · research' },
+    workType: { es: 'Paper de visión por computador', en: 'Computer vision paper' },
+    title: {
+      es: 'Color y emoción en el arte de la pandemia',
+      en: 'Color and emotion in pandemic art',
+    },
+    summary: {
+      es: 'Cómo se usó el color y qué emociones transmitió el arte hecho durante el COVID-19, con deep learning y clustering sobre 1.537 imágenes.',
+      en: 'How color was used and which emotions COVID-19 art conveyed, with deep learning and clustering over 1,537 images.',
+    },
+    goal: {
+      es: 'Entender el uso del color y su relación con las emociones en las imágenes del COVID Art Museum de Instagram. Resultado: predominan los colores cálidos, las armonías análogas por sobre las complementarias y las emociones positivas.',
+      en: 'Understand the use of color and its relation to emotion in the COVID Art Museum images on Instagram. Finding: warm colors, analogous over complementary harmonies, and positive emotions prevail.',
+    },
+    did: {
+      es: [
+        'Soy coautor del paper, publicado en arXiv (cs.CV) en marzo de 2022.',
+        'El método combina dos ramas en paralelo: clasificación de emociones con una red convolucional entrenada sobre ArtEmis, y extracción de colores y armonías con clustering sobre la paleta de Itten.',
+        'Luego se fusionan con densidades (KDE) por emoción y reglas de asociación (apriori).',
+      ],
+      en: [
+        "I'm a co-author of the paper, published on arXiv (cs.CV) in March 2022.",
+        'The method runs two branches in parallel: emotion classification with a CNN trained on ArtEmis, and color and harmony extraction with clustering over the Itten palette.',
+        'Both are then fused with per-emotion densities (KDE) and association rules (apriori).',
+      ],
+    },
+    stack: ['Python', 'CNN', 'ArtEmis', 'K-means', 'Apriori'],
+    paper: 'https://arxiv.org/abs/2203.13770',
   },
   {
     slug: 'rental-voucher-platform',
