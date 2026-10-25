@@ -10,11 +10,13 @@ const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY;
 
 const t = {
   es: {
+    reason: 'Me escribes por', reasons: { role: 'Un rol en tu equipo', project: 'Un proyecto o consultoría', other: 'Otra cosa' },
     name: 'Nombre', email: 'Tu correo', message: 'Mensaje', send: 'Enviar', sending: 'Enviando…',
     ok: 'Listo, te respondo pronto.', error: `No se pudo enviar. Escríbeme directo a ${contact.email}.`,
     subject: 'Nuevo mensaje desde govieworks.com',
   },
   en: {
+    reason: "You're reaching out about", reasons: { role: 'A role on your team', project: 'A project or consulting', other: 'Something else' },
     name: 'Name', email: 'Your email', message: 'Message', send: 'Send', sending: 'Sending…',
     ok: "Sent. I'll get back to you soon.", error: `Couldn't send it. Email me directly at ${contact.email}.`,
     subject: 'New message from govieworks.com',
@@ -27,6 +29,16 @@ const t = {
     <input type="hidden" name="access_key" value={accessKey} />
     <input type="hidden" name="subject" value={t.subject} />
     <input type="checkbox" name="botcheck" class="contact-form__trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <fieldset class="contact-form__reasons">
+      <legend>{t.reason}</legend>
+      {Object.entries(t.reasons).map(([value, label], i) => (
+        <label class="contact-form__reason">
+          <input type="radio" name="motivo" value={label} data-reason={value} checked={i === 0} />
+          <span>{label}</span>
+        </label>
+      ))}
+    </fieldset>
 
     <div class="contact-form__row">
       <label class="contact-form__field">
@@ -55,9 +67,18 @@ const t = {
     const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
     const status = form.querySelector<HTMLElement>('.contact-form__status')!;
     const label = button.textContent;
+    const subject = form.querySelector<HTMLInputElement>('input[name="subject"]')!;
+    const baseSubject = subject.value;
+
+    // Preselect the reason from ?motivo=project (links from portfolio pages)
+    const wanted = new URLSearchParams(location.search).get('motivo');
+    const preset = wanted && form.querySelector<HTMLInputElement>(`input[data-reason="${wanted}"]`);
+    if (preset) preset.checked = true;
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      const reason = form.querySelector<HTMLInputElement>('input[name="motivo"]:checked');
+      subject.value = reason ? `${baseSubject} · ${reason.value}` : baseSubject;
       button.disabled = true;
       button.textContent = form.dataset.sending ?? '';
       status.textContent = '';
@@ -75,7 +96,10 @@ const t = {
         status.textContent = form.dataset.ok ?? '';
         status.dataset.state = 'ok';
         // GA4 key event (no-op when analytics is not configured)
-        (window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'generate_lead', { method: 'contact_form' });
+        (window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'generate_lead', {
+          method: 'contact_form',
+          lead_type: form.querySelector<HTMLInputElement>('input[name="motivo"]:checked')?.dataset.reason,
+        });
       } catch {
         status.textContent = form.dataset.error ?? '';
         status.dataset.state = 'error';
@@ -89,6 +113,29 @@ const t = {
 
 <style>
   .contact-form { display: flex; flex-direction: column; gap: 16px; max-width: 640px; margin-bottom: 48px; }
+  .contact-form__reasons { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .contact-form__reasons legend {
+    width: 100%;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .contact-form__reason { cursor: pointer; }
+  .contact-form__reason input { position: absolute; opacity: 0; pointer-events: none; }
+  .contact-form__reason span {
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: var(--ink-muted);
+    border: 1px solid var(--rule);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .contact-form__reason:hover span { border-color: var(--ink); color: var(--ink); }
+  .contact-form__reason input:checked + span { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .contact-form__reason input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
   .contact-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .contact-form__field { display: flex; flex-direction: column; gap: 6px; }
   .contact-form__field span {

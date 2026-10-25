@@ -97,6 +97,14 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
       <h2 class="project__label">{t.stack}</h2>
       <div class="tag-list">{p.stack.map((s) => <span class="tag">{s}</span>)}</div>
     </section>
+
+    <aside class="project__cta">
+      <div>
+        <p class="project__cta-title">{t.ctaTitle}</p>
+        <p class="project__cta-body">{t.ctaBody}</p>
+      </div>
+      <a class="project__repo" href={`${lang === 'es' ? '/' : `/${lang}/`}?motivo=project#contact`}>{t.ctaLink}</a>
+    </aside>
   </article>
 </BaseLayout>
 
@@ -156,6 +164,19 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
   .project__results div { padding: var(--space-4); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-md); }
   .project__results dt { font-family: var(--font-serif); font-size: var(--text-2xl); line-height: 1; color: var(--accent); margin-bottom: var(--space-2); }
   .project__results dd { margin: 0; font-size: var(--text-sm); line-height: 1.5; color: var(--ink-muted); }
+  .project__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding: var(--space-5);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--accent-light);
+  }
+  .project__cta-title { font-family: var(--font-serif); font-size: var(--text-xl); color: var(--ink); margin: 0 0 var(--space-1); }
+  .project__cta-body { font-size: var(--text-sm); color: var(--ink-muted); margin: 0; }
   @media (max-width: 760px) {
     .project__body { grid-template-columns: 1fr; }
   }

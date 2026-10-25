@@ -25,6 +25,9 @@ export const labels = {
     arxiv: 'Ver en arXiv ↗',
     back: '← Portafolio',
     confidential: 'Proyecto confidencial: el código y los datos no son públicos.',
+    ctaTitle: '¿Tienes un desafío parecido?',
+    ctaBody: 'Cuéntame en qué estás y vemos si te puedo ayudar.',
+    ctaLink: 'Conversemos →',
   },
   en: {
     title: 'Portfolio',
@@ -48,6 +51,9 @@ export const labels = {
     arxiv: 'View on arXiv ↗',
     back: '← Portfolio',
     confidential: 'Confidential project: code and data are not public.',
+    ctaTitle: 'Working on something similar?',
+    ctaBody: "Tell me what you're working on and let's see if I can help.",
+    ctaLink: "Let's talk →",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

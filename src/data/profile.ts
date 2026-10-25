@@ -144,8 +144,8 @@ export const profile = {
   contact: {
     headline: { es: 'Conversemos.', en: 'Get in touch.' } as L10n<string>,
     body: {
-      es: 'Si buscas a alguien para liderar datos o IA, una asesoría o un curso, mándame un mensaje.',
-      en: "If you're looking for someone to lead data or AI, for advice, or for a course, send me a message.",
+      es: 'Ya sea para sumarme a tu equipo o para conversar sobre un proyecto de datos o IA, escríbeme y te respondo.',
+      en: "Whether you want me on your team or want to talk about a data or AI project, write to me and I'll get back to you.",
     } as L10n<string>,
   },
 };

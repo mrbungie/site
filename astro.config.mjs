@@ -10,9 +10,13 @@ import rehypeMathJaxSvg from 'rehype-mathjax/svg';
 const SITE = 'https://www.govieworks.com';
 
 // Spanish ↔ English section slugs (mirrors src/i18n/routes.ts).
+/** @type {Record<string, string>} */
 const SECTIONS = { acerca: 'about', portafolio: 'portfolio', conceptos: 'concepts', blog: 'blog' };
 
-/** Equivalent es/en paths for a sitemap URL, or null when only one language exists. */
+/**
+ * Equivalent es/en paths for a sitemap URL, or null when only one language exists.
+ * @param {string} path
+ */
 function localePair(path) {
   const parts = path.split('/').filter(Boolean);
   const isEn = parts[0] === 'en';
