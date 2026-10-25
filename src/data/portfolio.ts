@@ -14,6 +14,7 @@ export interface Project {
   did: L10n<string[]>;
   stack: string[];
   repo?: string;
+  site?: string; // public page about the project (non-OSS)
   results?: { value: string; label: L10n<string> }[];
 }
 
@@ -125,6 +126,37 @@ export const projects: Project[] = [
       ],
     },
     stack: ['Dagster', 'dbt', 'Python', 'LLMs', 'MLflow', 'Kubernetes'],
+  },
+  {
+    slug: 'rental-voucher-platform',
+    kind: 'proprietary',
+    period: '2020 – 2022',
+    industry: { es: 'Políticas públicas · vivienda', en: 'Public policy · housing' },
+    workType: { es: 'Consultoría de diseño y crecimiento', en: 'Design consulting & growth' },
+    title: {
+      es: 'Aprendo y Arriendo: consejería en línea para el Subsidio de Arriendo',
+      en: 'Aprendo y Arriendo: online counseling for rental vouchers',
+    },
+    summary: {
+      es: 'Plataforma web de un estudio experimental de la Universidad de Chile para apoyar a familias con subsidio de arriendo.',
+      en: 'Web platform for a University of Chile field experiment supporting rental voucher families.',
+    },
+    goal: {
+      es: 'Ayudar a las familias beneficiarias del Subsidio de Arriendo del Minvu a usar su subsidio, con información y acompañamiento en línea durante la búsqueda de vivienda. La investigación es de la académica Javiera Selman (Universidad de Chile) y en 2023 se adjudicó el Fondo de Evaluación de Impacto de Dipres.',
+      en: "Help families with Chile's Minvu rental voucher actually use it, with online information and support during the housing search. The research is led by Professor Javiera Selman (University of Chile) and won Dipres' 2023 Impact Evaluation Fund.",
+    },
+    did: {
+      es: [
+        'Hice consultoría sobre los diseños iniciales de la plataforma: arquitectura, flujo de datos y analítica.',
+        'Trabajé en hacer crecer la plataforma durante su primera etapa.',
+      ],
+      en: [
+        "Consulted on the platform's initial designs: architecture, data flow and analytics.",
+        'Worked on growing the platform during its first stage.',
+      ],
+    },
+    stack: ['Angular', 'Rails', 'PostgreSQL', 'GCP', 'Cloudflare', 'Rudderstack', 'dbt'],
+    site: 'https://www.javieraselman.com/onlinecounseling',
   },
   {
     slug: 'ai-disclosure',

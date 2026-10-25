@@ -27,7 +27,9 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
       </dl>
       {p.repo
         ? <a class="project__repo" href={p.repo} target="_blank" rel="noopener">{t.repo}</a>
-        : <p class="project__note">{t.confidential}</p>}
+        : p.site
+          ? <a class="project__repo" href={p.site} target="_blank" rel="noopener">{t.site}</a>
+          : <p class="project__note">{t.confidential}</p>}
     </header>
 
     <section class="project__section">

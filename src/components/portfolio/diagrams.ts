@@ -101,6 +101,33 @@ const builders: Record<string, Builder> = {
     base: tr('Dagster orquesta todo · Kubernetes · Postgres · IaC · CI/CD', 'Dagster orchestrates everything · Kubernetes · Postgres · IaC · CI/CD'),
   }),
 
+  'rental-voucher-platform': (tr) => ({
+    label: tr('Arquitectura de Aprendo y Arriendo', 'Aprendo y Arriendo architecture'),
+    width: 820,
+    height: 340,
+    nodes: [
+      { id: 'fe', x: 16, y: 72, w: 140, title: 'Frontend', sub: tr('Angular · celular\no desktop', 'Angular · mobile\nor desktop'), h: 66 },
+      { id: 'cf', x: 188, y: 32, w: 120, title: 'Cloudflare', sub: tr('proxy y caché', 'proxy and cache') },
+      { id: 'rud', x: 188, y: 160, w: 120, h: 66, title: 'Rudderstack', sub: tr('eventos de\nanalítica', 'analytics\nevents') },
+      { id: 'bucket', x: 340, y: 16, w: 150, title: 'Cloud Storage', sub: tr('app de frontend', 'frontend app') },
+      { id: 'api', x: 340, y: 110, w: 150, title: 'Backend Rails', sub: tr('lógica de la app', 'app logic'), accent: true },
+      { id: 'pg', x: 522, y: 110, w: 130, title: 'PostgreSQL', sub: tr('datos de la app', 'app data') },
+      { id: 'dbt', x: 522, y: 210, w: 130, title: 'dbt', sub: tr('ordena para analítica', 'models for analytics') },
+      { id: 'ds', x: 684, y: 210, w: 120, title: 'Data Studio', sub: 'dashboards' },
+    ],
+    edges: [
+      { from: 'fe', to: 'cf' },
+      { from: 'cf', to: 'bucket' },
+      { from: 'cf', to: 'api' },
+      { from: 'fe', to: 'rud' },
+      { from: 'rud', to: 'api' },
+      { from: 'api', to: 'pg' },
+      { from: 'pg', to: 'dbt' },
+      { from: 'dbt', to: 'ds' },
+    ],
+    base: tr('Google Cloud Platform · Rudderstack regula el ritmo de eventos para no saturar el backend', 'Google Cloud Platform · Rudderstack throttles events so the backend is not flooded'),
+  }),
+
   'ai-disclosure': (tr) => ({
     label: tr('Pipeline de análisis de divulgación de IA', 'AI disclosure analysis pipeline'),
     width: 820,
