@@ -46,8 +46,8 @@ export const profile = {
       en: "I was Head of Generative AI at Bci and Head of Analytics & Data Science at MACH, and I built Tenpo's data team from scratch. Before that I spent almost six years as a data scientist at Bci. I've taught machine learning since 2016, and this site hosts interactive versions of those classes.",
     } as L10n<string>,
     now: {
-      es: 'Terminé un MBA en Trieste y volví a Santiago. Disponible para roles en Chile, remotos o presenciales.',
-      en: 'I just finished an MBA in Trieste and moved back to Santiago. Open to roles in Chile, remote or on-site.',
+      es: 'Terminé un MBA en Trieste y volví a Santiago. Tomo roles de liderazgo y proyectos de consultoría, remotos o presenciales.',
+      en: 'I just finished an MBA in Trieste and moved back to Santiago. I take leadership roles and consulting projects, remote or on-site.',
     } as L10n<string>,
   },
 
@@ -160,6 +160,7 @@ export const copy = {
   skills: { es: 'Habilidades técnicas', en: 'Technical skills' },
   contact: { es: 'Contacto', en: 'Contact' },
   viewAll: { es: 'Ver todos →', en: 'All posts →' },
+  browseServices: { es: 'Ver servicios →', en: 'All services →' },
   downloadCv: { es: 'CV (PDF)', en: 'Résumé (PDF)' },
   downloadCvFull: { es: 'Descargar CV completo ↓', en: 'Download full résumé ↓' },
   emailMe: { es: 'Escríbeme', en: 'Email me' },

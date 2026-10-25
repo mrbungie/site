@@ -109,6 +109,28 @@ const builders: Record<string, Builder> = {
     base: tr('Dagster orquesta todo · Kubernetes · Postgres · IaC · CI/CD', 'Dagster orchestrates everything · Kubernetes · Postgres · IaC · CI/CD'),
   }),
 
+  'mach-nba-lighthouse': (tr) => ({
+    label: tr('Arquitectura de Faro', 'NBA Lighthouse architecture'),
+    width: 820,
+    height: 290,
+    nodes: [
+      { id: 'data', x: 16, y: 82, w: 140, h: 66, title: tr('Datos de usuarios', 'User data'), sub: tr('comportamiento y\ncampañas', 'behavior and\ncampaigns') },
+      { id: 'fw', x: 188, y: 78, w: 170, h: 74, title: 'Faro (NBA)', sub: tr('framework Spark\npara crear modelos', 'Spark framework\nfor building models'), accent: true },
+      { id: 'mon', x: 400, y: 16, w: 170, h: 66, title: tr('Monitoreo', 'Monitoring'), sub: tr('predicción con\n2 meses de desfase', 'prediction with\na 2-month lag') },
+      { id: 'gap', x: 612, y: 16, w: 192, h: 66, title: 'Gap finding', sub: tr('estrategia de growth\nvs. lo realizado', 'growth strategy\nvs. what happened'), accent: true },
+      { id: 'pred', x: 400, y: 150, w: 170, h: 66, title: tr('Predicción', 'Prediction'), sub: tr('próximo mes', 'next month') },
+      { id: 'tgt', x: 612, y: 150, w: 192, h: 66, title: 'Targeting', sub: tr('aplicar tácticas\nnuevas', 'apply new\ntactics'), accent: true },
+    ],
+    edges: [
+      { from: 'data', to: 'fw' },
+      { from: 'fw', to: 'mon' },
+      { from: 'fw', to: 'pred' },
+      { from: 'mon', to: 'gap' },
+      { from: 'pred', to: 'tgt' },
+    ],
+    base: tr('MACH · Spark sobre AWS · un mismo framework para monitorear y predecir', 'MACH · Spark on AWS · one framework to monitor and predict'),
+  }),
+
   'covid-art-color-emotion': (tr) => ({
     label: tr('Método del paper: emociones y color en paralelo', 'Paper method: emotion and color in parallel'),
     width: 820,

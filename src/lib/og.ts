@@ -8,6 +8,7 @@ import { Resvg } from '@resvg/resvg-js';
 import { locales, type Locale } from '../i18n/ui';
 import { routePath } from '../i18n/routes';
 import { projects } from '../data/portfolio';
+import { services } from '../data/services';
 import { profile } from '../data/profile';
 import { getConcepts, conceptHref } from '../components/concept/concepts';
 import { getPosts } from '../utils/blog';
@@ -46,6 +47,10 @@ async function buildCards(): Promise<OgCard[]> {
       { key: keyOf(routePath(lang, 'concepts')), lang, kicker: tr(lang, 'Conceptos de ML', 'ML Concepts'), title: tr(lang, 'Machine learning explicado con visualizaciones interactivas', 'Machine learning explained with interactive visuals') },
       { key: keyOf(routePath(lang, 'blog')), lang, kicker: 'Blog', title: tr(lang, 'Notas sobre datos, IA y estadística', 'Notes on data, AI and statistics') },
     );
+    cards.push({ key: keyOf(routePath(lang, 'services')), lang, kicker: tr(lang, 'Servicios', 'Services'), title: tr(lang, 'Datos, IA, cloud y software a medida', 'Data, AI, cloud and custom software') });
+    for (const s of services) {
+      cards.push({ key: keyOf(routePath(lang, 'services', s.slug)), lang, kicker: tr(lang, 'Servicios · Santiago, Chile', 'Services · Santiago, Chile'), title: s.seoTitle[lang] });
+    }
     for (const p of projects) {
       cards.push({ key: keyOf(routePath(lang, 'portfolio', p.slug)), lang, kicker: `${p.industry[lang]} · ${p.period}`, title: p.title[lang] });
     }

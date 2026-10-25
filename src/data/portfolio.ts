@@ -137,6 +137,39 @@ const allProjects: Project[] = [
     stack: ['Dagster', 'dbt', 'Python', 'LLMs', 'MLflow', 'Kubernetes'],
   },
   {
+    slug: 'mach-nba-lighthouse',
+    kind: 'proprietary',
+    period: '2022 – 2023',
+    end: '2023-11',
+    industry: { es: 'Fintech', en: 'Fintech' },
+    workType: { es: 'Framework de modelos para growth', en: 'Model framework for growth' },
+    title: {
+      es: 'Faro: Next Best Action en MACH',
+      en: 'NBA Lighthouse: Next Best Action at MACH',
+    },
+    summary: {
+      es: 'Framework sobre Spark para crear modelos que monitorean la estrategia de growth y predicen el mes siguiente para targeting.',
+      en: 'Spark framework for building models that monitor the growth strategy and predict next month for targeting.',
+    },
+    goal: {
+      es: 'Saber si las tácticas de growth estaban funcionando como se esperaba y decidir a quién aplicarle la siguiente, con modelos hechos de forma estándar y no uno a uno.',
+      en: 'Know whether growth tactics were working as expected and decide who to target with the next one, with models built in a standard way instead of one by one.',
+    },
+    did: {
+      es: [
+        'Diseñé Faro (NBA Lighthouse), un framework sobre Spark para crear modelos de Next Best Action con la misma estructura.',
+        'Modo monitoreo: modelos que predicen con dos meses de desfase, para comparar lo que la estrategia de growth esperaba con lo que realmente pasó y encontrar brechas.',
+        'Modo predicción: modelos del mes siguiente para hacer targeting y aplicar tácticas nuevas.',
+      ],
+      en: [
+        'Designed Faro (NBA Lighthouse), a Spark framework for building Next Best Action models with the same structure.',
+        'Monitoring mode: models that predict with a two-month lag, to compare what the growth strategy expected with what actually happened and find gaps.',
+        'Prediction mode: next-month models for targeting and for applying new tactics.',
+      ],
+    },
+    stack: ['Spark', 'Python', 'AWS', 'Next Best Action'],
+  },
+  {
     slug: 'covid-art-color-emotion',
     kind: 'paper',
     period: '2021 – 2022',

@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { services, serviceProcess, serviceFormats } from '../../data/services';
+import { serviceLabels, serviceHref, contactHref } from './labels';
+import { breadcrumbs, personRef } from '../../lib/schema';
+import { profile } from '../../data/profile';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const t = serviceLabels[lang];
+const site = Astro.site!;
+const schema = [
+  {
+    '@type': 'ItemList',
+    name: t.indexTitle,
+    itemListElement: services.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: new URL(serviceHref(lang, s.slug), site).href,
+      name: s.name[lang],
+    })),
+  },
+  breadcrumbs(site, [
+    { name: profile.name, path: lang === 'es' ? '/' : `/${lang}/` },
+    { name: t.title, path: Astro.url.pathname },
+  ]),
+];
+---
+
+<BaseLayout title={t.indexTitle} description={t.indexDesc} lang={lang} schema={schema}>
+  <section class="services">
+    <div class="section-label">{t.title}</div>
+    <h1 class="services__title">{t.indexTitle}</h1>
+    <p class="services__intro">{t.indexIntro}</p>
+
+    <div class="services__grid">
+      {services.map((s) => (
+        <article class="scard">
+          <h2 class="scard__title"><a class="scard__link" href={serviceHref(lang, s.slug)}>{s.name[lang]}</a></h2>
+          <p class="scard__body">{s.description[lang]}</p>
+          <span class="scard__more" aria-hidden="true">{t.more}</span>
+        </article>
+      ))}
+    </div>
+
+    <h2 class="services__label">{t.process}</h2>
+    <ol class="process">
+      {serviceProcess[lang].map((step, i) => (
+        <li class="process__step">
+          <span class="process__num">0{i + 1}</span>
+          <span class="process__title">{step.title}</span>
+          <span class="process__body">{step.body}</span>
+        </li>
+      ))}
+    </ol>
+    <p class="services__formats">{serviceFormats[lang]}</p>
+
+    <aside class="services__cta">
+      <div>
+        <p class="services__cta-title">{t.ctaTitle}</p>
+        <p class="services__cta-body">{t.ctaBody}</p>
+      </div>
+      <a class="services__cta-link" href={contactHref(lang)}>{t.ctaLink}</a>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .services { padding: clamp(56px, 9vw, 100px) 0 120px; }
+  .services__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--text-display);
+    line-height: var(--leading-tight);
+    margin: 0 0 var(--space-4);
+    text-wrap: balance;
+  }
+  .services__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-7); }
+  .services__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: var(--space-4); margin-bottom: var(--space-8); }
+
+  .scard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
+  }
+  .scard:hover, .scard:focus-within { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .scard__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); margin: 0; }
+  .scard__link { color: var(--ink); text-decoration: none; }
+  .scard__link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .scard__link:focus-visible { outline: none; }
+  .scard__body { flex: 1; margin: 0; font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); }
+  .scard__more { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+  .services__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 var(--space-4);
+  }
+  .process { list-style: none; margin: 0 0 var(--space-5); padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); }
+  .process__step { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-3); border-top: 2px solid var(--accent); }
+  .process__num { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--accent); }
+  .process__title { font-family: var(--font-serif); font-size: var(--text-lg); color: var(--ink); }
+  .process__body { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); }
+  .services__formats { max-width: 62ch; margin: 0 0 var(--space-7); font-size: var(--text-sm); color: var(--ink-muted); }
+
+  .services__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding: var(--space-5);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--accent-light);
+  }
+  .services__cta-title { font-family: var(--font-serif); font-size: var(--text-xl); color: var(--ink); margin: 0 0 var(--space-1); }
+  .services__cta-body { font-size: var(--text-sm); color: var(--ink-muted); margin: 0; }
+  .services__cta-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--ink);
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: background var(--dur-fast);
+  }
+  .services__cta-link:hover { background: var(--accent); }
+</style>

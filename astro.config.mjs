@@ -11,7 +11,7 @@ const SITE = 'https://www.govieworks.com';
 
 // Spanish ↔ English section slugs (mirrors src/i18n/routes.ts).
 /** @type {Record<string, string>} */
-const SECTIONS = { acerca: 'about', portafolio: 'portfolio', conceptos: 'concepts', blog: 'blog' };
+const SECTIONS = { acerca: 'about', servicios: 'services', portafolio: 'portfolio', conceptos: 'concepts', blog: 'blog' };
 
 /**
  * Equivalent es/en paths for a sitemap URL, or null when only one language exists.

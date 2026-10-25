@@ -5,12 +5,14 @@ export const routeSegments: Record<Locale, Record<string, string>> = {
     concepts: 'conceptos',
     blog: 'blog',
     about: 'acerca',
+    services: 'servicios',
     portfolio: 'portafolio',
   },
   en: {
     concepts: 'concepts',
     blog: 'blog',
     about: 'about',
+    services: 'services',
     portfolio: 'portfolio',
   },
 };

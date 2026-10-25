@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { AUTHOR } from '../consts';
 import { profile, cvHref } from '../data/profile';
 import { projects } from '../data/portfolio';
+import { services } from '../data/services';
 import { getConcepts, conceptHref } from '../components/concept/concepts';
 import { getPosts } from '../utils/blog';
 import { routePath } from '../i18n/routes';
@@ -28,6 +29,9 @@ export const GET: APIRoute = async ({ site }) => {
     `- [Résumé PDF (EN)](${abs(cvHref.en)})`,
     `- [CV PDF (ES)](${abs(cvHref.es)})`,
     ...AUTHOR.sameAs.map((url) => `- ${url}`),
+    '',
+    '## Services (consulting and implementation, Santiago and remote)',
+    ...services.map((s) => `- [${s.seoTitle.en}](${abs(`${routePath('en', 'services', s.slug)}/`)}): ${s.description.en}`),
     '',
     '## Portfolio',
     ...projects.map(

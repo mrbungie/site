@@ -1,0 +1,187 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PortfolioCard from '../portfolio/PortfolioCard.astro';
+import type { Locale } from '../../i18n/ui';
+import { routePath } from '../../i18n/routes';
+import type { Service } from '../../data/services';
+import { serviceProcess, serviceFormats } from '../../data/services';
+import { projects } from '../../data/portfolio';
+import { profile } from '../../data/profile';
+import { serviceLabels, serviceHref, contactHref } from './labels';
+import { breadcrumbs, personRef } from '../../lib/schema';
+
+interface Props { service: Service; lang: Locale }
+const { service: s, lang } = Astro.props;
+const t = serviceLabels[lang];
+const site = Astro.site!;
+const evidence = s.projects.map((slug) => projects.find((p) => p.slug === slug)).filter((p) => p !== undefined);
+const alternates = { es: serviceHref('es', s.slug), en: serviceHref('en', s.slug) };
+
+const schema = [
+  {
+    '@type': 'Service',
+    name: s.seoTitle[lang],
+    serviceType: s.name[lang],
+    description: s.description[lang],
+    url: new URL(serviceHref(lang, s.slug), site).href,
+    provider: personRef(site),
+    areaServed: [
+      { '@type': 'City', name: 'Santiago' },
+      { '@type': 'Country', name: 'Chile' },
+    ],
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: s.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q[lang],
+      acceptedAnswer: { '@type': 'Answer', text: f.a[lang] },
+    })),
+  },
+  breadcrumbs(site, [
+    { name: profile.name, path: lang === 'es' ? '/' : `/${lang}/` },
+    { name: t.title, path: `${routePath(lang, 'services')}/` },
+    { name: s.name[lang], path: serviceHref(lang, s.slug) },
+  ]),
+];
+---
+
+<BaseLayout title={s.seoTitle[lang]} description={s.description[lang]} lang={lang} alternates={alternates} schema={schema}>
+  <article class="service">
+    <a class="service__back" href={`${routePath(lang, 'services')}/`}>{t.back}</a>
+    <p class="service__kicker">{s.name[lang]}</p>
+    <h1 class="service__title">{s.seoTitle[lang]}</h1>
+    <p class="service__intro">{s.intro[lang]}</p>
+
+    <div class="service__cols">
+      <section>
+        <h2 class="service__label">{t.problems}</h2>
+        <ul class="service__list">{s.problems[lang].map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section>
+        <h2 class="service__label">{t.offer}</h2>
+        <ul class="service__list service__list--offer">{s.offer[lang].map((item) => <li>{item}</li>)}</ul>
+      </section>
+    </div>
+
+    <section class="service__section">
+      <h2 class="service__label">{t.evidence}</h2>
+      <div class="service__evidence">
+        {evidence.map((p) => <PortfolioCard project={p} lang={lang} compact />)}
+      </div>
+    </section>
+
+    <section class="service__section">
+      <h2 class="service__label">{t.process}</h2>
+      <ol class="service__process">
+        {serviceProcess[lang].map((step, i) => (
+          <li><span class="service__num">0{i + 1}</span> <strong>{step.title}.</strong> {step.body}</li>
+        ))}
+      </ol>
+      <p class="service__formats">{serviceFormats[lang]}</p>
+    </section>
+
+    <section class="service__section">
+      <h2 class="service__label">{t.faq}</h2>
+      <dl class="service__faq">
+        {s.faqs.map((f) => (
+          <div>
+            <dt>{f.q[lang]}</dt>
+            <dd>{f.a[lang]}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <aside class="service__cta">
+      <div>
+        <p class="service__cta-title">{t.ctaTitle}</p>
+        <p class="service__cta-body">{t.ctaBody}</p>
+      </div>
+      <a class="service__cta-link" href={contactHref(lang)}>{t.ctaLink}</a>
+    </aside>
+  </article>
+</BaseLayout>
+
+<style>
+  .service { padding: clamp(40px, 7vw, 80px) 0 120px; max-width: 920px; }
+  .service__back {
+    display: inline-block;
+    margin-bottom: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+  .service__back:hover { color: var(--accent); }
+  .service__kicker {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-3);
+  }
+  .service__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    margin: 0 0 var(--space-4);
+    text-wrap: balance;
+  }
+  .service__intro { max-width: 64ch; font-size: var(--text-lg); line-height: var(--leading-body); color: var(--ink-muted); margin: 0 0 var(--space-7); }
+  .service__cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); margin-bottom: var(--space-7); }
+  .service__section { margin-bottom: var(--space-7); }
+  .service__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 var(--space-3);
+  }
+  .service__list { margin: 0; padding-left: 1.1em; list-style: disc; display: flex; flex-direction: column; gap: var(--space-2); color: var(--ink-muted); line-height: 1.6; }
+  .service__list li::marker { color: var(--ink-faint); }
+  .service__list--offer { color: var(--ink); }
+  .service__list--offer li::marker { color: var(--accent); }
+  .service__evidence { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: var(--space-3); }
+  .service__process { margin: 0 0 var(--space-4); padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); color: var(--ink-muted); line-height: 1.6; }
+  .service__process strong { color: var(--ink); font-weight: 600; }
+  .service__num { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--accent); }
+  .service__formats { margin: 0; font-size: var(--text-sm); color: var(--ink-muted); }
+  .service__faq { margin: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+  .service__faq dt { font-weight: 600; color: var(--ink); margin-bottom: var(--space-1); }
+  .service__faq dd { margin: 0; color: var(--ink-muted); line-height: 1.6; }
+  .service__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding: var(--space-5);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    background: var(--accent-light);
+  }
+  .service__cta-title { font-family: var(--font-serif); font-size: var(--text-xl); color: var(--ink); margin: 0 0 var(--space-1); }
+  .service__cta-body { font-size: var(--text-sm); color: var(--ink-muted); margin: 0; }
+  .service__cta-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--ink);
+    padding: 12px 18px;
+    text-decoration: none;
+    transition: background var(--dur-fast);
+  }
+  .service__cta-link:hover { background: var(--accent); }
+  @media (max-width: 760px) {
+    .service__cols { grid-template-columns: 1fr; }
+  }
+</style>

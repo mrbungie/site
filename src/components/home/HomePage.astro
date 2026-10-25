@@ -7,6 +7,8 @@ import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
 import { profile, copy, contact } from '../../data/profile';
+import { services } from '../../data/services';
+import { serviceHref } from '../services/labels';
 import { profilePage } from '../../lib/schema';
 
 interface Props { lang: Locale }
@@ -22,6 +24,25 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
 <BaseLayout title={t('site.title')} description={t('site.description')} lang={lang} schema={[profilePage(Astro.site!, Astro.url.pathname)]}>
 
   <Hero lang={lang} />
+
+  <section id="services" class="home-section">
+    <div class="section-label section-label--split">
+      <span>{t('nav.services')}</span>
+      <a class="section-more" href={`${routePath(lang, 'services')}/`}>{copy.browseServices[lang]}</a>
+    </div>
+    <div class="concept-list">
+      {services.map((s) => (
+        <a href={serviceHref(lang, s.slug)} class="concept-item">
+          <div class="concept-area">{s.name[lang]}</div>
+          <div>
+            <div class="concept-title">{s.seoTitle[lang]}</div>
+            <p class="concept-summary">{s.description[lang]}</p>
+          </div>
+          <div class="work-arrow">↗</div>
+        </a>
+      ))}
+    </div>
+  </section>
 
   {allPosts.length > 0 && (
     <section id="writing" class="home-section">
