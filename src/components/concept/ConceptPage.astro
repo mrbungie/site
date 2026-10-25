@@ -19,6 +19,14 @@ const index = entries.findIndex((e) => e.id === concept.id);
 const prerequisites = resolveRefs(entries, concept.data.prerequisites, slug);
 const related = resolveRefs(entries, concept.data.related, slug);
 const originalHref = fallback ? routePath(defaultLocale, 'concepts', slug) : undefined;
+
+// hreflang pair only when both languages really have this concept
+const other: Locale = lang === 'es' ? 'en' : 'es';
+const otherSet = await getConcepts(other);
+const hasOther = !otherSet.fallback && otherSet.entries.some((e) => conceptSlug(e) === slug);
+const alternates = !fallback && hasOther
+	? { es: `${routePath('es', 'concepts', slug)}/`, en: `${routePath('en', 'concepts', slug)}/` }
+	: undefined;
 ---
 
 <ConceptLayout
@@ -32,6 +40,7 @@ const originalHref = fallback ? routePath(defaultLocale, 'concepts', slug) : und
 	prev={entries[index - 1]}
 	next={entries[index + 1]}
 	originalHref={originalHref}
+	alternates={alternates}
 >
 	<Content />
 </ConceptLayout>

@@ -2,11 +2,12 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import { getTranslations } from '../i18n/utils';
 import { routePath } from '../i18n/routes';
 import type { Locale } from '../i18n/ui';
-import { postHref } from '../utils/blog';
+import { postHref, postSlug, isTranslation } from '../utils/blog';
 import { breadcrumbs, personRef } from '../lib/schema';
 
 interface Props {
@@ -21,6 +22,12 @@ const { post, minutes, lang = 'es', prev, next } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, heroImage } = post.data;
 const t = getTranslations(lang);
 const site = Astro.site!;
+const slug = postSlug(post);
+// An English page that still shows the Spanish post canonicalizes to the original.
+const translated = lang === 'es' || isTranslation(post);
+const selfPath = translated ? postHref(lang, slug) : postHref('es', slug);
+const hasEn = (await getCollection('blog')).some((p) => p.id === `en/${slug}`);
+const postLang = isTranslation(post) ? 'en' : 'es';
 const schema = [
 	{
 		'@type': 'BlogPosting',
@@ -28,15 +35,15 @@ const schema = [
 		description,
 		datePublished: pubDate.toISOString(),
 		...(updatedDate && { dateModified: updatedDate.toISOString() }),
-		url: new URL(`/blog/${post.id}/`, site).href,
+		url: new URL(selfPath, site).href,
 		author: personRef(site),
 		publisher: personRef(site),
-		inLanguage: 'es',
+		inLanguage: postLang,
 		keywords: tags?.join(', '),
 	},
 	breadcrumbs(site, [
 		{ name: 'Blog', path: `${routePath(lang, 'blog')}/` },
-		{ name: title, path: `/blog/${post.id}/` },
+		{ name: title, path: selfPath },
 	]),
 ];
 ---
@@ -48,8 +55,8 @@ const schema = [
 	type="article"
 	publishedTime={pubDate}
 	modifiedTime={updatedDate}
-	canonical={`/blog/${post.id}/`}
-	alternates={lang === 'es' ? { es: `/blog/${post.id}/` } : undefined}
+	canonical={selfPath}
+	alternates={hasEn ? { es: postHref('es', slug), en: postHref('en', slug) } : undefined}
 	schema={schema}
 >
 	<article class="post">

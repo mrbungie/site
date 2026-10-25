@@ -1,0 +1,55 @@
+---
+title: "Decision Tree"
+summary: "Makes decisions by following branches of simple, highly interpretable rules."
+area: "Árboles y ensambles"
+level: "beginner"
+order: 9
+tags: ["classification", "interpretability", "rules"]
+prerequisites: []
+related: ["random-forest", "knn", "regresion-logistica"]
+featured: false
+draft: false
+---
+
+import DecisionTreeVisualizer from '../../../components/visuals/DecisionTreeVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+A **decision tree** splits the data space into branches by asking "if-then" questions. Each node tests a condition and each leaf gives a final decision.
+
+<TaxonomyBox
+  modelType="A hierarchical set of if-else rules that partitions the input space into decision leaves."
+  optimizationMethods={[
+    "Greedy top-down construction with Gini impurity",
+    "Greedy top-down construction with entropy / information gain",
+    "Post-pruning to reduce overfitting after the tree is grown",
+  ]}
+  typicalOptimization="Greedy top-down CART with binary splits"
+  typicalLoss="Gini impurity or log entropy for classification"
+/>
+
+## Follow a decision path
+
+<VizFrame>
+  <DecisionTreeVisualizer client:visible lang="en" />
+</VizFrame>
+
+## How a tree thinks
+
+At each node, the tree tries thresholds on the variables (income, debt, score...) and keeps the split that leaves the leaves as "pure" as possible. Purity is measured with Gini impurity or with entropy:
+
+$$
+G = 1 - \sum_{k} p_k^2, \qquad H = -\sum_{k} p_k \log_2 p_k
+$$
+
+where $p_k$ is the proportion of class $k$ in the node. Both are 0 when the node is pure.
+
+## What to look for
+
+- A single variable can send a case down a different branch.
+- The main advantage of a tree is that it is easy to **explain**.
+- If it grows too deep, it can memorize the training data and overfit.
+
+## Applications
+
+Used in credit scoring, medical rules, customer segmentation, and any setting where explaining the decision matters almost as much as accuracy.

@@ -4,6 +4,7 @@ import { Grid, Html, Line, OrbitControls, PointMaterial } from '@react-three/dre
 import * as THREE from 'three';
 import { useInView, usePrefersReducedMotion, useVizPalette, type Palette } from './shared/hooks';
 import { covariance3, eigenSymmetric3, type Vec3 } from './shared/linalg';
+import type { Lang } from './shared/i18n';
 import { createRng, fmt, pct } from './shared/math';
 import { Button, Callout, Meter, Notes, Panel, Plot, VizBody, VizFrame, vizStyles as v } from './shared/ui';
 import styles from './PCA3DVisualizer.module.css';
@@ -169,7 +170,61 @@ const Scene = ({
 
 /* ── Component ── */
 
-const PCA3DVisualizer = () => {
+const T = {
+  es: {
+    title: 'Visualizador PCA',
+    subtitle: 'De tres dimensiones a dos',
+    restore: 'Restaurar vista 3D',
+    project: 'Proyectar a 2D',
+    autoRotate: 'Giro automático',
+    dragTouch: 'Desliza horizontalmente para girar',
+    dragMouse: 'Arrastra para girar, rueda para acercar',
+    points: '150 puntos',
+    plotLabel: (retained: string) => `Nube de 150 puntos en 3D con sus tres componentes principales. PC1 y PC2 conservan ${retained} de la varianza.`,
+    loading: 'Cargando escena 3D…',
+    projectedView: 'Vista proyectada',
+    fullView: 'Vista completa',
+    variance: (p: string) => `${p} de varianza`,
+    lost: (p: string) => `Al descartar PC3 solo se pierde ${p} de la variación total.`,
+    captured: 'PC1 y PC2 capturan casi toda la variación; PC3 es la dirección residual.',
+    explained: 'Varianza explicada',
+    explainedBy: (name: string) => `Varianza explicada por ${name}`,
+    eigenvalues: 'Autovalores de la covarianza',
+    notes: [
+      'Los componentes son los autovectores de la matriz de covarianza, ordenados por autovalor.',
+      'Proyectar es quedarse con las coordenadas sobre PC1 y PC2 y olvidar PC3.',
+      'Si el último autovalor es pequeño, se pierde poca información.',
+    ],
+  },
+  en: {
+    title: 'PCA visualizer',
+    subtitle: 'From three dimensions to two',
+    restore: 'Restore 3D view',
+    project: 'Project to 2D',
+    autoRotate: 'Auto-rotate',
+    dragTouch: 'Swipe horizontally to rotate',
+    dragMouse: 'Drag to rotate, scroll to zoom',
+    points: '150 points',
+    plotLabel: (retained: string) => `Cloud of 150 points in 3D with its three principal components. PC1 and PC2 retain ${retained} of the variance.`,
+    loading: 'Loading 3D scene…',
+    projectedView: 'Projected view',
+    fullView: 'Full view',
+    variance: (p: string) => `${p} of variance`,
+    lost: (p: string) => `Dropping PC3 loses only ${p} of the total variation.`,
+    captured: 'PC1 and PC2 capture almost all of the variation; PC3 is the residual direction.',
+    explained: 'Explained variance',
+    explainedBy: (name: string) => `Variance explained by ${name}`,
+    eigenvalues: 'Covariance eigenvalues',
+    notes: [
+      'The components are the eigenvectors of the covariance matrix, ordered by eigenvalue.',
+      'Projecting means keeping the coordinates along PC1 and PC2 and discarding PC3.',
+      'If the last eigenvalue is small, little information is lost.',
+    ],
+  },
+} as const;
+
+const PCA3DVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
   const [projected, setProjected] = useState(false);
   const [rotate, setRotate] = useState(true);
   const [coarse, setCoarse] = useState(false);
@@ -197,58 +252,54 @@ const PCA3DVisualizer = () => {
 
   return (
     <VizFrame
-      title="Visualizador PCA"
-      subtitle="De tres dimensiones a dos"
+      title={t.title}
+      subtitle={t.subtitle}
       frameRef={frameRef}
       actions={
         <>
-          <Button primary onClick={() => setProjected((p) => !p)}>{projected ? 'Restaurar vista 3D' : 'Proyectar a 2D'}</Button>
-          <Button pressed={rotate} onClick={() => setRotate((r) => !r)} disabled={projected}>Giro automático</Button>
+          <Button primary onClick={() => setProjected((p) => !p)}>{projected ? t.restore : t.project}</Button>
+          <Button pressed={rotate} onClick={() => setRotate((r) => !r)} disabled={projected}>{t.autoRotate}</Button>
         </>
       }
     >
       <VizBody
         plot={
-          <Plot wide caption={<><span>{coarse ? 'Desliza horizontalmente para girar' : 'Arrastra para girar, rueda para acercar'}</span><span>150 puntos</span></>}>
+          <Plot wide caption={<><span>{coarse ? t.dragTouch : t.dragMouse}</span><span>{t.points}</span></>}>
             <div
               ref={canvasHost}
               className={styles.canvasFill}
               style={{ touchAction: coarse ? 'pan-y' : 'none' }}
               role="img"
-              aria-label={`Nube de 150 puntos en 3D con sus tres componentes principales. PC1 y PC2 conservan ${pct(retained)} de la varianza.`}
+              aria-label={t.plotLabel(pct(retained))}
             >
               {mounted && visible ? (
                 <Canvas dpr={[1, 2]} frameloop="always" camera={{ position: [5.5, 3.8, 5.5], fov: 34 }} gl={{ antialias: true, alpha: true }} style={{ touchAction: 'inherit' }}>
                   <Scene basis={basis} points={points} projected={projected} rotate={rotate} coarse={coarse} reduced={reduced} palette={palette} />
                 </Canvas>
               ) : (
-                <div className={styles.placeholder}>Cargando escena 3D…</div>
+                <div className={styles.placeholder}>{t.loading}</div>
               )}
             </div>
           </Plot>
         }
         side={
           <>
-            <Callout eyebrow={projected ? 'Vista proyectada' : 'Vista completa'} title={`${pct(retained)} de varianza`} tone="c3">
+            <Callout eyebrow={projected ? t.projectedView : t.fullView} title={t.variance(pct(retained))} tone="c3">
               {projected
-                ? `Al descartar PC3 solo se pierde ${pct(ratios[2])} de la variación total.`
-                : 'PC1 y PC2 capturan casi toda la variación; PC3 es la dirección residual.'}
+                ? t.lost(pct(ratios[2]))
+                : t.captured}
             </Callout>
-            <Panel title="Varianza explicada">
+            <Panel title={t.explained}>
               {['PC1', 'PC2', 'PC3'].map((name, i) => (
                 <div key={name} className={styles.scree}>
                   <span>{name}</span>
-                  <Meter value={ratios[i]} tone={i === 0 ? 'c5' : i === 1 ? 'pos' : 'neg'} label={`Varianza explicada por ${name}`} />
+                  <Meter value={ratios[i]} tone={i === 0 ? 'c5' : i === 1 ? 'pos' : 'neg'} label={t.explainedBy(name)} />
                   <output>{pct(ratios[i])}</output>
                 </div>
               ))}
-              <p className={v.hint}>Autovalores de la covarianza: {basis.eigenvalues.map((e) => fmt(e, 2)).join(' · ')}</p>
+              <p className={v.hint}>{t.eigenvalues}: {basis.eigenvalues.map((e) => fmt(e, 2)).join(' · ')}</p>
             </Panel>
-            <Notes items={[
-              'Los componentes son los autovectores de la matriz de covarianza, ordenados por autovalor.',
-              'Proyectar es quedarse con las coordenadas sobre PC1 y PC2 y olvidar PC3.',
-              'Si el último autovalor es pequeño, se pierde poca información.',
-            ]} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

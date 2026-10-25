@@ -1,0 +1,65 @@
+---
+title: "Support Vector Machine (SVM)"
+summary: "Finds the boundary that separates the classes with the widest possible margin."
+area: "Clasificación"
+level: "intermediate"
+order: 8
+tags: ["classification", "margin", "kernels"]
+prerequisites: ["regresion-logistica"]
+related: ["regresion-logistica", "knn", "arbol-de-decision"]
+featured: false
+draft: false
+---
+
+import SVMVisualizer from '../../../components/visuals/SVMVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+The **Support Vector Machine** looks for a decision boundary that not only separates the classes, but does so leaving the widest possible **margin** between them.
+
+<TaxonomyBox
+  modelType="A maximum-margin hyperplane; with kernels it becomes a nonlinear boundary in the original space."
+  optimizationMethods={[
+    "Convex quadratic programming for hard or soft margin",
+    "Sequential Minimal Optimization (SMO) for kernels",
+    "Linear solvers such as coordinate descent or SGD for large linear versions",
+  ]}
+  typicalOptimization="SMO or a convex quadratic programming solver"
+  typicalLoss="Hinge loss, often with L2 regularization"
+/>
+
+## Experiment with the margin
+
+See how the boundary, the margin and the support vectors respond to the data.
+
+<VizFrame>
+  <SVMVisualizer client:visible lang="en" />
+</VizFrame>
+
+## The mathematical idea
+
+In its linear version, SVM defines a separating hyperplane:
+
+$$
+w^\top x + b = 0
+$$
+
+A point is classified according to the sign of $w^\top x + b$. The **margin** (the distance between the two classes on either side of the boundary) equals $2/\lVert w \rVert$, so maximizing the margin is equivalent to minimizing $\lVert w \rVert$.
+
+When the classes are not perfectly separable, some error is allowed through the **hinge loss** and a regularization parameter $C$:
+
+$$
+\min_{w,b} \; \tfrac{1}{2}\lVert w \rVert^2 + C \sum_{i=1}^{n} \max\bigl(0,\; 1 - y_i (w^\top x_i + b)\bigr)
+$$
+
+A large $C$ punishes errors and gives narrow margins; a small $C$ tolerates errors and gives wide margins.
+
+## What to look for
+
+- The **support vectors** are the most critical points: if they move, the boundary changes; the rest do not affect it.
+- A kernel such as **RBF** allows curved boundaries when a straight line is not enough.
+- A wide margin makes the model more robust to small perturbations.
+
+## Applications
+
+SVM is used in text classification, bioinformatics, computer vision and problems where good geometric separation matters more than a calibrated probability.

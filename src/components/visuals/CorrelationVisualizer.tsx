@@ -1,13 +1,67 @@
 import { useMemo, useState } from 'react';
 import { clamp, clipLine, correlationInterval, createRng, fmt, gaussian, linearStats } from './shared/math';
+import { common, type Lang } from './shared/i18n';
 import { Button, Callout, Legend, Notes, Panel, Plot, PlotSvg, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v } from './shared/ui';
 
-const strengthOf = (r: number) => {
+const T = {
+  es: {
+    strengths: ['muy fuerte', 'moderada', 'débil', 'casi nula'],
+    title: 'Laboratorio de correlación',
+    subtitle: 'Pearson en tiempo real',
+    xCaption: 'X (reescalada)',
+    yCaption: 'Y (reescalada)',
+    plotLabel: (n: number, r: string) => `Diagrama de dispersión de ${n} puntos con r igual a ${r}`,
+    rho: 'Correlación poblacional ρ',
+    sampleSize: 'Tamaño de muestra n',
+    sampleHint: 'Con n pequeño, r fluctúa mucho alrededor de ρ.',
+    positive: 'Relación positiva',
+    negative: 'Relación negativa',
+    none: 'Sin relación lineal',
+    explained: (r2: string, pct: string) => `r² = ${r2}, es decir, la recta explica ${pct}% de la varianza de Y.`,
+    observed: 'r observado',
+    ci: 'IC 95% (Fisher)',
+    slope: 'Pendiente',
+    ols: 'Recta de mínimos cuadrados',
+    notes: [
+      'Lleva ρ a ±0.95 y la nube se estrecha sobre la recta.',
+      'Baja n: el IC se ensancha y r se aleja de ρ.',
+      'r mide solo relación lineal; no implica causalidad.',
+    ],
+  },
+  en: {
+    strengths: ['very strong', 'moderate', 'weak', 'almost none'],
+    title: 'Correlation lab',
+    subtitle: 'Pearson in real time',
+    xCaption: 'X (rescaled)',
+    yCaption: 'Y (rescaled)',
+    plotLabel: (n: number, r: string) => `Scatter plot of ${n} points with r equal to ${r}`,
+    rho: 'Population correlation ρ',
+    sampleSize: 'Sample size n',
+    sampleHint: 'With small n, r fluctuates a lot around ρ.',
+    positive: 'Positive relationship',
+    negative: 'Negative relationship',
+    none: 'No linear relationship',
+    explained: (r2: string, pct: string) => `r² = ${r2}, i.e. the line explains ${pct}% of the variance of Y.`,
+    observed: 'Observed r',
+    ci: '95% CI (Fisher)',
+    slope: 'Slope',
+    ols: 'Least-squares line',
+    notes: [
+      'Push ρ to ±0.95 and the cloud tightens around the line.',
+      'Lower n: the CI widens and r drifts away from ρ.',
+      'r only measures linear association; it does not imply causation.',
+    ],
+  },
+} as const;
+
+const strengthOf = (r: number, words: readonly string[]) => {
   const a = Math.abs(r);
-  return a > 0.8 ? 'muy fuerte' : a > 0.55 ? 'moderada' : a > 0.25 ? 'débil' : 'casi nula';
+  return a > 0.8 ? words[0] : a > 0.55 ? words[1] : a > 0.25 ? words[2] : words[3];
 };
 
-const CorrelationVisualizer = () => {
+const CorrelationVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
+  const c = common[lang];
   const [rho, setRho] = useState(0.7);
   const [n, setN] = useState(36);
   const [version, setVersion] = useState(0);
@@ -41,17 +95,17 @@ const CorrelationVisualizer = () => {
 
   return (
     <VizFrame
-      title="Laboratorio de correlación"
-      subtitle="Pearson en tiempo real"
-      actions={<Button onClick={() => setVersion((value) => value + 1)}>Nueva muestra</Button>}
+      title={t.title}
+      subtitle={t.subtitle}
+      actions={<Button onClick={() => setVersion((value) => value + 1)}>{c.newSample}</Button>}
     >
       <VizBody
         plot={
           <Plot
-            overlay={<>r = {fmt(stats.r, 3)} · {strengthOf(stats.r)}</>}
-            caption={<><span>X (reescalada)</span><span>Y (reescalada)</span></>}
+            overlay={<>r = {fmt(stats.r, 3)} · {strengthOf(stats.r, t.strengths)}</>}
+            caption={<><span>{t.xCaption}</span><span>{t.yCaption}</span></>}
           >
-            <PlotSvg label={`Diagrama de dispersión de ${n} puntos con r igual a ${fmt(stats.r, 2)}`}>
+            <PlotSvg label={t.plotLabel(n, fmt(stats.r, 2))}>
               {trend && (
                 <line className={v.lineDashed} x1={trend[0].x} y1={flipY(trend[0].y)} x2={trend[1].x} y2={flipY(trend[1].y)} />
               )}
@@ -63,24 +117,20 @@ const CorrelationVisualizer = () => {
         }
         side={
           <>
-            <Panel title="Ajustes">
-              <Slider label="Correlación poblacional ρ" value={rho} min={-0.95} max={0.95} step={0.05} onChange={setRho} format={(x) => fmt(x, 2)} tone="pos" />
-              <Slider label="Tamaño de muestra n" value={n} min={12} max={120} step={2} onChange={setN} tone="c3" hint="Con n pequeño, r fluctúa mucho alrededor de ρ." />
+            <Panel title={c.settings}>
+              <Slider label={t.rho} value={rho} min={-0.95} max={0.95} step={0.05} onChange={setRho} format={(x) => fmt(x, 2)} tone="pos" />
+              <Slider label={t.sampleSize} value={n} min={12} max={120} step={2} onChange={setN} tone="c3" hint={t.sampleHint} />
             </Panel>
-            <Callout eyebrow="Lectura" title={stats.r > 0.05 ? 'Relación positiva' : stats.r < -0.05 ? 'Relación negativa' : 'Sin relación lineal'} tone={tone}>
-              r = {fmt(stats.r, 3)}; r² = {fmt(stats.r ** 2, 3)}, es decir, la recta explica {fmt(stats.r ** 2 * 100, 1)}% de la varianza de Y.
+            <Callout eyebrow={c.reading} title={stats.r > 0.05 ? t.positive : stats.r < -0.05 ? t.negative : t.none} tone={tone}>
+              r = {fmt(stats.r, 3)}; {t.explained(fmt(stats.r ** 2, 3), fmt(stats.r ** 2 * 100, 1))}
             </Callout>
             <StatGrid>
-              <Stat label="r observado" value={fmt(stats.r, 3)} tone={tone} />
-              <Stat label="IC 95% (Fisher)" value={`[${fmt(clamp(stats.interval[0], -1, 1), 2)}, ${fmt(clamp(stats.interval[1], -1, 1), 2)}]`} />
-              <Stat label="Pendiente" value={fmt(stats.slope, 3)} />
+              <Stat label={t.observed} value={fmt(stats.r, 3)} tone={tone} />
+              <Stat label={t.ci} value={`[${fmt(clamp(stats.interval[0], -1, 1), 2)}, ${fmt(clamp(stats.interval[1], -1, 1), 2)}]`} />
+              <Stat label={t.slope} value={fmt(stats.slope, 3)} />
             </StatGrid>
-            <Legend items={[{ kind: 'pos', label: 'r ≥ 0' }, { kind: 'neg', label: 'r < 0' }, { kind: 'dash', label: 'Recta de mínimos cuadrados' }]} />
-            <Notes items={[
-              'Lleva ρ a ±0.95 y la nube se estrecha sobre la recta.',
-              'Baja n: el IC se ensancha y r se aleja de ρ.',
-              'r mide solo relación lineal; no implica causalidad.',
-            ]} />
+            <Legend items={[{ kind: 'pos', label: 'r ≥ 0' }, { kind: 'neg', label: 'r < 0' }, { kind: 'dash', label: t.ols }]} lang={lang} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

@@ -2,9 +2,9 @@ import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getPosts } from '../utils/blog';
 
-// Posts are written in Spanish only, so a single (default-locale) feed is enough.
+// Spanish feed (the source language); English translations live under /en/blog.
 export async function GET(context) {
-	const posts = await getPosts();
+	const posts = await getPosts('es');
 	return rss({
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,

@@ -2,7 +2,7 @@
 import FormattedDate from '../FormattedDate.astro';
 import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
-import { getPosts, postHref, readingTime } from '../../utils/blog';
+import { getPosts, postHref, postSlug, readingTime } from '../../utils/blog';
 
 interface Props {
 	lang: Locale;
@@ -10,7 +10,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = getTranslations(lang);
-const posts = await getPosts();
+const posts = await getPosts(lang);
 ---
 
 {posts.length === 0 ? (
@@ -19,7 +19,7 @@ const posts = await getPosts();
 	<ol class="post-list">
 		{posts.map((post) => (
 			<li class="post-item">
-				<a href={postHref(lang, post.id)} class="post-link">
+				<a href={postHref(lang, postSlug(post))} class="post-link">
 					<p class="post-meta">
 						<FormattedDate date={post.data.pubDate} lang={lang} />
 						<span aria-hidden="true">·</span>

@@ -1,0 +1,68 @@
+---
+title: "Naive Bayes"
+summary: "A fast probabilistic classifier that assumes the variables are conditionally independent."
+area: "Clasificación"
+level: "intermediate"
+order: 7
+tags: ["classification", "probability", "Bayes"]
+prerequisites: []
+related: ["regresion-logistica", "knn", "svm"]
+featured: false
+draft: false
+---
+
+import NaiveBayesVisualizer from '../../../components/visuals/NaiveBayesVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+**Naive Bayes** uses Bayes' theorem to estimate which class is most likely given the observed evidence. Its "naive" assumption is that the variables are conditionally independent within each class.
+
+<TaxonomyBox
+  modelType="A generative probabilistic model that estimates per-class distributions and combines evidence under conditional independence."
+  optimizationMethods={[
+    "Maximum likelihood estimation of probabilities or distribution parameters",
+    "MAP estimation with Laplace smoothing or conjugate priors",
+    "Closed-form computation of counts, means and variances per class, depending on the chosen variant",
+  ]}
+  typicalOptimization="Closed-form maximum likelihood estimation with smoothing"
+  typicalLoss="Negative log-likelihood or generative log loss"
+/>
+
+## Combine evidence step by step
+
+<VizFrame>
+  <NaiveBayesVisualizer client:visible lang="en" />
+</VizFrame>
+
+## The decision rule
+
+Bayes' theorem gives the posterior probability of each class $C$ given the attributes $X = (x_1, \dots, x_m)$:
+
+$$
+P(C \mid X) = \frac{P(X \mid C)\,P(C)}{P(X)}
+$$
+
+The "naive" assumption factorizes the likelihood as a product of simple terms, one per variable:
+
+$$
+P(X \mid C) = \prod_{j=1}^{m} P(x_j \mid C)
+$$
+
+Since $P(X)$ is the same for all classes, it is enough to compare the numerators and pick the largest:
+
+$$
+\hat{C} = \arg\max_{C} \; P(C) \prod_{j=1}^{m} P(x_j \mid C)
+$$
+
+In practice, logarithms are summed instead of multiplying probabilities, to avoid numerical underflow.
+
+## What to look for
+
+- With only a few counts you already get a useful posterior probability.
+- The independence assumption is strong, but it often works well, especially for ranking classes.
+- Its probabilities tend to be poorly calibrated: it gets the class right but overstates its confidence.
+- It is especially competitive on text and on high-dimensional problems.
+
+## Applications
+
+Spam filtering, sentiment analysis, document classification, and tasks where training and prediction speed matter a lot.

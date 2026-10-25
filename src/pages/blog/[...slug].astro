@@ -1,9 +1,9 @@
 ---
 import PostPage from '../../components/blog/PostPage.astro';
-import { getPosts } from '../../utils/blog';
+import { getPosts, postSlug } from '../../utils/blog';
 
 export async function getStaticPaths() {
-	return (await getPosts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
+	return (await getPosts('es')).map((post) => ({ params: { slug: postSlug(post) }, props: { post } }));
 }
 
 const { post } = Astro.props;

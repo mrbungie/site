@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { regressionExample } from './shared/datasets';
 import { useSvgPoint } from './shared/hooks';
+import type { Lang } from './shared/i18n';
 import { clamp, clipLine, createRng, fmt, linearStats, sumSquaredResiduals } from './shared/math';
 import {
   Button, Callout, Legend, Meter, Notes, Panel, Plot, PlotSvg, Segmented, Slider, Stat, StatGrid, VizBody, VizFrame, cx, flipY, vizStyles as v,
@@ -19,7 +20,83 @@ type Overlay = 'none' | 'residuals' | 'mean';
 const MAX_POINTS = 40;
 const initialPoints = (): DataPoint[] => regressionExample().map((p, id) => ({ id, ...p }));
 
-const RegressionVisualizer = () => {
+const T = {
+  es: {
+    title: 'Laboratorio de regresión',
+    subtitle: 'Mínimos cuadrados ordinarios',
+    example: 'Ejemplo',
+    clear: 'Limpiar',
+    caption: 'Clic en el plano para añadir un punto; clic en un punto para quitarlo',
+    needTwo: 'Añade al menos dos puntos con distinto x.',
+    plotLabel: (n: number, text: string) => `Plano de regresión con ${n} puntos. ${text}`,
+    pointLabel: (x: string, y: string) => `Punto en x ${x}, y ${y}. Enter o Suprimir para quitar.`,
+    empty: 'Haz clic en el plano para dibujar datos',
+    model: 'Modelo',
+    mode: 'Modo',
+    auto: 'Automático (OLS)',
+    manual: 'Manual',
+    slope: 'Pendiente β₁',
+    intercept: 'Intercepto β₀',
+    squares: 'Cuadrados',
+    none: 'Ninguno',
+    residuals: 'Residuos',
+    vsMean: 'Vs. media',
+    addRandom: 'Añadir punto aleatorio',
+    goodness: 'Bondad de ajuste',
+    excess: (d: string) => `Te sobran ${d} de SSE respecto al óptimo de mínimos cuadrados.`,
+    minimizes: 'Esta recta minimiza la suma de residuos al cuadrado.',
+    variance: 'Varianza',
+    sseRel: 'SSE relativo a SST',
+    minSse: 'SSE mínimo',
+    olsLine: 'Recta OLS',
+    yourLine: 'Tu recta',
+    olsRef: 'OLS (referencia)',
+    notes: [
+      'R² = 1 − SSE/SST: cuánta varianza explica la recta frente a usar solo la media.',
+      'Cada cuadrado tiene lado igual al residuo; su área es su aporte al SSE.',
+      'En modo manual, intenta igualar el SSE mínimo moviendo ambos deslizadores.',
+    ],
+  },
+  en: {
+    title: 'Regression lab',
+    subtitle: 'Ordinary least squares',
+    example: 'Example',
+    clear: 'Clear',
+    caption: 'Click the plane to add a point; click a point to remove it',
+    needTwo: 'Add at least two points with different x.',
+    plotLabel: (n: number, text: string) => `Regression plane with ${n} points. ${text}`,
+    pointLabel: (x: string, y: string) => `Point at x ${x}, y ${y}. Press Enter or Delete to remove.`,
+    empty: 'Click the plane to draw data',
+    model: 'Model',
+    mode: 'Mode',
+    auto: 'Automatic (OLS)',
+    manual: 'Manual',
+    slope: 'Slope β₁',
+    intercept: 'Intercept β₀',
+    squares: 'Squares',
+    none: 'None',
+    residuals: 'Residuals',
+    vsMean: 'Vs. mean',
+    addRandom: 'Add random point',
+    goodness: 'Goodness of fit',
+    excess: (d: string) => `You are ${d} above the least-squares optimum in SSE.`,
+    minimizes: 'This line minimizes the sum of squared residuals.',
+    variance: 'Variance',
+    sseRel: 'SSE relative to SST',
+    minSse: 'Minimum SSE',
+    olsLine: 'OLS line',
+    yourLine: 'Your line',
+    olsRef: 'OLS (reference)',
+    notes: [
+      'R² = 1 − SSE/SST: how much variance the line explains compared with using only the mean.',
+      'Each square has a side equal to the residual; its area is its contribution to the SSE.',
+      'In manual mode, try to match the minimum SSE by moving both sliders.',
+    ],
+  },
+} as const;
+
+const RegressionVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
   const [points, setPoints] = useState<DataPoint[]>(initialPoints);
   const nextId = useRef(100);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -64,12 +141,12 @@ const RegressionVisualizer = () => {
 
   return (
     <VizFrame
-      title="Laboratorio de regresión"
-      subtitle="Mínimos cuadrados ordinarios"
+      title={t.title}
+      subtitle={t.subtitle}
       actions={
         <>
-          <Button onClick={() => setPoints(initialPoints())}>Ejemplo</Button>
-          <Button onClick={() => setPoints([])}>Limpiar</Button>
+          <Button onClick={() => setPoints(initialPoints())}>{t.example}</Button>
+          <Button onClick={() => setPoints([])}>{t.clear}</Button>
         </>
       }
     >
@@ -77,9 +154,9 @@ const RegressionVisualizer = () => {
         plot={
           <Plot
             overlay={<span className={styles.equation}>{eq}</span>}
-            caption={<><span>Clic en el plano para añadir un punto; clic en un punto para quitarlo</span><span>{points.length}/{MAX_POINTS}</span></>}
+            caption={<><span>{t.caption}</span><span>{points.length}/{MAX_POINTS}</span></>}
           >
-            <PlotSvg svgRef={svgRef} label={`Plano de regresión con ${points.length} puntos. ${ready ? eq : 'Añade al menos dos puntos con distinto x.'}`}>
+            <PlotSvg svgRef={svgRef} label={t.plotLabel(points.length, ready ? eq : t.needTwo)}>
               <rect className={styles.hit} x={-4} y={-4} width={108} height={108} onPointerUp={onPlotClick} />
               {ready && overlay === 'mean' && <line className={styles.mean} x1={0} y1={flipY(fit.yMean)} x2={100} y2={flipY(fit.yMean)} />}
               {ready && points.map((p) => {
@@ -106,7 +183,7 @@ const RegressionVisualizer = () => {
                   className={styles.dataPoint}
                   tabIndex={0}
                   role="button"
-                  aria-label={`Punto en x ${fmt(p.x, 0)}, y ${fmt(p.y, 0)}. Enter o Suprimir para quitar.`}
+                  aria-label={t.pointLabel(fmt(p.x, 0), fmt(p.y, 0))}
                   onPointerUp={(event) => { event.stopPropagation(); remove(p.id); }}
                   onKeyDown={(event) => onPointKey(event, p.id)}
                 >
@@ -115,46 +192,42 @@ const RegressionVisualizer = () => {
                 </g>
               ))}
             </PlotSvg>
-            {points.length === 0 && <div className={styles.empty}>Haz clic en el plano para dibujar datos</div>}
+            {points.length === 0 && <div className={styles.empty}>{t.empty}</div>}
           </Plot>
         }
         side={
           <>
-            <Panel title="Modelo">
-              <Segmented<Mode> label="Modo" value={mode} onChange={setMode} options={[{ value: 'ols', label: 'Automático (OLS)' }, { value: 'manual', label: 'Manual' }]} />
+            <Panel title={t.model}>
+              <Segmented<Mode> label={t.mode} value={mode} onChange={setMode} options={[{ value: 'ols', label: t.auto }, { value: 'manual', label: t.manual }]} />
               {mode === 'manual' && (
                 <>
-                  <Slider label="Pendiente β₁" value={slope} min={-2} max={2} step={0.01} onChange={setSlope} format={(x) => fmt(x, 2)} tone="neg" />
-                  <Slider label="Intercepto β₀" value={intercept} min={-50} max={150} step={0.5} onChange={setIntercept} format={(x) => fmt(x, 1)} tone="c5" />
+                  <Slider label={t.slope} value={slope} min={-2} max={2} step={0.01} onChange={setSlope} format={(x) => fmt(x, 2)} tone="neg" />
+                  <Slider label={t.intercept} value={intercept} min={-50} max={150} step={0.5} onChange={setIntercept} format={(x) => fmt(x, 1)} tone="c5" />
                 </>
               )}
-              <Segmented<Overlay> label="Cuadrados" value={overlay} onChange={setOverlay} options={[{ value: 'none', label: 'Ninguno' }, { value: 'residuals', label: 'Residuos' }, { value: 'mean', label: 'Vs. media' }]} />
-              <Button onClick={addRandom} disabled={points.length >= MAX_POINTS}>Añadir punto aleatorio</Button>
+              <Segmented<Overlay> label={t.squares} value={overlay} onChange={setOverlay} options={[{ value: 'none', label: t.none }, { value: 'residuals', label: t.residuals }, { value: 'mean', label: t.vsMean }]} />
+              <Button onClick={addRandom} disabled={points.length >= MAX_POINTS}>{t.addRandom}</Button>
             </Panel>
-            <Callout eyebrow="Bondad de ajuste" title={r2 === null ? 'R² = —' : `R² = ${fmt(r2, 3)}`} tone={r2 !== null && r2 >= 0.5 ? 'pos' : 'neg'}>
+            <Callout eyebrow={t.goodness} title={r2 === null ? 'R² = —' : `R² = ${fmt(r2, 3)}`} tone={r2 !== null && r2 >= 0.5 ? 'pos' : 'neg'}>
               {!ready
-                ? 'Añade al menos dos puntos con distinto x.'
+                ? t.needTwo
                 : mode === 'manual' && sse > sseMin + 1e-6
-                  ? `Te sobran ${fmt(sse - sseMin, 0)} de SSE respecto al óptimo de mínimos cuadrados.`
-                  : 'Esta recta minimiza la suma de residuos al cuadrado.'}
+                  ? t.excess(fmt(sse - sseMin, 0))
+                  : t.minimizes}
             </Callout>
-            <Panel title="Varianza">
+            <Panel title={t.variance}>
               <div className={styles.compare}>
-                <div className={styles.compareRow}><span>SSE</span><Meter value={sst > 0 ? Math.min(1, sse / sst) : 0} tone="neg" label="SSE relativo a SST" /><output>{fmt(sse, 0)}</output></div>
+                <div className={styles.compareRow}><span>SSE</span><Meter value={sst > 0 ? Math.min(1, sse / sst) : 0} tone="neg" label={t.sseRel} /><output>{fmt(sse, 0)}</output></div>
                 <div className={styles.compareRow}><span>SST</span><Meter value={sst > 0 ? 1 : 0} tone="pos" label="SST" /><output>{fmt(sst, 0)}</output></div>
               </div>
               <StatGrid>
                 <Stat label="β₁ (OLS)" value={fmt(fit.slope, 3)} />
                 <Stat label="β₀ (OLS)" value={fmt(fit.intercept, 1)} />
-                <Stat label="SSE mínimo" value={fmt(sseMin, 0)} tone="c3" />
+                <Stat label={t.minSse} value={fmt(sseMin, 0)} tone="c3" />
               </StatGrid>
             </Panel>
-            <Legend items={[{ kind: 'line', label: 'Recta OLS', tone: 'ink' }, { kind: 'line', label: 'Tu recta', tone: 'c5' }, { kind: 'dash', label: 'OLS (referencia)' }]} />
-            <Notes items={[
-              'R² = 1 − SSE/SST: cuánta varianza explica la recta frente a usar solo la media.',
-              'Cada cuadrado tiene lado igual al residuo; su área es su aporte al SSE.',
-              'En modo manual, intenta igualar el SSE mínimo moviendo ambos deslizadores.',
-            ]} />
+            <Legend items={[{ kind: 'line', label: t.olsLine, tone: 'ink' }, { kind: 'line', label: t.yourLine, tone: 'c5' }, { kind: 'dash', label: t.olsRef }]} lang={lang} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

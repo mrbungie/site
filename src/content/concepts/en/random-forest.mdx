@@ -1,0 +1,54 @@
+---
+title: "Random Forest"
+summary: "An ensemble of trees that vote together to gain robustness and reduce variance."
+area: "Árboles y ensambles"
+level: "intermediate"
+order: 10
+tags: ["ensemble", "bagging", "classification"]
+prerequisites: ["arbol-de-decision"]
+related: ["arbol-de-decision", "svm", "knn"]
+featured: false
+draft: false
+---
+
+import RandomForestVisualizer from '../../../components/visuals/RandomForestVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+**Random Forest** combines many decision trees trained on different samples and different subsets of variables. Instead of relying on a single branch, it gathers many small voices and decides by majority.
+
+<TaxonomyBox
+  modelType="A bagging ensemble of multiple decision trees with bootstrap sampling and random variable selection at each node."
+  optimizationMethods={[
+    "Greedy growth of CART trees within each individual tree",
+    "Bootstrap aggregation (bagging) and feature subsampling to decorrelate the ensemble",
+    "Validation-based selection of hyperparameters such as number of trees, depth and mtry",
+  ]}
+  typicalOptimization="Bagging + greedy CART trees with feature subsampling"
+  typicalLoss="Gini impurity or entropy at the nodes of each tree; majority vote as the final ensemble rule"
+/>
+
+## Watch the forest vote
+
+<VizFrame>
+  <RandomForestVisualizer client:visible lang="en" />
+</VizFrame>
+
+## Key intuition
+
+A single tree is unstable: a small change in the data can alter its structure a lot (high variance). The forest reduces this problem by averaging trees that differ from one another. To achieve this, each tree is trained with:
+
+- a **bootstrap** sample of the rows (with replacement), and
+- a random subset of variables at each split.
+
+Averaging weakly correlated trees lowers the variance without increasing the bias much. In addition, the rows left out of each bootstrap sample (*out-of-bag*) serve as free validation.
+
+## What to look for
+
+- Each tree uses similar rules, but not identical ones.
+- The final decision depends on the **aggregation**, not on a single tree.
+- You gain robustness at the cost of losing a simple global explanation.
+
+## Applications
+
+A strong baseline for tabular classification, fraud detection, credit risk and diagnosis when you want good performance without much fine-tuning.

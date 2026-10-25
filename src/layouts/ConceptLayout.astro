@@ -1,5 +1,6 @@
 ---
 import type { MarkdownHeading } from 'astro';
+import { areaLabel } from '../components/concept/areas';
 import BaseLayout from './BaseLayout.astro';
 import ConceptMeta from '../components/concept/ConceptMeta.astro';
 import ConceptCard from '../components/concept/ConceptCard.astro';
@@ -22,9 +23,10 @@ interface Props {
 	next?: ConceptEntry;
 	/** Same concept under the default locale, used by the "read original" link. */
 	originalHref?: string;
+	alternates?: Partial<Record<Locale, string>>;
 }
 
-const { concept, headings, minutes, lang, fallback = false, prerequisites, related, prev, next, originalHref } = Astro.props;
+const { concept, headings, minutes, lang, fallback = false, prerequisites, related, prev, next, originalHref, alternates } = Astro.props;
 const { title, summary, area, level, tags, order } = concept.data;
 const t = getTranslations(lang);
 const link = (e: ConceptEntry) => ({ title: e.data.title, href: conceptHref(lang, e) });
@@ -39,9 +41,9 @@ const schema = [
 		author: personRef(site),
 		educationalLevel: level,
 		learningResourceType: 'interactive explanation',
-		about: area,
+		about: areaLabel(lang, area),
 		keywords: tags?.join(', '),
-		inLanguage: 'es',
+		inLanguage: fallback ? 'es' : lang,
 	},
 	breadcrumbs(site, [
 		{ name: t('nav.mlConcepts'), path: `${indexHref}/` },
@@ -50,13 +52,13 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={summary} lang={lang} schema={schema} canonical={fallback ? originalHref : undefined}>
+<BaseLayout title={title} description={summary} lang={lang} schema={schema} canonical={fallback ? originalHref : undefined} alternates={alternates}>
 	<article class="concept-page">
 		<header class="concept-page__header">
 			<nav class="concept-page__crumbs" aria-label="breadcrumb">
 				<a href={indexHref}>{t('nav.concepts')}</a>
 				<span aria-hidden="true">/</span>
-				<span>{area}</span>
+				<span>{areaLabel(lang, area)}</span>
 			</nav>
 			<p class="concept-page__order">{String(order).padStart(2, '0')} · {t('concepts.path')}</p>
 			<h1 class="concept-page__title">{title}</h1>

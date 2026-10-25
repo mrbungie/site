@@ -1,0 +1,89 @@
+---
+title: "PCA (Principal Component Analysis)"
+summary: "Reduces the dimensionality of the data while keeping most of its variance."
+area: "Reducción de dimensión"
+level: "intermediate"
+order: 5
+tags: ["dimensionality reduction", "linear algebra", "visualization"]
+prerequisites: ["covarianza", "correlacion"]
+related: ["covarianza", "regresion-lineal"]
+featured: true
+draft: false
+---
+
+import PCA3DVisualizer from '../../../components/visuals/PCA3DVisualizer';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+import Callout from '../../../components/concept/Callout.astro';
+
+**PCA** (Principal Component Analysis) transforms a set of correlated variables into a smaller number of uncorrelated variables, called **principal components**, that retain most of the variance.
+
+## Visualize the dimensionality reduction
+
+In this 3D simulator, a cloud of points is projected onto a 2-dimensional plane (PC1 and PC2) while losing as little information as possible.
+
+<VizFrame>
+  <PCA3DVisualizer client:visible lang="en" />
+</VizFrame>
+
+<Callout type="tip">
+**PC1** is the yellow line: it runs through the longest part of the ellipse and is the direction of **maximum variance**.
+</Callout>
+
+## What it is for
+
+1. **Reducing noise**: by keeping the components that explain most of the variance, we discard directions dominated by noise (like the red axis PC3).
+2. **Visualizing**: it lets you project high-dimensional data down to 2 or 3 dimensions for plotting.
+3. **Gaining efficiency**: models train faster with fewer variables.
+
+## Geometric intuition
+
+The idea is to "rotate" the data space until we look at it from the most informative angle: the one that maximizes the spread of the points.
+
+## The algorithm step by step
+
+### 1. Centering and standardization
+
+So that variables with large scales (like "income") do not dominate those with small scales (like "age"), we rescale each column:
+
+$$
+Z = \frac{X - \mu}{\sigma}
+$$
+
+This leaves each variable with **zero mean** and **unit variance**. If you only center (without dividing by $\sigma$), you work with the original covariance matrix; if you standardize, with the correlation matrix.
+
+### 2. Covariance matrix
+
+We compute the matrix $\Sigma$, which summarizes the linear relationships between all pairs of variables:
+
+$$
+\Sigma = \frac{1}{n-1} Z^\top Z
+$$
+
+### 3. Eigenvalues and eigenvectors
+
+The principal axes are the eigenvectors of $\Sigma$. They are obtained by solving the **characteristic equation**:
+
+$$
+\det(\Sigma - \lambda I) = 0
+$$
+
+- **Eigenvalues** $\lambda$: indicate **importance**; each one is the variance captured along its direction.
+- **Eigenvectors** $v$: indicate **direction**; they define the new axes (the lines in the simulator).
+
+The fraction of variance explained by component $j$ is $\lambda_j / \sum_k \lambda_k$.
+
+### 4. Projection
+
+We choose the $k$ eigenvectors with the largest eigenvalues, collect them as columns of $W_k$, and project:
+
+$$
+T = Z \, W_k
+$$
+
+$T$ holds the reduced data, ready for plotting or for training a model.
+
+## Caution
+
+<Callout type="warning">
+PCA is linear and sensitive to scale: without standardizing, the variable with the largest magnitude dominates PC1. Also, "more variance" does not always mean "more useful for prediction".
+</Callout>

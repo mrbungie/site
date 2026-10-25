@@ -1,0 +1,50 @@
+---
+title: "k-Nearest Neighbors (k-NN)"
+summary: "Classifies a new case by majority vote among the closest examples, without training an explicit model."
+area: "Clasificación"
+level: "beginner"
+order: 6
+tags: ["classification", "instance-based", "distance"]
+prerequisites: []
+related: ["naive-bayes", "svm", "random-forest"]
+featured: false
+draft: false
+---
+
+import KNNVisualizer from '../../../components/visuals/KNNVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+**k-NN** does not learn a global formula: it stores the data and, when a new case arrives, looks at its nearest neighbors and decides by majority.
+
+<TaxonomyBox
+  modelType="An instance-based method that decides by local majority among the closest examples in feature space."
+  optimizationMethods={[
+    "No parametric fitting: the method stores the sample and compares distances",
+    "Selecting k, the distance metric and distance weighting by validation",
+    "Speeding up queries with brute-force search, KD-tree or Ball tree",
+  ]}
+  typicalOptimization="There is no parametric training; the usual approach is to tune k and use distance-based search"
+  typicalLoss="It does not minimize an explicit loss during training; it is typically selected by validation classification error"
+/>
+
+## Explore a local decision
+
+<VizFrame>
+  <KNNVisualizer client:visible lang="en" />
+</VizFrame>
+
+## The idea
+
+The decision depends on the immediate neighborhood. If positive examples dominate around the new point, the prediction will be positive; if negatives dominate, the opposite happens.
+
+## What to look for
+
+- With a small $k$, the model reacts strongly to local noise.
+- With a large $k$, the boundary becomes smoother and loses detail.
+- The scale of the variables matters: distance (usually Euclidean) decides everything, so it is a good idea to standardize.
+- In high dimensions, distances lose discriminating power (the "curse of dimensionality").
+
+## Applications
+
+Useful for prototypes, local pattern recognition, and settings where an intuitive rule based on proximity is preferred over a complex parametric model. Its cost is at prediction time: every new case has to be compared with the whole sample.

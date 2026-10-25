@@ -6,8 +6,20 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import remarkMath from 'remark-math';
 import rehypeMathJaxSvg from 'rehype-mathjax/svg';
+import { existsSync, readdirSync } from 'node:fs';
 
 const SITE = 'https://www.govieworks.com';
+
+/**
+ * Slugs that have an English translation (files in <dir>/en/ named like the Spanish source).
+ * @param {string} dir
+ */
+const translated = (dir) =>
+  new Set(existsSync(dir) ? readdirSync(dir).filter((f) => /\.mdx?$/.test(f)).map((f) => f.replace(/\.mdx?$/, '')) : []);
+const EN_CONCEPTS = translated('./src/content/concepts/en');
+const EN_POSTS = translated('./src/content/blog/en');
+/** @param {string} esSeg @param {string} slug */
+const hasEnglish = (esSeg, slug) => (esSeg === 'conceptos' ? EN_CONCEPTS : EN_POSTS).has(slug);
 
 // Spanish ↔ English section slugs (mirrors src/i18n/routes.ts).
 /** @type {Record<string, string>} */
@@ -25,8 +37,8 @@ function localePair(path) {
   const esSeg = isEn ? Object.keys(SECTIONS).find((k) => SECTIONS[k] === parts[0]) : parts[0];
   if (!esSeg || !(esSeg in SECTIONS)) return null;
   const rest = parts.slice(1);
-  // Concept and blog entries only exist in Spanish (the /en copies are excluded above).
-  if (rest.length && (esSeg === 'conceptos' || esSeg === 'blog')) return null;
+  // Concept and blog entries pair only when an English translation exists.
+  if (rest.length && (esSeg === 'conceptos' || esSeg === 'blog') && !hasEnglish(esSeg, rest[0])) return null;
   const tail = rest.length ? `${rest.join('/')}/` : '';
   return { es: `/${esSeg}/${tail}`, en: `/en/${SECTIONS[esSeg]}/${tail}` };
 }
@@ -44,8 +56,11 @@ export default defineConfig({
     mdx({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeMathJaxSvg] }),
     react(),
     sitemap({
-      // /en concept and blog pages are Spanish fallbacks that canonicalize to the original.
-      filter: (page) => !/\/en\/(concepts|blog)\/[^/]+\/$/.test(new URL(page).pathname),
+      // Untranslated /en concept and blog pages are Spanish fallbacks that canonicalize to the original.
+      filter: (page) => {
+        const m = new URL(page).pathname.match(/^\/en\/(concepts|blog)\/([^/]+)\/$/);
+        return !m || hasEnglish(m[1] === 'concepts' ? 'conceptos' : 'blog', m[2]);
+      },
       // Pair es/en pages by section, since slugs are translated (acerca ↔ about, ...).
       serialize: (item) => {
         const pair = localePair(new URL(item.url).pathname);

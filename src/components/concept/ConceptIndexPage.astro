@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { areaLabel } from './areas';
 import ConceptCard from './ConceptCard.astro';
 import { getLevelTranslationKey, getTranslations, type Locale } from '../../i18n/utils';
 import { conceptHref, getConcepts, groupByArea, readingMinutes } from './concepts';
@@ -53,7 +54,7 @@ const card = (e: (typeof entries)[number]) => ({
 
 		{groups.map(({ area, items }) => (
 			<section class="concepts-index__group" data-group>
-				<h2 class="concepts-index__heading">{area}</h2>
+				<h2 class="concepts-index__heading">{areaLabel(lang, area)}</h2>
 				<div class="concepts-index__grid">
 					{items.map((e) => (
 						<div data-level={e.data.level}><ConceptCard {...card(e)} /></div>

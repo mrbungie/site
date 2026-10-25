@@ -59,7 +59,7 @@ const hreflangs = alternates
 	: locales.flatMap((l) => {
 			if (l === lang) return [[l, canonical] as const];
 			const m = switchLocalePath(Astro.url.pathname, l);
-			return m.exact ? [[l, abs(m.path)] as const] : [];
+			return m.exact ? [[l, abs(withSlash(m.path))] as const] : [];
 		});
 const hasAlternates = hreflangs.length > 1;
 const defaultAlt = hreflangs.find(([l]) => l === 'es')?.[1] ?? canonical;

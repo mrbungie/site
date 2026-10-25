@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { linearSample, ringSample, type Label, type Point2D } from './shared/datasets';
+import { common, type Lang } from './shared/i18n';
 import { fmt } from './shared/math';
 import {
   Button, Callout, Legend, Mark, Notes, Panel, Plot, PlotSvg, QueryHandle, Segmented, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v,
@@ -21,7 +22,68 @@ const vote = (neighbors: { p: Point2D }[]): { label: Label; positives: number } 
   return { label: positives * 2 > neighbors.length ? 1 : 0, positives };
 };
 
-const KNNVisualizer = () => {
+const T = {
+  es: {
+    class1Circles: 'Clase 1 (círculos)',
+    class0Squares: 'Clase 0 (cuadrados)',
+    title: 'Laboratorio k-NN',
+    subtitle: 'Mayoría local entre vecinos',
+    dragCaption: 'Arrastra el punto de consulta o usa las flechas',
+    radius: 'radio',
+    plotLabel: (k: number, decision: string) => `Clasificación k-NN con k igual a ${k}. Predicción: ${decision}`,
+    queryLabel: 'Punto de consulta',
+    dataset: 'Conjunto de datos',
+    ring: 'Anillo',
+    linear: 'Lineal',
+    kLabel: 'k vecinos',
+    kHint: 'Siempre impar para evitar empates.',
+    queryX: 'Consulta X',
+    queryY: 'Consulta Y',
+    regions: 'Regiones de decisión',
+    local: 'Predicción local',
+    votesFor: (votes: number, total: number) => `${votes} de ${total} vecinos votan por esta clase.`,
+    votes1: 'Votos clase 1',
+    votes0: 'Votos clase 0',
+    usedNeighbor: 'Vecino usado',
+    notes: [
+      'k = 1 memoriza el ruido: la frontera es muy irregular.',
+      'k grande suaviza, pero en el anillo termina borrando el patrón.',
+      'Solo los vecinos con anillo influyen en la predicción.',
+    ],
+  },
+  en: {
+    class1Circles: 'Class 1 (circles)',
+    class0Squares: 'Class 0 (squares)',
+    title: 'k-NN lab',
+    subtitle: 'Local majority vote among neighbors',
+    dragCaption: 'Drag the query point or use the arrow keys',
+    radius: 'radius',
+    plotLabel: (k: number, decision: string) => `k-NN classification with k equal to ${k}. Prediction: ${decision}`,
+    queryLabel: 'Query point',
+    dataset: 'Dataset',
+    ring: 'Ring',
+    linear: 'Linear',
+    kLabel: 'k neighbors',
+    kHint: 'Always odd to avoid ties.',
+    queryX: 'Query X',
+    queryY: 'Query Y',
+    regions: 'Decision regions',
+    local: 'Local prediction',
+    votesFor: (votes: number, total: number) => `${votes} of ${total} neighbors vote for this class.`,
+    votes1: 'Class 1 votes',
+    votes0: 'Class 0 votes',
+    usedNeighbor: 'Neighbor used',
+    notes: [
+      'k = 1 memorizes the noise: the boundary is very irregular.',
+      'Large k smooths it out, but on the ring it ends up erasing the pattern.',
+      'Only the ringed neighbors influence the prediction.',
+    ],
+  },
+} as const;
+
+const KNNVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
+  const c = common[lang];
   const [dataset, setDataset] = useState<Dataset>('ring');
   const [version, setVersion] = useState(0);
   const [k, setK] = useState(5);
@@ -49,20 +111,20 @@ const KNNVisualizer = () => {
     });
   }, [k, points, showRegions]);
 
-  const decisionText = result.label === 1 ? 'Clase 1 (círculos)' : 'Clase 0 (cuadrados)';
+  const decisionText = result.label === 1 ? t.class1Circles : t.class0Squares;
 
   return (
     <VizFrame
-      title="Laboratorio k-NN"
-      subtitle="Mayoría local entre vecinos"
-      actions={<Button onClick={() => setVersion((n) => n + 1)}>Nueva muestra</Button>}
+      title={t.title}
+      subtitle={t.subtitle}
+      actions={<Button onClick={() => setVersion((n) => n + 1)}>{c.newSample}</Button>}
     >
       <VizBody
         plot={
-          <Plot caption={<><span>Arrastra el punto de consulta o usa las flechas</span><span>radio = {fmt(result.radius, 1)}</span></>}>
+          <Plot caption={<><span>{t.dragCaption}</span><span>{t.radius} = {fmt(result.radius, 1)}</span></>}>
             <PlotSvg
               svgRef={svgRef}
-              label={`Clasificación k-NN con k igual a ${k}. Predicción: ${decisionText}`}
+              label={t.plotLabel(k, decisionText)}
             >
               {regions.map((r) => (
                 <rect key={`${r.x}-${r.y}`} className={r.label === 1 ? v.regionPos : v.regionNeg} x={r.x} y={flipY(r.y + r.cell)} width={r.cell + 0.05} height={r.cell + 0.05} />
@@ -75,37 +137,33 @@ const KNNVisualizer = () => {
               {points.map((p) => (
                 <Mark key={`${dataset}-${version}-${p.id}`} x={p.x} y={p.y} label={p.label} ring={result.ids.has(p.id)} delay={p.id * 0.006} />
               ))}
-              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label="Punto de consulta" onMove={(x, y) => setQuery({ x, y })} />
+              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label={t.queryLabel} lang={lang} onMove={(x, y) => setQuery({ x, y })} />
             </PlotSvg>
           </Plot>
         }
         side={
           <>
-            <Panel title="Ajustes">
+            <Panel title={c.settings}>
               <Segmented<Dataset>
-                label="Conjunto de datos"
+                label={t.dataset}
                 value={dataset}
                 onChange={setDataset}
-                options={[{ value: 'ring', label: 'Anillo' }, { value: 'linear', label: 'Lineal' }]}
+                options={[{ value: 'ring', label: t.ring }, { value: 'linear', label: t.linear }]}
               />
-              <Slider label="k vecinos" value={k} min={1} max={21} step={2} onChange={setK} tone="pos" hint="Siempre impar para evitar empates." />
-              <Slider label="Consulta X" value={query.x} min={2} max={98} step={1} onChange={(x) => setQuery((q) => ({ ...q, x }))} format={(x) => fmt(x, 0)} tone="c3" />
-              <Slider label="Consulta Y" value={query.y} min={2} max={98} step={1} onChange={(y) => setQuery((q) => ({ ...q, y }))} format={(y) => fmt(y, 0)} tone="c4" />
-              <Button pressed={showRegions} onClick={() => setShowRegions((s) => !s)}>Regiones de decisión</Button>
+              <Slider label={t.kLabel} value={k} min={1} max={21} step={2} onChange={setK} tone="pos" hint={t.kHint} />
+              <Slider label={t.queryX} value={query.x} min={2} max={98} step={1} onChange={(x) => setQuery((q) => ({ ...q, x }))} format={(x) => fmt(x, 0)} tone="c3" />
+              <Slider label={t.queryY} value={query.y} min={2} max={98} step={1} onChange={(y) => setQuery((q) => ({ ...q, y }))} format={(y) => fmt(y, 0)} tone="c4" />
+              <Button pressed={showRegions} onClick={() => setShowRegions((s) => !s)}>{t.regions}</Button>
             </Panel>
-            <Callout eyebrow="Predicción local" title={decisionText} tone={result.label === 1 ? 'pos' : 'neg'}>
-              {result.label === 1 ? result.positives : result.neighbors.length - result.positives} de {result.neighbors.length} vecinos votan por esta clase.
+            <Callout eyebrow={t.local} title={decisionText} tone={result.label === 1 ? 'pos' : 'neg'}>
+              {t.votesFor(result.label === 1 ? result.positives : result.neighbors.length - result.positives, result.neighbors.length)}
             </Callout>
             <StatGrid>
-              <Stat label="Votos clase 1" value={result.positives} tone="pos" />
-              <Stat label="Votos clase 0" value={result.neighbors.length - result.positives} tone="neg" />
+              <Stat label={t.votes1} value={result.positives} tone="pos" />
+              <Stat label={t.votes0} value={result.neighbors.length - result.positives} tone="neg" />
             </StatGrid>
-            <Legend items={[{ kind: 'pos', label: 'Clase 1' }, { kind: 'neg', label: 'Clase 0' }, { kind: 'ring', label: 'Vecino usado' }]} />
-            <Notes items={[
-              'k = 1 memoriza el ruido: la frontera es muy irregular.',
-              'k grande suaviza, pero en el anillo termina borrando el patrón.',
-              'Solo los vecinos con anillo influyen en la predicción.',
-            ]} />
+            <Legend items={[{ kind: 'pos', label: c.class1 }, { kind: 'neg', label: c.class0 }, { kind: 'ring', label: t.usedNeighbor }]} lang={lang} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

@@ -6,35 +6,37 @@ interface Props {
 	typicalLoss: string;
 	class?: string;
 }
+// MDX can't pass the page language down, so read it from the URL.
+const t = Astro.url.pathname.startsWith('/en/')
+	? { eyebrow: 'Method taxonomy', title: 'At a glance', intro: 'What kind of model it is, how it is usually fit, and which error criterion it most often uses.', model: 'Model', optimization: 'Optimization', loss: 'Typical loss', typical: 'Most common' }
+	: { eyebrow: 'Taxonomía del método', title: 'Resumen estructural', intro: 'Qué clase de modelo es, cómo suele ajustarse y qué criterio de error usa con más frecuencia.', model: 'Modelo', optimization: 'Optimización', loss: 'Pérdida típica', typical: 'Más típico' };
 ---
 
 <aside class:list={['taxonomy-box', 'not-prose', Astro.props.class]}>
 	<div class="taxonomy-box__header">
-		<p class="taxonomy-box__eyebrow">Taxonomía del método</p>
-		<h2 class="taxonomy-box__title">Resumen estructural</h2>
-		<p class="taxonomy-box__intro">
-			Qué clase de modelo es, cómo suele ajustarse y qué criterio de error usa con más frecuencia.
-		</p>
+		<p class="taxonomy-box__eyebrow">{t.eyebrow}</p>
+		<h2 class="taxonomy-box__title">{t.title}</h2>
+		<p class="taxonomy-box__intro">{t.intro}</p>
 	</div>
 
 	<div class="taxonomy-box__grid">
 		<div class="taxonomy-box__card">
-			<p class="taxonomy-box__label">Modelo</p>
+			<p class="taxonomy-box__label">{t.model}</p>
 			<p class="taxonomy-box__body">{Astro.props.modelType}</p>
 		</div>
 
 		<div class="taxonomy-box__card taxonomy-box__card--accent">
-			<p class="taxonomy-box__label taxonomy-box__label--accent">Optimización</p>
+			<p class="taxonomy-box__label taxonomy-box__label--accent">{t.optimization}</p>
 			<ul class="taxonomy-box__list">
 				{Astro.props.optimizationMethods.map((method: string) => <li>{method}</li>)}
 			</ul>
 			<p class="taxonomy-box__badge">
-				Más típico: {Astro.props.typicalOptimization}
+				{t.typical}: {Astro.props.typicalOptimization}
 			</p>
 		</div>
 
 		<div class="taxonomy-box__card">
-			<p class="taxonomy-box__label">Pérdida típica</p>
+			<p class="taxonomy-box__label">{t.loss}</p>
 			<p class="taxonomy-box__body">{Astro.props.typicalLoss}</p>
 		</div>
 	</div>

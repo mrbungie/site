@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { bootstrap, buildTree, predictProbability, type TreeNode } from './shared/cart';
 import { creditSample } from './shared/datasets';
+import { common, type Lang } from './shared/i18n';
 import { createRng, pct } from './shared/math';
 import {
   Button, Callout, Legend, Mark, Meter, Notes, Panel, Plot, PlotSvg, QueryHandle, Slider, Stat, StatGrid, VizBody, VizFrame, flipY, vizStyles as v,
@@ -11,7 +12,64 @@ const GRID = 28;
 const forestProbability = (forest: TreeNode[], x: number, y: number) =>
   forest.reduce((sum, tree) => sum + (predictProbability(tree, x, y) >= 0.5 ? 1 : 0), 0) / forest.length;
 
-const RandomForestVisualizer = () => {
+const T = {
+  es: {
+    title: 'Laboratorio Random Forest',
+    subtitle: 'Bagging y votación de árboles',
+    xCaption: 'X: ingreso',
+    yCaption: 'Y: deuda / ingreso',
+    plotLabel: (n: number) => `Probabilidad de aprobación del bosque de ${n} árboles`,
+    queryLabel: 'Cliente a evaluar',
+    ensemble: 'Ensamble',
+    treeCount: 'Número de árboles',
+    maxDepth: 'Profundidad máxima',
+    voting: 'Votación',
+    approved: 'Aprobado',
+    rejected: 'Rechazado',
+    votesText: (pos: number, total: number, share: string) => `${pos} de ${total} árboles votan “aprobado” (${share}).`,
+    eachVote: 'Voto de cada árbol',
+    individual: 'Votos individuales',
+    treeTitle: (i: number, vote: boolean) => `Árbol ${i}: ${vote ? 'aprobado' : 'rechazado'}`,
+    shareLabel: 'Proporción de votos a favor',
+    single: 'Árbol único (prueba)',
+    forest: (n: number) => `Bosque (${n})`,
+    notes: [
+      'Cada árbol entrena con una muestra bootstrap y un solo atributo candidato por corte.',
+      'Un árbol único tiene una frontera escalonada; promediar muchos árboles la suaviza y reduce la varianza.',
+      'La exactitud se mide en 400 casos nuevos que ningún árbol vio.',
+    ],
+  },
+  en: {
+    title: 'Random forest lab',
+    subtitle: 'Bagging and tree voting',
+    xCaption: 'X: income',
+    yCaption: 'Y: debt / income',
+    plotLabel: (n: number) => `Approval probability of the ${n}-tree forest`,
+    queryLabel: 'Customer to evaluate',
+    ensemble: 'Ensemble',
+    treeCount: 'Number of trees',
+    maxDepth: 'Max depth',
+    voting: 'Voting',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    votesText: (pos: number, total: number, share: string) => `${pos} of ${total} trees vote “approved” (${share}).`,
+    eachVote: 'Each tree’s vote',
+    individual: 'Individual votes',
+    treeTitle: (i: number, vote: boolean) => `Tree ${i}: ${vote ? 'approved' : 'rejected'}`,
+    shareLabel: 'Share of votes in favor',
+    single: 'Single tree (test)',
+    forest: (n: number) => `Forest (${n})`,
+    notes: [
+      'Each tree trains on a bootstrap sample and a single candidate feature per split.',
+      'A single tree has a staircase boundary; averaging many trees smooths it and reduces variance.',
+      'Accuracy is measured on 400 new cases that no tree has seen.',
+    ],
+  },
+} as const;
+
+const RandomForestVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
+  const c = common[lang];
   const [version, setVersion] = useState(0);
   const [treeCount, setTreeCount] = useState(15);
   const [depth, setDepth] = useState(4);
@@ -55,51 +113,47 @@ const RandomForestVisualizer = () => {
 
   return (
     <VizFrame
-      title="Laboratorio Random Forest"
-      subtitle="Bagging y votación de árboles"
-      actions={<Button onClick={() => setVersion((n) => n + 1)}>Nueva muestra</Button>}
+      title={t.title}
+      subtitle={t.subtitle}
+      actions={<Button onClick={() => setVersion((n) => n + 1)}>{c.newSample}</Button>}
     >
       <VizBody
         plot={
-          <Plot caption={<><span>X: ingreso</span><span>Y: deuda / ingreso</span></>}>
-            <PlotSvg svgRef={svgRef} label={`Probabilidad de aprobación del bosque de ${treeCount} árboles`}>
+          <Plot caption={<><span>{t.xCaption}</span><span>{t.yCaption}</span></>}>
+            <PlotSvg svgRef={svgRef} label={t.plotLabel(treeCount)}>
               {cells.map((c) => (
                 <rect key={`${c.x}-${c.y}`} className={c.p >= 0.5 ? v.markPos : v.markNeg} style={{ opacity: 0.06 + 0.3 * Math.abs(2 * c.p - 1) }} x={c.x} y={flipY(c.y + c.size)} width={c.size + 0.05} height={c.size + 0.05} />
               ))}
               {train.map((p) => (
                 <Mark key={`${version}-${p.id}`} x={p.x} y={p.y} label={p.label} size={1.35} delay={p.id * 0.004} />
               ))}
-              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label="Cliente a evaluar" onMove={(x, y) => setQuery({ x, y })} />
+              <QueryHandle x={query.x} y={query.y} svgRef={svgRef} label={t.queryLabel} lang={lang} onMove={(x, y) => setQuery({ x, y })} />
             </PlotSvg>
           </Plot>
         }
         side={
           <>
-            <Panel title="Ensamble">
-              <Slider label="Número de árboles" value={treeCount} min={1} max={40} step={1} onChange={setTreeCount} tone="pos" />
-              <Slider label="Profundidad máxima" value={depth} min={1} max={7} step={1} onChange={setDepth} tone="c3" />
+            <Panel title={t.ensemble}>
+              <Slider label={t.treeCount} value={treeCount} min={1} max={40} step={1} onChange={setTreeCount} tone="pos" />
+              <Slider label={t.maxDepth} value={depth} min={1} max={7} step={1} onChange={setDepth} tone="c3" />
             </Panel>
-            <Callout eyebrow="Votación" title={approved ? 'Aprobado' : 'Rechazado'} tone={approved ? 'pos' : 'neg'}>
-              {positives} de {votes.length} árboles votan “aprobado” ({pct(share, 0)}).
+            <Callout eyebrow={t.voting} title={approved ? t.approved : t.rejected} tone={approved ? 'pos' : 'neg'}>
+              {t.votesText(positives, votes.length, pct(share, 0))}
             </Callout>
-            <Panel title="Voto de cada árbol">
-              <ul className={styles.votes} aria-label="Votos individuales">
+            <Panel title={t.eachVote}>
+              <ul className={styles.votes} aria-label={t.individual}>
                 {votes.map((vote, i) => (
-                  <li key={i} className={`${styles.vote} ${vote ? styles.votePos : styles.voteNeg}`} title={`Árbol ${i + 1}: ${vote ? 'aprobado' : 'rechazado'}`}>{vote ? '+' : '−'}</li>
+                  <li key={i} className={`${styles.vote} ${vote ? styles.votePos : styles.voteNeg}`} title={t.treeTitle(i + 1, vote === 1)}>{vote ? '+' : '−'}</li>
                 ))}
               </ul>
-              <Meter value={share} tone="pos" label="Proporción de votos a favor" />
+              <Meter value={share} tone="pos" label={t.shareLabel} />
             </Panel>
             <StatGrid>
-              <Stat label="Árbol único (prueba)" value={pct(accuracy.single)} tone="neg" />
-              <Stat label={`Bosque (${treeCount})`} value={pct(accuracy.forest)} tone="pos" />
+              <Stat label={t.single} value={pct(accuracy.single)} tone="neg" />
+              <Stat label={t.forest(treeCount)} value={pct(accuracy.forest)} tone="pos" />
             </StatGrid>
-            <Legend items={[{ kind: 'pos', label: 'Aprobado' }, { kind: 'neg', label: 'Rechazado' }]} />
-            <Notes items={[
-              'Cada árbol entrena con una muestra bootstrap y un solo atributo candidato por corte.',
-              'Un árbol único tiene una frontera escalonada; promediar muchos árboles la suaviza y reduce la varianza.',
-              'La exactitud se mide en 400 casos nuevos que ningún árbol vio.',
-            ]} />
+            <Legend items={[{ kind: 'pos', label: t.approved }, { kind: 'neg', label: t.rejected }]} lang={lang} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

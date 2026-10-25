@@ -1,0 +1,56 @@
+---
+title: "Correlation"
+summary: "Normalized covariance: a number between -1 and 1 that measures the strength of a linear relationship."
+area: "Fundamentos estadísticos"
+level: "beginner"
+order: 2
+tags: ["statistics", "linear relationship", "Pearson"]
+prerequisites: ["covarianza"]
+related: ["covarianza", "regresion-lineal", "pca"]
+featured: true
+draft: false
+---
+
+import CorrelationVisualizer from '../../../components/visuals/CorrelationVisualizer';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+import Callout from '../../../components/concept/Callout.astro';
+
+**Pearson correlation** is probably the most widely used measure of the relationship between two variables. Unlike [covariance](/en/concepts/covarianza), it is normalized and always lies between **-1 and 1**.
+
+## Definition
+
+The correlation $\rho$ divides the covariance by the product of the standard deviations:
+
+$$
+\rho_{X,Y} = \frac{\operatorname{cov}(X,Y)}{\sigma_X \, \sigma_Y}
+$$
+
+where $\operatorname{cov}(X,Y)$ is the covariance and $\sigma_X$, $\sigma_Y$ are the standard deviations of $X$ and $Y$. With sample data, the estimator is written $r$.
+
+## Interpretation
+
+- **1**: perfect positive linear relationship.
+- **0**: no linear relationship.
+- **-1**: perfect negative linear relationship.
+
+## Play with a sample
+
+Change the target correlation and the sample size. You will see that the observed coefficient fluctuates because of sampling noise, even though the underlying relationship is always the same.
+
+<VizFrame>
+  <CorrelationVisualizer client:visible lang="en" />
+</VizFrame>
+
+<Callout type="tip">
+With few observations, $r$ can be far from the true value. More data usually stabilizes the estimate.
+</Callout>
+
+## Why it is better than covariance
+
+Because it lives in a fixed range, it lets you compare the relationship between "height and weight" with that between "temperature and electricity consumption" without worrying about units.
+
+## Caution
+
+<Callout type="warning">
+**Correlation does not imply causation.** Two variables moving together does not mean one causes the other: there may be a hidden third variable (a confounder) or just a coincidence. Also, Pearson only detects **linear** relationships: a U-shaped relationship can have a correlation close to 0.
+</Callout>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from './shared/hooks';
 import { clamp, createRng, fmt, pct, sigmoid } from './shared/math';
+import { common, type Lang } from './shared/i18n';
 import { Button, Callout, Legend, Notes, Panel, Plot, PlotSvg, Slider, Stat, StatGrid, VizBody, VizFrame, flipY } from './shared/ui';
 import styles from './LogisticRegressionVisualizer.module.css';
 
@@ -72,7 +73,80 @@ const fitNewton = (data: Obs[]): Params => {
   return { b0: clamp(b0, -B0_RANGE, B0_RANGE), b1: clamp(b1, -B1_RANGE, B1_RANGE) };
 };
 
-const LogisticRegressionVisualizer = () => {
+const T = {
+  es: {
+    title: 'Laboratorio de regresión logística',
+    subtitle: 'Sigmoide, verosimilitud y umbral',
+    xCaption: 'x (característica)',
+    yCaption: 'y = 0 abajo · y = 1 arriba',
+    plotLabel: (n: number, loss: string) => `Curva logística con ${n} observaciones. Pérdida ${loss}`,
+    params: 'Parámetros',
+    slope: 'Pendiente β₁',
+    intercept: 'Intercepto β₀',
+    threshold: 'Umbral de decisión',
+    thresholdHint: 'Cambia las decisiones, no las probabilidades.',
+    sampleSize: 'Tamaño de muestra',
+    stop: 'Detener descenso',
+    descent: 'Descenso de gradiente',
+    newton: 'Ir al óptimo (Newton)',
+    likelihood: 'Verosimilitud',
+    loss: (l: string) => `Pérdida ${l}`,
+    minLoss: (m: string, g: string) => `Mínimo alcanzable: ${m}. |∇| = ${g}`,
+    boundary: (x: string) => ` · frontera en x* = ${x}`,
+    confusion: 'Matriz de confusión',
+    pred1: 'pred. 1',
+    pred0: 'pred. 0',
+    real1: 'real 1',
+    real0: 'real 0',
+    tp: 'VP', fn: 'FN', fp: 'FP', tn: 'VN',
+    correct: 'Bien clasificado',
+    error: 'Error',
+    thresholdLegend: 'Umbral',
+    notes: [
+      'Los datos vienen de un modelo fijo; tú buscas los β que mejor lo recuperan.',
+      'El gradiente es cero en el óptimo: ahí la pérdida deja de bajar.',
+      'Subir el umbral sacrifica recall para ganar precision.',
+    ],
+  },
+  en: {
+    title: 'Logistic regression lab',
+    subtitle: 'Sigmoid, likelihood and threshold',
+    xCaption: 'x (feature)',
+    yCaption: 'y = 0 bottom · y = 1 top',
+    plotLabel: (n: number, loss: string) => `Logistic curve with ${n} observations. Loss ${loss}`,
+    params: 'Parameters',
+    slope: 'Slope β₁',
+    intercept: 'Intercept β₀',
+    threshold: 'Decision threshold',
+    thresholdHint: 'It changes the decisions, not the probabilities.',
+    sampleSize: 'Sample size',
+    stop: 'Stop descent',
+    descent: 'Gradient descent',
+    newton: 'Jump to the optimum (Newton)',
+    likelihood: 'Likelihood',
+    loss: (l: string) => `Loss ${l}`,
+    minLoss: (m: string, g: string) => `Attainable minimum: ${m}. |∇| = ${g}`,
+    boundary: (x: string) => ` · boundary at x* = ${x}`,
+    confusion: 'Confusion matrix',
+    pred1: 'pred. 1',
+    pred0: 'pred. 0',
+    real1: 'actual 1',
+    real0: 'actual 0',
+    tp: 'TP', fn: 'FN', fp: 'FP', tn: 'TN',
+    correct: 'Correctly classified',
+    error: 'Error',
+    thresholdLegend: 'Threshold',
+    notes: [
+      'The data come from a fixed model; you look for the β that best recover it.',
+      'The gradient is zero at the optimum: that is where the loss stops decreasing.',
+      'Raising the threshold sacrifices recall to gain precision.',
+    ],
+  },
+} as const;
+
+const LogisticRegressionVisualizer = ({ lang = 'es' }: { lang?: Lang }) => {
+  const t = T[lang];
+  const c = common[lang];
   const [params, setParams] = useState<Params>({ b0: 0, b1: 0.4 });
   const [threshold, setThreshold] = useState(0.5);
   const [n, setN] = useState(48);
@@ -155,18 +229,18 @@ const LogisticRegressionVisualizer = () => {
 
   return (
     <VizFrame
-      title="Laboratorio de regresión logística"
-      subtitle="Sigmoide, verosimilitud y umbral"
-      actions={<Button onClick={() => setVersion((value) => value + 1)}>Nueva muestra</Button>}
+      title={t.title}
+      subtitle={t.subtitle}
+      actions={<Button onClick={() => setVersion((value) => value + 1)}>{c.newSample}</Button>}
     >
       <VizBody
         plot={
           <Plot
             wide
             overlay={<>p(y=1|x) = σ({fmt(params.b1, 2)}·x {params.b0 < 0 ? '−' : '+'} {fmt(Math.abs(params.b0), 2)})</>}
-            caption={<><span>x (característica)</span><span>y = 0 abajo · y = 1 arriba</span></>}
+            caption={<><span>{t.xCaption}</span><span>{t.yCaption}</span></>}
           >
-            <PlotSvg label={`Curva logística con ${data.length} observaciones. Pérdida ${fmt(metrics.loss, 3)}`}>
+            <PlotSvg label={t.plotLabel(data.length, fmt(metrics.loss, 3))}>
               <line className={styles.threshold} x1={0} y1={flipY(threshold * 100)} x2={100} y2={flipY(threshold * 100)} />
               {inRange && <line className={styles.boundary} x1={toPlotX(boundary)} y1={0} x2={toPlotX(boundary)} y2={100} />}
               <path className={styles.curve} d={curve} />
@@ -180,16 +254,16 @@ const LogisticRegressionVisualizer = () => {
         }
         side={
           <>
-            <Panel title="Parámetros">
-              <Slider label="Pendiente β₁" value={params.b1} min={-B1_RANGE} max={B1_RANGE} step={0.05} onChange={(b1) => setParams((p) => ({ ...p, b1 }))} format={(x) => fmt(x, 2)} tone="c4" />
-              <Slider label="Intercepto β₀" value={params.b0} min={-B0_RANGE} max={B0_RANGE} step={0.05} onChange={(b0) => setParams((p) => ({ ...p, b0 }))} format={(x) => fmt(x, 2)} tone="pos" />
-              <Slider label="Umbral de decisión" value={threshold} min={0.1} max={0.9} step={0.01} onChange={setThreshold} format={(x) => fmt(x, 2)} tone="c5" hint="Cambia las decisiones, no las probabilidades." />
-              <Slider label="Tamaño de muestra" value={n} min={20} max={120} step={2} onChange={setN} tone="c3" />
-              <Button pressed={descending} onClick={() => setDescending((d) => !d)}>{descending ? 'Detener descenso' : 'Descenso de gradiente'}</Button>
-              <Button onClick={() => { setDescending(false); setParams(mle); }}>Ir al óptimo (Newton)</Button>
+            <Panel title={t.params}>
+              <Slider label={t.slope} value={params.b1} min={-B1_RANGE} max={B1_RANGE} step={0.05} onChange={(b1) => setParams((p) => ({ ...p, b1 }))} format={(x) => fmt(x, 2)} tone="c4" />
+              <Slider label={t.intercept} value={params.b0} min={-B0_RANGE} max={B0_RANGE} step={0.05} onChange={(b0) => setParams((p) => ({ ...p, b0 }))} format={(x) => fmt(x, 2)} tone="pos" />
+              <Slider label={t.threshold} value={threshold} min={0.1} max={0.9} step={0.01} onChange={setThreshold} format={(x) => fmt(x, 2)} tone="c5" hint={t.thresholdHint} />
+              <Slider label={t.sampleSize} value={n} min={20} max={120} step={2} onChange={setN} tone="c3" />
+              <Button pressed={descending} onClick={() => setDescending((d) => !d)}>{descending ? t.stop : t.descent}</Button>
+              <Button onClick={() => { setDescending(false); setParams(mle); }}>{t.newton}</Button>
             </Panel>
-            <Callout eyebrow="Verosimilitud" title={`Pérdida ${fmt(metrics.loss, 3)}`} tone="c4">
-              Mínimo alcanzable: {fmt(minLoss, 3)}. |∇| = {fmt(gradNorm, 3)}{boundary !== null ? ` · frontera en x* = ${fmt(boundary, 2)}` : ''}.
+            <Callout eyebrow={t.likelihood} title={t.loss(fmt(metrics.loss, 3))} tone="c4">
+              {t.minLoss(fmt(minLoss, 3), fmt(gradNorm, 3))}{boundary !== null ? t.boundary(fmt(boundary, 2)) : ''}.
             </Callout>
             <StatGrid>
               <Stat label="∂L/∂β₀" value={fmt(metrics.grad.b0, 3)} />
@@ -198,25 +272,21 @@ const LogisticRegressionVisualizer = () => {
               <Stat label="Precision" value={metrics.precision === null ? '—' : pct(metrics.precision)} tone="c3" />
               <Stat label="Recall" value={metrics.recall === null ? '—' : pct(metrics.recall)} tone="c5" />
             </StatGrid>
-            <Panel title="Matriz de confusión">
+            <Panel title={t.confusion}>
               <div className={styles.confusion}>
                 <span />
-                <span>pred. 1</span>
-                <span>pred. 0</span>
-                <span>real 1</span>
-                <div className={`${styles.cell} ${styles.good}`}><small>VP</small>{metrics.tp}</div>
-                <div className={`${styles.cell} ${styles.miss}`}><small>FN</small>{metrics.fn}</div>
-                <span>real 0</span>
-                <div className={`${styles.cell} ${styles.miss}`}><small>FP</small>{metrics.fp}</div>
-                <div className={`${styles.cell} ${styles.good}`}><small>VN</small>{metrics.tn}</div>
+                <span>{t.pred1}</span>
+                <span>{t.pred0}</span>
+                <span>{t.real1}</span>
+                <div className={`${styles.cell} ${styles.good}`}><small>{t.tp}</small>{metrics.tp}</div>
+                <div className={`${styles.cell} ${styles.miss}`}><small>{t.fn}</small>{metrics.fn}</div>
+                <span>{t.real0}</span>
+                <div className={`${styles.cell} ${styles.miss}`}><small>{t.fp}</small>{metrics.fp}</div>
+                <div className={`${styles.cell} ${styles.good}`}><small>{t.tn}</small>{metrics.tn}</div>
               </div>
             </Panel>
-            <Legend items={[{ kind: 'pos', label: 'Bien clasificado', tone: 'pos' }, { kind: 'neg', label: 'Error' }, { kind: 'dash', label: 'Umbral', tone: 'c5' }]} />
-            <Notes items={[
-              'Los datos vienen de un modelo fijo; tú buscas los β que mejor lo recuperan.',
-              'El gradiente es cero en el óptimo: ahí la pérdida deja de bajar.',
-              'Subir el umbral sacrifica recall para ganar precision.',
-            ]} />
+            <Legend items={[{ kind: 'pos', label: t.correct, tone: 'pos' }, { kind: 'neg', label: t.error }, { kind: 'dash', label: t.thresholdLegend, tone: 'c5' }]} lang={lang} />
+            <Notes items={[...t.notes]} lang={lang} />
           </>
         }
       />

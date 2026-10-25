@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getPosts, postHref, postSlug } from '../../utils/blog';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from './Hero.astro';
 import { getTranslations } from '../../i18n/utils';
@@ -14,8 +14,7 @@ interface Props { lang: Locale }
 const { lang } = Astro.props;
 const t = getTranslations(lang);
 
-const allPosts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const allPosts = await getPosts(lang);
 
 const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
 ---
@@ -52,7 +51,7 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { yea
       </div>
       <div class="writing-list">
         {allPosts.slice(0, 4).map(post => (
-          <a href={`${routePath(lang, 'blog', post.id)}/`} class="writing-item plain-link">
+          <a href={postHref(lang, postSlug(post))} class="writing-item plain-link">
             <div class="writing-date">{dateFmt.format(post.data.pubDate)}</div>
             <div>
               <div class="writing-title">{post.data.title}</div>

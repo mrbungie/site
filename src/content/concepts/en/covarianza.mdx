@@ -1,0 +1,48 @@
+---
+title: "Covariance"
+summary: "Measures how two variables move together relative to their means; it is the basis of correlation and PCA."
+area: "Fundamentos estadísticos"
+level: "beginner"
+order: 1
+tags: ["statistics", "probability", "linear relationship"]
+prerequisites: []
+related: ["correlacion", "pca"]
+featured: true
+draft: false
+---
+
+**Covariance** tells you how much two random variables vary together around their respective means. It is the basic ingredient for describing a linear relationship between two quantities.
+
+## What the sign tells us
+
+The numerical value depends on the units of the variables, so it is rarely interpreted on its own. The sign, however, is informative:
+
+- **Positive**: when one variable goes up, the other tends to go up.
+- **Negative**: when one variable goes up, the other tends to go down.
+- **Close to zero**: there is no obvious linear trend.
+
+## Definition
+
+For a sample of $n$ pairs $(x_i, y_i)$, the sample covariance is
+
+$$
+\operatorname{cov}(X, Y) = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{n-1}
+$$
+
+where $\bar{x}$ and $\bar{y}$ are the means of each variable. Each term in the numerator is positive when both values are on the same side of their mean, and negative when they are on opposite sides.
+
+### Relationship with variance
+
+If you compute the covariance of a variable with itself, you get its **variance**:
+
+$$
+\operatorname{cov}(X, X) = \operatorname{var}(X) = \sigma_x^2
+$$
+
+## Example
+
+If you look at advertising spend ($x$) and sales ($y$) over several months and both rise together, the covariance will be positive. If spend increases and sales fall, it will be negative.
+
+## Applications
+
+Covariance appears in portfolio calculations in finance, in the covariance matrix used by [PCA](/en/concepts/pca), and in the definition of [correlation](/en/concepts/correlacion), which is its unit-free version.

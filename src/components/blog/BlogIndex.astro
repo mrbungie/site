@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostList from './PostList.astro';
 import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
+import { getPosts, isTranslation } from '../../utils/blog';
 
 interface Props {
 	lang: Locale;
@@ -10,13 +11,14 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = getTranslations(lang);
+const untranslated = lang !== 'es' && (await getPosts(lang)).some((p) => !isTranslation(p));
 ---
 
 <BaseLayout title={`${t('blog.title')} | Germán Oviedo`} description={t('blog.subtitle')} lang={lang}>
 	<header class="blog-header">
 		<h1>{t('blog.title')}</h1>
 		<p>{t('blog.subtitle')}</p>
-		{lang !== 'es' && <p class="note">{t('blog.es-only')}</p>}
+		{untranslated && <p class="note">{t('blog.es-only')}</p>}
 	</header>
 	<PostList lang={lang} />
 </BaseLayout>

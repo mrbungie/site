@@ -1,5 +1,6 @@
 ---
 import { getLevelTranslationKey, getTranslations, type Level, type Locale } from '../../i18n/utils';
+import { areaLabel } from './areas';
 
 interface Link {
 	title: string;
@@ -22,7 +23,7 @@ const t = getTranslations(lang);
 	<dl class="concept-meta__facts">
 		<div>
 			<dt>{t('concepts.area')}</dt>
-			<dd>{area}</dd>
+			<dd>{areaLabel(lang, area)}</dd>
 		</div>
 		<div>
 			<dt>{t('concepts.level')}</dt>

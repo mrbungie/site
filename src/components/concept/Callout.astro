@@ -4,7 +4,9 @@ interface Props {
 	label?: string;
 }
 const { type = 'tip', label } = Astro.props;
-const text = label ?? (type === 'warning' ? 'Cuidado' : 'Consejo');
+// MDX can't pass the page language down, so read it from the URL.
+const en = Astro.url.pathname.startsWith('/en/');
+const text = label ?? (type === 'warning' ? (en ? 'Watch out' : 'Cuidado') : (en ? 'Tip' : 'Consejo'));
 ---
 
 <aside class={`callout callout--${type} not-prose`}>

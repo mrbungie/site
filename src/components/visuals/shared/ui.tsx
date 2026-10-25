@@ -2,6 +2,7 @@ import { memo, useId, useRef, type CSSProperties, type KeyboardEvent, type React
 import { useSvgPoint } from './hooks';
 import { clamp, fmt } from './math';
 import type { Label } from './datasets';
+import { common, type Lang } from './i18n';
 import styles from './viz.module.css';
 
 export const cx = (...names: (string | false | null | undefined)[]) => names.filter(Boolean).join(' ');
@@ -189,8 +190,8 @@ export const Meter = ({ value, tone = 'pos', label }: { value: number; tone?: To
 );
 
 export type LegendKind = 'pos' | 'neg' | 'ring' | 'dash' | 'line';
-export const Legend = ({ items }: { items: { kind: LegendKind; label: string; tone?: Tone }[] }) => (
-  <ul className={styles.legend} aria-label="Leyenda">
+export const Legend = ({ items, lang = 'es' }: { items: { kind: LegendKind; label: string; tone?: Tone }[]; lang?: Lang }) => (
+  <ul className={styles.legend} aria-label={common[lang].legend}>
     {items.map((item) => (
       <li key={item.label}>
         <span
@@ -210,8 +211,8 @@ export const Legend = ({ items }: { items: { kind: LegendKind; label: string; to
   </ul>
 );
 
-export const Notes = ({ title = 'Qué mirar', items }: { title?: string; items: string[] }) => (
-  <Panel title={title}>
+export const Notes = ({ title, items, lang = 'es' }: { title?: string; items: string[]; lang?: Lang }) => (
+  <Panel title={title ?? common[lang].whatToLook}>
     <ul className={styles.notes}>
       {items.map((item) => <li key={item}>{item}</li>)}
     </ul>
@@ -294,13 +295,14 @@ Mark.displayName = 'Mark';
 
 /** Draggable + keyboard-movable point in plot space (0..100, y up). Arrow keys move by 2 (8 with Shift). */
 export const QueryHandle = ({
-  x, y, svgRef, onMove, label,
+  x, y, svgRef, onMove, label, lang = 'es',
 }: {
   x: number;
   y: number;
   svgRef: RefObject<SVGSVGElement | null>;
   onMove: (x: number, y: number) => void;
   label: string;
+  lang?: Lang;
 }) => {
   const toSvg = useSvgPoint(svgRef);
   const dragging = useRef(false);
@@ -321,7 +323,7 @@ export const QueryHandle = ({
     <g
       tabIndex={0}
       role="img"
-      aria-label={`${label}: x ${fmt(x, 0)}, y ${fmt(y, 0)}. Arrastra o usa las flechas.`}
+      aria-label={`${label}: x ${fmt(x, 0)}, y ${fmt(y, 0)}. ${common[lang].dragHint}`}
       className={styles.focusable}
       style={{ touchAction: 'none' }}
       onKeyDown={onKey}

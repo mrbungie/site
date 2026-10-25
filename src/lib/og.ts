@@ -11,7 +11,8 @@ import { projects } from '../data/portfolio';
 import { services } from '../data/services';
 import { profile } from '../data/profile';
 import { getConcepts, conceptHref } from '../components/concept/concepts';
-import { getPosts } from '../utils/blog';
+import { areaLabel } from '../components/concept/areas';
+import { getPosts, postSlug } from '../utils/blog';
 
 export interface OgCard {
   key: string; // pathname without slashes, 'home' for /
@@ -35,7 +36,6 @@ export async function hasOgCard(pathname: string) {
 }
 
 async function buildCards(): Promise<OgCard[]> {
-  const posts = await getPosts();
   const cards: OgCard[] = [];
   for (const lang of locales) {
     const home = lang === 'es' ? '/' : `/${lang}/`;
@@ -57,10 +57,10 @@ async function buildCards(): Promise<OgCard[]> {
     }
     const { entries } = await getConcepts(lang);
     for (const c of entries) {
-      cards.push({ key: keyOf(conceptHref(lang, c)), lang, kicker: tr(lang, 'Conceptos de ML', 'ML Concepts') + ` · ${c.data.area}`, title: c.data.title });
+      cards.push({ key: keyOf(conceptHref(lang, c)), lang, kicker: tr(lang, 'Conceptos de ML', 'ML Concepts') + ` · ${areaLabel(lang, c.data.area)}`, title: c.data.title });
     }
-    for (const post of posts) {
-      cards.push({ key: keyOf(routePath(lang, 'blog', post.id)), lang, kicker: 'Blog', title: post.data.title });
+    for (const post of await getPosts(lang)) {
+      cards.push({ key: keyOf(routePath(lang, 'blog', postSlug(post))), lang, kicker: 'Blog', title: post.data.title });
     }
   }
   return cards;

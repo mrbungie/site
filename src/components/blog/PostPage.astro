@@ -11,7 +11,7 @@ interface Props {
 
 const { post, lang } = Astro.props;
 const { Content } = await render(post);
-const posts = await getPosts();
+const posts = await getPosts(lang);
 const i = posts.findIndex((p) => p.id === post.id);
 ---
 

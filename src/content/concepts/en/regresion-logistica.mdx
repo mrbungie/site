@@ -1,0 +1,80 @@
+---
+title: "Logistic Regression"
+summary: "The classic model for estimating probabilities and making binary decisions from a linear combination."
+area: "Modelos lineales"
+level: "intermediate"
+order: 4
+tags: ["classification", "probability", "sigmoid"]
+prerequisites: ["regresion-lineal"]
+related: ["regresion-lineal", "svm", "naive-bayes"]
+featured: true
+draft: false
+---
+
+import LogisticRegressionVisualizer from '../../../components/visuals/LogisticRegressionVisualizer';
+import TaxonomyBox from '../../../components/concept/TaxonomyBox.astro';
+import VizFrame from '../../../components/concept/VizFrame.astro';
+
+**Logistic regression** models the probability that the positive class occurs. It starts from a linear combination of the input variables, but squeezes the output between **0 and 1** using a sigmoid function.
+
+<TaxonomyBox
+  modelType="A linear function followed by a sigmoid to produce class probabilities in binary classification."
+  optimizationMethods={[
+    "Gradient descent, mini-batch or SGD",
+    "Second-order methods such as Newton-Raphson or IRLS",
+    "Quasi-Newton optimizers such as L-BFGS or regularized variants (saga, liblinear)",
+  ]}
+  typicalOptimization="Maximum likelihood with gradient descent or L-BFGS"
+  typicalLoss="Log loss (binary cross-entropy)"
+/>
+
+## Experiment with the decision boundary
+
+Move the slope, the intercept and the threshold to see how the logistic curve, the decision boundary and the confusion matrix change on a simulated binary sample. The controls redefine the process that generates the data: you are not retraining a model on a fixed sample, but exploring different scenarios.
+
+<VizFrame>
+  <LogisticRegressionVisualizer client:visible lang="en" />
+</VizFrame>
+
+## The fundamental equation
+
+The estimated probability of belonging to the positive class is
+
+$$
+P(y=1 \mid x) = \sigma(\beta_0 + \beta_1 x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}}
+$$
+
+Instead of predicting an unbounded line, the model transforms the linear combination into an **S**-shaped curve.
+
+## From the logit to classification
+
+Solving for the linear combination gives the **logit** (log of the odds):
+
+$$
+\log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1 x
+$$
+
+The parameters can be read from it:
+
+- $\beta_0$ shifts the curve to the left or right.
+- $\beta_1$ controls how abrupt the transition between classes is; also, $e^{\beta_1}$ is the factor by which the odds are multiplied when $x$ increases by one unit.
+- The **threshold** $t$ turns the probability into a decision: if $p \ge t$, the model predicts class 1. With $t = 0.5$ the boundary is at $x = -\beta_0/\beta_1$.
+
+## How it is fitted
+
+The coefficients are estimated by maximizing the likelihood, which is equivalent to minimizing the **log loss**:
+
+$$
+\mathcal{L} = -\frac{1}{n}\sum_{i=1}^{n} \Big[ y_i \log p_i + (1-y_i)\log(1-p_i) \Big]
+$$
+
+## What to look for
+
+- If you raise the threshold, the model becomes more conservative when labeling positives.
+- If you increase the slope, the transition between classes becomes sharper.
+- **Accuracy** can improve or worsen depending on the balance between false positives and false negatives.
+- **Log loss** penalizes confident but wrong predictions more heavily.
+
+## Applications
+
+Fraud detection, customer churn prediction, disease risk estimation and, in general, any problem with a **yes/no**, **success/failure** or **buy/no buy** response.
