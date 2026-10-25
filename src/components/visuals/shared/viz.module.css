@@ -3,11 +3,11 @@
    and falls back to the light palette. Dark mode follows html[data-theme="dark"]. */
 
 .frame {
-  --v-bg: var(--bg, #f5f3f0);
+  --v-bg: var(--bg, #fcfbf8);
   --v-ink: var(--ink, #1a1a18);
   --v-muted: var(--ink-muted, #5f5c55);
   --v-rule: var(--rule, #d8d5ce);
-  --v-accent: var(--accent, #8b7355);
+  --v-accent: var(--accent, #7a1f2e);
   --v-surface: color-mix(in srgb, var(--v-ink) 4%, var(--v-bg));
   --v-raised: color-mix(in srgb, var(--v-ink) 7%, var(--v-bg));
   --v-grid: color-mix(in srgb, var(--v-ink) 9%, transparent);

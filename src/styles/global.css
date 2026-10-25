@@ -30,17 +30,17 @@
   color-scheme: light;
 
   /* Colour: semantic */
-  --bg: #F5F3F0;
+  --bg: #FCFBF8;
   --surface: #FFFFFF;
-  --surface-sunken: #EDEAE5;
-  --ink: #1A1A18;
-  --ink-muted: #5F5C55;
-  --ink-faint: #857F74;
-  --accent: #7A6347;
-  --accent-light: #8B735533;
-  --rule: #D8D5CE;
-  --danger: #B4442C;
-  --focus: #7A6347;
+  --surface-sunken: #F4F2ED;
+  --ink: #1A1718;
+  --ink-muted: #5C5656;
+  --ink-faint: #746C6A;
+  --accent: #7A1F2E;
+  --accent-light: #7A1F2E1F;
+  --rule: #E6E1DC;
+  --danger: #C2410C;
+  --focus: #7A1F2E;
 
   /* Type scale (rem; root stays 16px) */
   --text-2xs: 0.6875rem;
@@ -102,11 +102,11 @@
   --ink: #ECEAE5;
   --ink-muted: #A8A59D;
   --ink-faint: #7C796F;
-  --accent: #B59C7A;
-  --accent-light: #B59C7A38;
+  --accent: #D9838F;
+  --accent-light: #D9838F33;
   --rule: #2E2C28;
   --danger: #E07A62;
-  --focus: #B59C7A;
+  --focus: #D9838F;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 6px 20px -8px rgb(0 0 0 / 0.6);
   --shadow-lg: 0 24px 48px -20px rgb(0 0 0 / 0.7);
@@ -121,11 +121,11 @@
     --ink: #ECEAE5;
     --ink-muted: #A8A59D;
     --ink-faint: #7C796F;
-    --accent: #B59C7A;
-    --accent-light: #B59C7A38;
+    --accent: #D9838F;
+    --accent-light: #D9838F33;
     --rule: #2E2C28;
     --danger: #E07A62;
-    --focus: #B59C7A;
+    --focus: #D9838F;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 6px 20px -8px rgb(0 0 0 / 0.6);
     --shadow-lg: 0 24px 48px -20px rgb(0 0 0 / 0.7);
@@ -242,7 +242,7 @@ img, svg, video { max-width: 100%; }
   transition: var(--transition-theme);
 }
 
-.sidebar__bar { display: block; }
+.sidebar__bar { display: none; }
 .sidebar .sidebar__toggle { display: none; }
 .sidebar__brand { text-decoration: none; }
 .sidebar__body { display: flex; flex-direction: column; flex: 1; }
@@ -250,11 +250,7 @@ img, svg, video { max-width: 100%; }
 .sidebar-monogram {
   display: block;
   font-family: var(--font-serif);
-  font-size: var(--text-xs);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-bottom: var(--space-7);
+  color: var(--ink);
 }
 
 .sidebar-name {
@@ -408,7 +404,7 @@ img, svg, video { max-width: 100%; }
     justify-content: space-between;
     padding: var(--space-3) var(--space-4);
   }
-  .sidebar-monogram { margin: 0; font-size: var(--text-sm); }
+  .sidebar-monogram { font-size: var(--text-lg); }
   .sidebar .sidebar__toggle { display: inline-block; }
   .sidebar__body {
     display: none;

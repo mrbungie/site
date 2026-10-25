@@ -39,7 +39,7 @@ const langLinks = locales.map((l) => ({
 <header class="sidebar" id="site-sidebar" data-theme-key={THEME_STORAGE_KEY}>
 	<div class="sidebar__bar">
 		<a class="sidebar__brand" href={`${homeHref}/`} aria-label={`${AUTHOR.name}, ${t('nav.home')}`}>
-			<span class="sidebar-monogram">G.O.</span>
+			<span class="sidebar-monogram">{AUTHOR.name}</span>
 		</a>
 		<button
 			type="button"
