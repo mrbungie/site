@@ -295,7 +295,8 @@
 .controlValue {
   font-family: var(--font-mono, monospace);
   font-size: 0.82rem;
-  color: var(--tone, var(--v-accent));
+  /* Value text stays high-contrast; the slider itself carries the tone color. */
+  color: var(--v-ink, var(--ink));
   font-variant-numeric: tabular-nums;
 }
 

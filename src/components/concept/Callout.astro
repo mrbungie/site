@@ -21,7 +21,7 @@ const text = label ?? (type === 'warning' ? 'Cuidado' : 'Consejo');
 		background: var(--accent-light);
 	}
 	.callout--warning {
-		border-left-color: #b4572f;
+		border-left-color: var(--danger);
 	}
 	.callout__label {
 		margin: 0 0 6px;
@@ -32,7 +32,7 @@ const text = label ?? (type === 'warning' ? 'Cuidado' : 'Consejo');
 		color: var(--accent);
 	}
 	.callout--warning .callout__label {
-		color: #b4572f;
+		color: var(--ink);
 	}
 	.callout__body {
 		font-size: 15px;
