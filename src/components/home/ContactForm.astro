@@ -1,0 +1,135 @@
+---
+import type { Locale } from '../../i18n/ui';
+import { contact } from '../../data/profile';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+
+// Web3Forms access keys are public by design: they only allow sending to the owner's inbox.
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY;
+
+const t = {
+  es: {
+    name: 'Nombre', email: 'Tu correo', message: 'Mensaje', send: 'Enviar', sending: 'Enviando…',
+    ok: 'Listo, te respondo pronto.', error: `No se pudo enviar. Escríbeme directo a ${contact.email}.`,
+    subject: 'Nuevo mensaje desde govieworks.com',
+  },
+  en: {
+    name: 'Name', email: 'Your email', message: 'Message', send: 'Send', sending: 'Sending…',
+    ok: "Sent. I'll get back to you soon.", error: `Couldn't send it. Email me directly at ${contact.email}.`,
+    subject: 'New message from govieworks.com',
+  },
+}[lang];
+---
+
+{accessKey && (
+  <form class="contact-form" data-contact-form data-sending={t.sending} data-ok={t.ok} data-error={t.error}>
+    <input type="hidden" name="access_key" value={accessKey} />
+    <input type="hidden" name="subject" value={t.subject} />
+    <input type="checkbox" name="botcheck" class="contact-form__trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <div class="contact-form__row">
+      <label class="contact-form__field">
+        <span>{t.name}</span>
+        <input type="text" name="name" required autocomplete="name" maxlength="120" />
+      </label>
+      <label class="contact-form__field">
+        <span>{t.email}</span>
+        <input type="email" name="email" required autocomplete="email" maxlength="200" />
+      </label>
+    </div>
+    <label class="contact-form__field">
+      <span>{t.message}</span>
+      <textarea name="message" required rows="5" maxlength="5000"></textarea>
+    </label>
+
+    <div class="contact-form__actions">
+      <button type="submit" class="contact-form__submit">{t.send}</button>
+      <p class="contact-form__status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+)}
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const status = form.querySelector<HTMLElement>('.contact-form__status')!;
+    const label = button.textContent;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      button.textContent = form.dataset.sending ?? '';
+      status.textContent = '';
+      status.dataset.state = '';
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message);
+        form.reset();
+        status.textContent = form.dataset.ok ?? '';
+        status.dataset.state = 'ok';
+      } catch {
+        status.textContent = form.dataset.error ?? '';
+        status.dataset.state = 'error';
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact-form { display: flex; flex-direction: column; gap: 16px; max-width: 640px; margin-bottom: 48px; }
+  .contact-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .contact-form__field { display: flex; flex-direction: column; gap: 6px; }
+  .contact-form__field span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .contact-form__field input,
+  .contact-form__field textarea {
+    font: inherit;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+  }
+  .contact-form__field textarea { resize: vertical; min-height: 120px; }
+  .contact-form__field input:focus-visible,
+  .contact-form__field textarea:focus-visible { outline: none; border-color: var(--ink); }
+  .contact-form__trap { position: absolute; left: -9999px; }
+  .contact-form__actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .contact-form__submit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    padding: 13px 24px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .contact-form__submit:hover { background: var(--accent); border-color: var(--accent); }
+  .contact-form__submit:disabled { opacity: 0.6; cursor: wait; }
+  .contact-form__status { margin: 0; font-size: 14px; color: var(--ink-muted); }
+  .contact-form__status[data-state='ok'] { color: var(--ink); }
+  .contact-form__status[data-state='error'] { color: var(--danger); }
+  @media (max-width: 560px) {
+    .contact-form__row { grid-template-columns: 1fr; }
+  }
+</style>

@@ -39,6 +39,7 @@
   --accent: #7A6347;
   --accent-light: #8B735533;
   --rule: #D8D5CE;
+  --danger: #B4442C;
   --focus: #7A6347;
 
   /* Type scale (rem; root stays 16px) */
@@ -104,6 +105,7 @@
   --accent: #B59C7A;
   --accent-light: #B59C7A38;
   --rule: #2E2C28;
+  --danger: #E07A62;
   --focus: #B59C7A;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-md: 0 6px 20px -8px rgb(0 0 0 / 0.6);
@@ -122,6 +124,7 @@
     --accent: #B59C7A;
     --accent-light: #B59C7A38;
     --rule: #2E2C28;
+    --danger: #E07A62;
     --focus: #B59C7A;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 6px 20px -8px rgb(0 0 0 / 0.6);

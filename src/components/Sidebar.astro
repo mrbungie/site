@@ -23,7 +23,6 @@ const startsWith = (href: string) => pathname === href || pathname.startsWith(`$
 
 const sections = [
 	...(projects.length > 0 ? [{ id: 'work', label: t('nav.work') }] : []),
-	{ id: 'writing', label: t('nav.writing') },
 ];
 const pages = [
 	{ href: routePath(lang, 'about'), label: t('nav.about') },
@@ -66,7 +65,7 @@ const langLinks = locales.map((l) => ({
 				{sections.map((s) => (
 					<li><a href={`${homeHref}/#${s.id}`} data-section={s.id}>{s.label}</a></li>
 				))}
-				<li class="nav-divider" aria-hidden="true"></li>
+				{sections.length > 0 && <li class="nav-divider" aria-hidden="true"></li>}
 				{pages.map((p) => (
 					<li><a href={p.href} aria-current={startsWith(p.href) ? 'page' : undefined}>{p.label}</a></li>
 				))}

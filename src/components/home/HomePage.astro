@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from './Hero.astro';
+import ContactForm from './ContactForm.astro';
 import { getTranslations } from '../../i18n/utils';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
@@ -14,10 +15,6 @@ const t = getTranslations(lang);
 
 const allPosts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const featuredConcepts = (await getCollection('concepts'))
-  .filter(c => c.id.startsWith(`${lang}/`) && c.data.featured && !c.data.draft)
-  .slice(0, 5);
 
 const dateFmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-CL' : 'en-US', { year: 'numeric', month: 'short' });
 const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es));
@@ -50,27 +47,6 @@ const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es))
     </section>
   )}
 
-  {featuredConcepts.length > 0 && (
-    <section id="concepts" class="home-section">
-      <div class="section-label section-label--split">
-        <span>{copy.concepts[lang]}</span>
-        <a class="section-more" href={routePath(lang, 'concepts')}>{copy.browseAll[lang]}</a>
-      </div>
-      <div class="concept-list">
-        {featuredConcepts.map(concept => (
-          <a href={routePath(lang, 'concepts', concept.id.split('/')[1].replace(/\.(mdx|md)$/, ''))} class="concept-item">
-            <div class="concept-area">{concept.data.area}</div>
-            <div>
-              <div class="concept-title">{concept.data.title}</div>
-              <p class="concept-summary">{concept.data.summary}</p>
-            </div>
-            <div class="work-arrow">↗</div>
-          </a>
-        ))}
-      </div>
-    </section>
-  )}
-
   {allPosts.length > 0 && (
     <section id="writing" class="home-section">
       <div class="section-label section-label--split">
@@ -79,7 +55,7 @@ const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es))
       </div>
       <div class="writing-list">
         {allPosts.slice(0, 4).map(post => (
-          <a href={`/blog/${post.id}/`} class="writing-item plain-link">
+          <a href={`${routePath(lang, 'blog', post.id)}/`} class="writing-item plain-link">
             <div class="writing-date">{dateFmt.format(post.data.pubDate)}</div>
             <div>
               <div class="writing-title">{post.data.title}</div>
@@ -95,6 +71,7 @@ const localized = (es: string, en?: string) => (lang === 'es' ? es : (en ?? es))
     <div class="section-label">{copy.contact[lang]}</div>
     <h2 class="contact-headline">{profile.contact.headline[lang]}</h2>
     <p class="contact-body">{profile.contact.body[lang]}</p>
+    <ContactForm lang={lang} />
     <div class="contact-links">
       <a class="contact-link-row" href={`mailto:${contact.email}`}>
         <span class="contact-link-label">Email</span>

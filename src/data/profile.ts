@@ -38,8 +38,8 @@ export const profile = {
 
   hero: {
     headline: {
-      es: { before: 'Dirijo equipos de', em: 'datos e IA', after: 'en banca y fintech.' },
-      en: { before: 'I lead', em: 'data and AI', after: 'teams in banking and fintech.' },
+      es: { before: 'Llevo diez años trabajando en', em: 'datos e IA', after: 'para banca y fintech.' },
+      en: { before: "I've spent ten years in", em: 'data and AI', after: 'for banking and fintech.' },
     } as L10n<{ before: string; em: string; after: string }>,
     lead: {
       es: 'Fui Subgerente de IA Generativa en Bci, Head of Analytics & Data Science en MACH y armé desde cero el área de datos de Tenpo. Antes pasé casi seis años como data scientist en Bci. Desde 2016 hago clases de machine learning, y en este sitio publico versiones interactivas de esas clases.',
@@ -144,8 +144,8 @@ export const profile = {
   contact: {
     headline: { es: 'Conversemos.', en: 'Get in touch.' } as L10n<string>,
     body: {
-      es: 'Si buscas a alguien para liderar datos o IA, una asesoría o un curso, escríbeme.',
-      en: "If you're looking for someone to lead data or AI, for advice, or for a course, email me.",
+      es: 'Si buscas a alguien para liderar datos o IA, una asesoría o un curso, mándame un mensaje.',
+      en: "If you're looking for someone to lead data or AI, for advice, or for a course, send me a message.",
     } as L10n<string>,
   },
 };
@@ -155,14 +155,12 @@ export const copy = {
   about: { es: 'Sobre mí', en: 'About' },
   work: { es: 'Trabajo', en: 'Work' },
   writing: { es: 'Escritura', en: 'Writing' },
-  concepts: { es: 'Conceptos', en: 'Concepts' },
   experience: { es: 'Experiencia', en: 'Experience' },
   education: { es: 'Educación', en: 'Education' },
   teaching: { es: 'Docencia', en: 'Teaching' },
   skills: { es: 'Habilidades técnicas', en: 'Technical skills' },
   contact: { es: 'Contacto', en: 'Contact' },
   viewAll: { es: 'Ver todos →', en: 'All posts →' },
-  browseAll: { es: 'Ver todos →', en: 'Browse all →' },
   downloadCv: { es: 'CV (PDF)', en: 'Résumé (PDF)' },
   downloadCvFull: { es: 'Descargar CV completo ↓', en: 'Download full résumé ↓' },
   emailMe: { es: 'Escríbeme', en: 'Email me' },
