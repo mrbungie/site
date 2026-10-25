@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { routePath } from '../i18n/routes';
+---
+
+<BaseLayout title="Página no encontrada" description="Esta página no existe." lang="es" noindex>
+  <section class="not-found">
+    <p class="not-found__code">404</p>
+    <h1 class="not-found__title">Esta página no existe.</h1>
+    <p class="not-found__body">Puede que el enlace esté roto o que la página se haya movido. <span lang="en">This page doesn't exist.</span></p>
+    <nav class="not-found__links">
+      <a href="/">Inicio</a>
+      <a href={`${routePath('es', 'portfolio')}/`}>Portafolio</a>
+      <a href={`${routePath('es', 'services')}/`}>Servicios</a>
+      <a href={`${routePath('es', 'contact')}/`}>Contacto</a>
+    </nav>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found { padding: clamp(80px, 14vw, 160px) 0 120px; max-width: 640px; }
+  .not-found__code { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.1em; color: var(--accent); margin: 0 0 var(--space-3); }
+  .not-found__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-display); line-height: var(--leading-tight); margin: 0 0 var(--space-4); }
+  .not-found__body { color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-6); }
+  .not-found__links { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .not-found__links a { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 2px; }
+  .not-found__links a:hover { color: var(--accent); }
+</style>
