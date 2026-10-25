@@ -52,6 +52,40 @@ export const projects: Project[] = [
     stack: ['Python', 'FastAPI', 'Temporal', 'React', 'LiteLLM', 'GCP'],
   },
   {
+    slug: 'solar-forecasting-mlops',
+    kind: 'proprietary',
+    period: '2025 – 2026',
+    industry: { es: 'Energía solar', en: 'Solar energy' },
+    workType: { es: 'MLOps y forecasting', en: 'MLOps & forecasting' },
+    title: {
+      es: 'Plataforma MLOps para pronosticar generación solar',
+      en: 'MLOps platform for solar generation forecasting',
+    },
+    summary: {
+      es: 'Pronóstico de producción por inversor sobre un lakehouse en S3 y Kubernetes, con error 31% menor que la línea base física.',
+      en: 'Per-inverter production forecasts on an S3 lakehouse and Kubernetes, with 31% lower error than the physics baseline.',
+    },
+    goal: {
+      es: 'Pronosticar la generación diaria de miles de inversores con más precisión que la estimación física, para operar la red y comercializar energía con menos incertidumbre.',
+      en: 'Forecast daily generation for thousands of inverters more accurately than the physics estimate, to run the grid and trade energy with less uncertainty.',
+    },
+    did: {
+      es: [
+        'Diseñé un lakehouse en S3 con capas bronze, silver y gold en Parquet, replicando la base operacional con dlt.',
+        'Escribí las transformaciones con DuckDB y Polars, cruzando datos de clima y generación.',
+        'Armé el entrenamiento en Dagster comparando XGBoost, LightGBM y CatBoost, con estrategia por niveles configurable en YAML y modelos globales para sitios con pocos datos.',
+        'Llevé todo a EKS con Terraform, Helm y Karpenter, con modelos servidos desde MLflow e inferencia batch diaria.',
+      ],
+      en: [
+        'Designed an S3 lakehouse with bronze, silver and gold Parquet layers, replicating the operational database with dlt.',
+        'Wrote the transformations in DuckDB and Polars, joining weather and generation data.',
+        'Built training in Dagster comparing XGBoost, LightGBM and CatBoost, with YAML-configured tiering and global models for low-data sites.',
+        'Deployed it all to EKS with Terraform, Helm and Karpenter, serving models from MLflow with daily batch inference.',
+      ],
+    },
+    stack: ['Dagster', 'DuckDB', 'Polars', 'XGBoost', 'MLflow', 'AWS EKS'],
+  },
+  {
     slug: 'optical-data-platform',
     kind: 'proprietary',
     period: '2024 – 2026',

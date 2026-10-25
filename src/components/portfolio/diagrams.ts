@@ -52,6 +52,28 @@ const builders: Record<string, Builder> = {
     base: 'GCP · GKE Autopilot · Gateway · Secret Manager · Workload Identity · Terraform',
   }),
 
+  'solar-forecasting-mlops': (tr) => ({
+    label: tr('Arquitectura de la plataforma MLOps', 'MLOps platform architecture'),
+    width: 820,
+    height: 320,
+    nodes: [
+      { id: 'pg', x: 16, y: 32, w: 130, title: 'PostgreSQL', sub: tr('base operacional', 'operational DB') },
+      { id: 'dlt', x: 178, y: 32, w: 130, title: 'dlt', sub: tr('sync incremental', 'incremental sync') },
+      { id: 's3', x: 340, y: 24, w: 150, h: 72, title: 'Lakehouse S3', sub: tr('bronze · silver · gold\nParquet + ZSTD', 'bronze · silver · gold\nParquet + ZSTD') },
+      { id: 'etl', x: 522, y: 32, w: 130, title: 'DuckDB + Polars', sub: tr('clima × generación', 'weather × generation') },
+      { id: 'train', x: 522, y: 164, w: 130, h: 66, title: tr('Entrenamiento', 'Training'), sub: tr('XGBoost · LightGBM\nCatBoost', 'XGBoost · LightGBM\nCatBoost'), accent: true },
+      { id: 'mlflow', x: 684, y: 92, w: 120, title: 'MLflow', sub: tr('registro · REST', 'registry · REST') },
+      { id: 'batch', x: 684, y: 190, w: 120, title: tr('Inferencia batch', 'Batch inference'), sub: tr('export diario a S3', 'daily S3 export') },
+      { id: 'cfg', x: 340, y: 164, w: 150, h: 66, title: tr('Config YAML', 'YAML config'), sub: tr('niveles por sitio\nfallback global', 'per-site tiers\nglobal fallback') },
+    ],
+    edges: [
+      ...chain('pg', 'dlt', 's3', 'etl', 'train', 'mlflow'),
+      { from: 'cfg', to: 'train' },
+      { from: 'train', to: 'batch' },
+    ],
+    base: tr('Dagster orquesta · AWS EKS · Terraform · Helm · Karpenter · Prometheus', 'Dagster orchestrates · AWS EKS · Terraform · Helm · Karpenter · Prometheus'),
+  }),
+
   'optical-data-platform': (tr) => ({
     label: tr('Arquitectura de la plataforma de datos', 'Data platform architecture'),
     width: 820,
