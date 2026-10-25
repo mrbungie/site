@@ -1,0 +1,57 @@
+---
+// Layered architecture diagram: one row per layer, top (user-facing) to bottom (infrastructure).
+import type { StackSpec } from './diagrams';
+
+type Props = StackSpec;
+const { label, layers, note } = Astro.props;
+---
+
+<figure class="stack" role="img" aria-label={label}>
+  <ol class="stack__layers">
+    {layers.map((layer) => (
+      <li class:list={['stack__layer', { 'stack__layer--accent': layer.accent }]}>
+        <span class="stack__name">{layer.name}</span>
+        <span class="stack__items">
+          {layer.items.map((item) => <span class="stack__chip">{item}</span>)}
+        </span>
+      </li>
+    ))}
+  </ol>
+  {note && <figcaption class="stack__note">{note}</figcaption>}
+</figure>
+
+<style>
+  .stack { margin: 0; }
+  .stack__layers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .stack__layer {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+  }
+  .stack__layer--accent { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+  .stack__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .stack__layer--accent .stack__name { color: var(--accent); }
+  .stack__items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack__chip {
+    font-size: var(--text-sm);
+    color: var(--ink);
+    padding: 4px 10px;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-sm);
+  }
+  .stack__note { margin-top: var(--space-3); font-size: var(--text-sm); color: var(--ink-muted); }
+  @media (max-width: 560px) {
+    .stack__layer { grid-template-columns: 1fr; gap: var(--space-2); }
+  }
+</style>

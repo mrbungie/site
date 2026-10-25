@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Diagram from './Diagram.astro';
+import StackDiagram from './StackDiagram.astro';
+import FunnelDiagram from './FunnelDiagram.astro';
 import { diagramFor } from './diagrams';
 import type { Locale } from '../../i18n/ui';
 import { routePath } from '../../i18n/routes';
@@ -10,6 +12,7 @@ import { labels, projectHref } from './labels';
 interface Props { project: Project; lang: Locale }
 const { project: p, lang } = Astro.props;
 const t = labels[lang];
+const spec = diagramFor(p.slug, lang);
 const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
 ---
 
@@ -34,7 +37,9 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
 
     <section class="project__section">
       <h2 class="project__label">{t.architecture}</h2>
-      <Diagram {...diagramFor(p.slug, lang)} />
+      {spec.type === 'stack' ? <StackDiagram {...spec} />
+        : spec.type === 'funnel' ? <FunnelDiagram {...spec} />
+        : <Diagram {...spec} />}
     </section>
 
     <div class="project__body">

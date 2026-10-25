@@ -13,6 +13,7 @@ export interface DiagramNode {
 export interface DiagramEdge { from: string; to: string }
 
 export interface DiagramSpec {
+  type?: 'flow';
   label: string;
   width: number;
   height: number;
@@ -21,35 +22,42 @@ export interface DiagramSpec {
   base: string;
 }
 
-type Builder = (tr: (es: string, en: string) => string) => DiagramSpec;
+// Layered architecture: one row per layer, components as chips.
+export interface StackSpec {
+  type: 'stack';
+  label: string;
+  layers: { name: string; items: string[]; accent?: boolean }[];
+  note?: string;
+}
+
+// Narrowing pipeline: each stage keeps less, but more refined, data.
+export interface FunnelSpec {
+  type: 'funnel';
+  label: string;
+  stages: { title: string; sub: string; accent?: boolean }[];
+  note?: string;
+}
+
+export type AnySpec = DiagramSpec | StackSpec | FunnelSpec;
+
+type Builder = (tr: (es: string, en: string) => string) => AnySpec;
 
 const chain = (...ids: string[]): DiagramEdge[] => ids.slice(1).map((to, i) => ({ from: ids[i], to }));
 
 // One architecture diagram per project slug (see src/data/portfolio.ts).
 const builders: Record<string, Builder> = {
   'agency-workflows': (tr) => ({
-    label: tr('Arquitectura de la plataforma de workflows', 'Workflow platform architecture'),
-    width: 820,
-    height: 320,
-    nodes: [
-      { id: 'users', x: 16, y: 102, w: 120, title: tr('Equipo', 'Team'), sub: tr('y clientes', 'and clients') },
-      { id: 'fe', x: 168, y: 102, w: 140, title: 'Frontend', sub: 'React · wfsdk/react' },
-      { id: 'api', x: 340, y: 32, w: 150, title: 'Backend API', sub: 'FastAPI · roles' },
-      { id: 'dsl', x: 340, y: 172, w: 150, h: 66, title: 'wfsdk', sub: tr('DSL de workflows\ntipado', 'typed workflow\nDSL'), accent: true },
-      { id: 'temporal', x: 522, y: 32, w: 130, title: 'Temporal', sub: tr('pasos humanos', 'human steps') },
-      { id: 'worker', x: 522, y: 172, w: 130, title: 'Worker', sub: tr('ejecuta pasos', 'runs steps') },
-      { id: 'llm', x: 684, y: 16, w: 120, title: 'LiteLLM', sub: '→ Gemini' },
-      { id: 'deck', x: 684, y: 104, w: 120, title: 'Deck render', sub: 'HTML → PPTX/PDF' },
-      { id: 'db', x: 684, y: 192, w: 120, title: 'Postgres', sub: 'Redis' },
+    type: 'stack',
+    label: tr('Capas de la plataforma de workflows', 'Workflow platform layers'),
+    layers: [
+      { name: tr('Interfaz', 'Interface'), items: ['React SPA', 'Vite', '@wfsdk/react', tr('roles: agencia y cliente', 'roles: agency and client')] },
+      { name: 'API', items: ['FastAPI', tr('auth y organizaciones', 'auth and organizations'), 'HTTP · SSE'] },
+      { name: 'Workflows', items: [tr('wfsdk: DSL tipado', 'wfsdk: typed DSL'), 'Temporal', tr('workers', 'workers'), tr('pasos humanos', 'human steps')], accent: true },
+      { name: tr('Servicios', 'Services'), items: ['LiteLLM → Gemini', tr('deck render: HTML → PPTX/PDF', 'deck render: HTML → PPTX/PDF')] },
+      { name: tr('Datos', 'Data'), items: ['PostgreSQL', 'Redis', 'Cloud Storage'] },
+      { name: tr('Plataforma', 'Platform'), items: ['GKE Autopilot', 'Gateway', 'Secret Manager', 'Workload Identity', 'Terraform'], accent: true },
     ],
-    edges: [
-      ...chain('users', 'fe', 'api', 'temporal', 'worker'),
-      { from: 'dsl', to: 'api' },
-      { from: 'worker', to: 'llm' },
-      { from: 'worker', to: 'deck' },
-      { from: 'worker', to: 'db' },
-    ],
-    base: 'GCP · GKE Autopilot · Gateway · Secret Manager · Workload Identity · Terraform',
+    note: tr('wfsdk no depende del backend: el backend lo importa, nunca al revés.', 'wfsdk does not depend on the backend: the backend imports it, never the other way around.'),
   }),
 
   'solar-forecasting-mlops': (tr) => ({
@@ -129,24 +137,16 @@ const builders: Record<string, Builder> = {
   }),
 
   'ai-disclosure': (tr) => ({
-    label: tr('Pipeline de análisis de divulgación de IA', 'AI disclosure analysis pipeline'),
-    width: 820,
-    height: 320,
-    nodes: [
-      { id: 'sec', x: 16, y: 32, w: 130, h: 66, title: 'SEC EDGAR', sub: '10-K, 10-Q, 8-K,\nproxies' },
-      { id: 'calls', x: 16, y: 132, w: 130, title: 'Earnings calls', sub: tr('transcripciones', 'transcripts') },
-      { id: 'seg', x: 178, y: 74, w: 132, h: 66, title: tr('Segmentación', 'Segmentation'), sub: tr('secciones y\nhablantes, sin LLM', 'sections and\nspeakers, no LLM') },
-      { id: 'pre', x: 342, y: 74, w: 132, h: 66, title: tr('Prefiltro', 'Prefilter'), sub: tr('logit + embeddings\n1,5M párrafos', 'logit + embeddings\n1.5M paragraphs') },
-      { id: 'llm', x: 506, y: 74, w: 140, h: 66, title: 'LLM judges', sub: tr('marcos semánticos\ny actividades', 'semantic frames\nand activities'), accent: true },
-      { id: 'gold', x: 678, y: 74, w: 126, h: 66, title: tr('Panel gold', 'Gold panel'), sub: tr('índice de washing\npor empresa', 'washing index\nper firm') },
-      { id: 'econ', x: 600, y: 184, w: 150, title: tr('Econometría', 'Econometrics'), sub: tr('DiD · posturas', 'DiD · postures') },
+    type: 'funnel',
+    label: tr('Embudo de análisis de divulgación de IA', 'AI disclosure analysis funnel'),
+    stages: [
+      { title: tr('1,5M+ párrafos', '1.5M+ paragraphs'), sub: tr('10-K, 10-Q, 8-K, proxies y earnings calls del S&P 500, segmentados sin LLM', '10-K, 10-Q, 8-K, proxies and earnings calls from the S&P 500, segmented without LLMs') },
+      { title: tr('Candidatos de IA', 'AI candidates'), sub: tr('prefiltro logístico con vocabulario y embeddings', 'logistic prefilter on vocabulary and embeddings') },
+      { title: tr('Marcos semánticos', 'Semantic frames'), sub: tr('LLM judges extraen afirmaciones y actividades concretas', 'LLM judges extract claims and concrete activities'), accent: true },
+      { title: tr('Panel empresa-año', 'Firm-year panel'), sub: tr('índice de washing: narrativa contra respaldo operativo', 'washing index: narrative against operational grounding') },
+      { title: tr('Econometría', 'Econometrics'), sub: tr('DiD, posturas y estabilidad bootstrap', 'DiD, postures and bootstrap stability') },
     ],
-    edges: [
-      { from: 'sec', to: 'seg' },
-      { from: 'calls', to: 'seg' },
-      ...chain('seg', 'pre', 'llm', 'gold', 'econ'),
-    ],
-    base: tr('Data lake Parquet por capas · Polars · DuckDB · explorador en Gradio', 'Layered Parquet data lake · Polars · DuckDB · Gradio explorer'),
+    note: tr('Data lake Parquet por capas con Polars y DuckDB; cada etapa es reproducible y solo agrega datos.', 'Layered Parquet data lake with Polars and DuckDB; every stage is reproducible and append-only.'),
   }),
 
   'sales-pipeline-model': (tr) => ({
@@ -170,41 +170,30 @@ const builders: Record<string, Builder> = {
   }),
 
   'gpu-data-runtime': (tr) => ({
-    label: tr('Build y ejecución del runtime', 'Runtime build and execution'),
-    width: 820,
-    height: 300,
-    nodes: [
-      { id: 'df', x: 16, y: 74, w: 130, h: 66, title: 'Dockerfile', sub: 'BASE_IMAGE\nubuntu | cuda' },
-      { id: 'ci', x: 178, y: 82, w: 130, title: 'GitHub Actions', sub: tr('build cpu y gpu', 'cpu and gpu builds') },
-      { id: 'ghcr', x: 340, y: 82, w: 130, title: 'GHCR', sub: tr('imágenes', 'images') },
-      { id: 'vast', x: 502, y: 66, w: 150, h: 84, title: tr('Instancia vast.ai', 'vast.ai instance'), sub: tr('tini · sshd · cron\nwatchdog por\ninactividad', 'tini · sshd · cron\nidle shutdown\nwatchdog'), accent: true },
-      { id: 'jup', x: 684, y: 24, w: 120, title: 'nginx', sub: '→ JupyterLab' },
-      { id: 'tools', x: 684, y: 140, w: 120, title: tr('Herramientas', 'Tooling'), sub: tr('uv · DuckDB · IA', 'uv · DuckDB · AI') },
+    type: 'stack',
+    label: tr('Capas de la imagen Docker', 'Docker image layers'),
+    layers: [
+      { name: tr('Acceso', 'Access'), items: ['nginx → JupyterLab', 'sshd', tr('websockets', 'websockets')] },
+      { name: tr('Análisis', 'Analysis'), items: [tr('uv en venv aislado', 'uv in an isolated venv'), 'JupyterLab', 'DuckDB', 'claude · gemini · codex'] },
+      { name: tr('Operación', 'Operations'), items: ['tini (PID 1)', tr('cron persistente', 'persistent cron'), tr('watchdog de inactividad', 'idle watchdog')], accent: true },
+      { name: tr('Datos', 'Data'), items: ['rclone', 'awscli', 'gsutil', 'huggingface-cli'] },
+      { name: tr('Base', 'Base'), items: ['ubuntu:24.04', tr('o', 'or'), 'nvidia/cuda runtime'], accent: true },
     ],
-    edges: [...chain('df', 'ci', 'ghcr', 'vast', 'jup'), { from: 'vast', to: 'tools' }],
-    base: tr('Un solo Dockerfile para CPU y GPU · drivers CUDA montados en runtime', 'One Dockerfile for CPU and GPU · CUDA drivers mounted at runtime'),
+    note: tr('Un solo Dockerfile parametrizado por BASE_IMAGE; GitHub Actions publica ambas variantes en GHCR.', 'One Dockerfile parameterized by BASE_IMAGE; GitHub Actions publishes both variants to GHCR.'),
   }),
 
   'healthcare-chatbot': (tr) => ({
-    label: tr('Arquitectura de la plataforma de chatbots', 'Chatbot platform architecture'),
-    width: 820,
-    height: 340,
-    nodes: [
-      { id: 'ch', x: 16, y: 40, w: 120, h: 66, title: tr('Canales', 'Channels'), sub: 'WebChat React\nAPI REST' },
-      { id: 'bf', x: 168, y: 48, w: 130, title: 'Bot Framework', sub: tr('conector de canales', 'channel connector') },
-      { id: 'bs', x: 330, y: 40, w: 150, h: 66, title: 'Bot Service', sub: tr('librería común\n+ plugins por bot', 'shared library\n+ per-bot plugins'), accent: true },
-      { id: 'nlu', x: 512, y: 16, w: 150, title: 'DialogFlow', sub: tr('intents y entidades', 'intents and entities') },
-      { id: 'mods', x: 512, y: 110, w: 150, h: 66, title: tr('Módulos cognitivos', 'Cognitive modules'), sub: tr('tickets · Q&A\nsobre Elasticsearch', 'tickets · Q&A\non Elasticsearch') },
-      { id: 'agents', x: 16, y: 208, w: 120, title: tr('Agentes', 'Agents'), sub: tr('equipo de soporte', 'support team') },
-      { id: 'sheets', x: 168, y: 200, w: 130, h: 66, title: 'Google Sheets', sub: tr('intents, sinónimos\nfallbacks', 'intents, synonyms\nfallbacks') },
-      { id: 'airflow', x: 330, y: 200, w: 150, h: 66, title: 'Airflow', sub: tr('DAGs de\nreentrenamiento', 'retraining\nDAGs'), accent: true },
+    type: 'stack',
+    label: tr('Capas de la plataforma de chatbots', 'Chatbot platform layers'),
+    layers: [
+      { name: tr('Canales', 'Channels'), items: ['WebChat React', 'API REST', 'Bot Connector'] },
+      { name: 'Bot', items: ['Bot Builder SDK', tr('librería común', 'shared library'), tr('plugins por bot', 'per-bot plugins')], accent: true },
+      { name: tr('Inteligencia', 'Intelligence'), items: [tr('DialogFlow: intents y entidades', 'DialogFlow: intents and entities'), tr('tickets', 'tickets'), 'Q&A · Elasticsearch'] },
+      { name: tr('Operación', 'Operations'), items: [tr('Google Sheets para agentes', 'Google Sheets for agents'), tr('Airflow: reentrenamiento', 'Airflow: retraining'), tr('revisión de fallbacks', 'fallback review')], accent: true },
+      { name: tr('Entrega', 'Delivery'), items: ['Jenkins', tr('dev → QA → UAT → prod', 'dev → QA → UAT → prod'), 'VSTS'] },
+      { name: tr('Infraestructura', 'Infrastructure'), items: ['Azure', 'Kubernetes', 'Docker'] },
     ],
-    edges: [
-      ...chain('ch', 'bf', 'bs', 'nlu'),
-      { from: 'bs', to: 'mods' },
-      ...chain('agents', 'sheets', 'airflow', 'nlu'),
-    ],
-    base: tr('Azure · Kubernetes · Docker · CD con Jenkins: desarrollo → QA → UAT → producción', 'Azure · Kubernetes · Docker · Jenkins CD: dev → QA → UAT → production'),
+    note: tr('Un plugin que usan varios bots se promueve a módulo general de la librería.', 'A plugin used by several bots gets promoted to a shared library module.'),
   }),
 
   'cloud-tco-openstack': (tr) => ({
@@ -269,7 +258,7 @@ const builders: Record<string, Builder> = {
   }),
 };
 
-export function diagramFor(slug: string, lang: Locale): DiagramSpec {
+export function diagramFor(slug: string, lang: Locale): AnySpec {
   const build = builders[slug];
   if (!build) throw new Error(`No diagram for project "${slug}"`);
   return build((es, en) => (lang === 'es' ? es : en));
