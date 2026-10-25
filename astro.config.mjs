@@ -9,7 +9,7 @@ import rehypeMathJaxSvg from 'rehype-mathjax/svg';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://govieworks.com',
+  site: 'https://www.govieworks.com',
   trailingSlash: 'ignore',
   compressHTML: true,
 

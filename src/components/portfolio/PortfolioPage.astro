@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
-import { projects } from '../../data/portfolio';
+import { featuredProjects, archivedProjects } from '../../data/portfolio';
+import PortfolioCard from './PortfolioCard.astro';
 import { labels, projectHref } from './labels';
 
 interface Props { lang: Locale }
@@ -15,25 +16,14 @@ const t = labels[lang];
     <h1 class="portfolio__title">{t.title}</h1>
     <p class="portfolio__intro">{t.intro}</p>
 
+    <h2 class="portfolio__heading">{t.featured}</h2>
     <div class="portfolio__grid">
-      {projects.map((p) => (
-        <article class="pcard">
-          <div class="pcard__top">
-            <span class:list={['kind-badge', `kind-badge--${p.kind}`]}>{t[p.kind]}</span>
-            <span class="pcard__period">{p.period}</span>
-          </div>
-          <h2 class="pcard__title">
-            <a class="pcard__link" href={projectHref(lang, p)}>{p.title[lang]}</a>
-          </h2>
-          <p class="pcard__meta">{p.industry[lang]} · {p.workType[lang]}</p>
-          <p class="pcard__summary">{p.summary[lang]}</p>
-          <div class="pcard__foot">
-            <div class="tag-list">{p.stack.slice(0, 4).map((s) => <span class="tag">{s}</span>)}</div>
-            {p.repo && <a class="pcard__repo" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>}
-            {p.paper && <a class="pcard__repo" href={p.paper} target="_blank" rel="noopener">arXiv ↗</a>}
-          </div>
-        </article>
-      ))}
+      {featuredProjects.map((p) => <PortfolioCard project={p} lang={lang} />)}
+    </div>
+
+    <h2 class="portfolio__heading portfolio__heading--archive">{t.archive}</h2>
+    <div class="portfolio__grid portfolio__grid--archive">
+      {archivedProjects.map((p) => <PortfolioCard project={p} lang={lang} compact />)}
     </div>
   </section>
 </BaseLayout>
@@ -48,47 +38,17 @@ const t = labels[lang];
     margin: 0 0 var(--space-4);
   }
   .portfolio__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-7); }
+  .portfolio__heading {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 var(--space-4);
+  }
+  .portfolio__heading--archive { margin-top: var(--space-8); }
+  .portfolio__grid--archive { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: var(--space-3); }
   .portfolio__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: var(--space-4); }
 
-  .pcard {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-5);
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-lg);
-    transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
-  }
-  .pcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .pcard:focus-within { border-color: var(--accent); }
-  .pcard__top { display: flex; justify-content: space-between; align-items: center; }
-  .pcard__period { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); }
-  .pcard__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); line-height: var(--leading-snug); margin: 0; }
-  .pcard__link { color: var(--ink); text-decoration: none; }
-  .pcard__link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
-  .pcard__link:focus-visible { outline: none; }
-  .pcard__meta {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0;
-  }
-  .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: 0; flex: 1; }
-  .pcard__foot { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
-  .pcard__repo {
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    text-decoration: none;
-  }
-  .pcard__repo:hover { color: var(--accent); }
 </style>

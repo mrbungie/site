@@ -18,11 +18,13 @@ export interface Project {
   site?: string; // public page about the project (non-OSS)
   paper?: string; // arXiv or publisher link
   results?: { value: string; label: L10n<string> }[];
+  featured?: boolean; // shown first, in the large grid
 }
 
 const allProjects: Project[] = [
   {
     slug: 'agency-workflows',
+    featured: true,
     kind: 'proprietary',
     period: '2026',
     end: '2026-10',
@@ -58,6 +60,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'solar-forecasting-mlops',
+    featured: true,
     kind: 'proprietary',
     period: '2025 – 2026',
     end: '2026-01',
@@ -99,6 +102,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'optical-data-platform',
+    featured: true,
     kind: 'proprietary',
     period: '2024 – 2026',
     end: '2026-09-23',
@@ -200,6 +204,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'ai-disclosure',
+    featured: true,
     kind: 'oss',
     period: '2026',
     end: '2026-09-28',
@@ -555,3 +560,5 @@ const allProjects: Project[] = [
 
 // Newest first, by end date; ties keep the order above.
 export const projects = [...allProjects].sort((a, b) => b.end.localeCompare(a.end));
+export const featuredProjects = projects.filter((p) => p.featured);
+export const archivedProjects = projects.filter((p) => !p.featured);

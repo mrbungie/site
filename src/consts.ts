@@ -1,6 +1,6 @@
 // Global site constants. Import from anywhere with `import { ... } from '../consts'`.
 
-export const SITE_URL = 'https://govieworks.com';
+export const SITE_URL = 'https://www.govieworks.com';
 export const SITE_NAME = 'Germán Oviedo';
 export const SITE_TITLE = 'Germán Oviedo | Data & AI';
 export const SITE_DESCRIPTION =
