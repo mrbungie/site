@@ -12,6 +12,12 @@
 @font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/dmmono-400.woff2') format('woff2'); }
 @font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('/fonts/dmmono-500.woff2') format('woff2'); }
 
+/* Metric-matched fallbacks (Capsize): system fonts sized like the DM faces, so swapping
+   to the web font doesn't move the layout (CLS). */
+@font-face { font-family: 'DM Serif Display Fallback'; src: local('Georgia'); ascent-override: 103.5537%; descent-override: 33.485%; size-adjust: 100.0447%; }
+@font-face { font-family: 'DM Sans Fallback'; src: local('Arial'), local('ArialMT'); ascent-override: 94.9001%; descent-override: 29.6563%; line-gap-override: 0%; size-adjust: 104.531%; }
+@font-face { font-family: 'DM Mono Fallback'; src: local('Courier New'), local('CourierNewPSMT'); ascent-override: 99.2161%; descent-override: 31.005%; size-adjust: 99.9837%; }
+
 /* ═══════════════════════════════════════════════════════════════
    2. DESIGN TOKENS
    Light is the default; dark applies via the OS preference or an
@@ -21,9 +27,9 @@
 
 /* Typography families (static: always emitted so var(--font-*) works anywhere) */
 @theme static {
-  --font-serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
-  --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-serif: 'DM Serif Display', 'DM Serif Display Fallback', Georgia, serif;
+  --font-sans: 'DM Sans', 'DM Sans Fallback', Arial, sans-serif;
+  --font-mono: 'DM Mono', 'DM Mono Fallback', 'Courier New', monospace;
 }
 
 :root {
