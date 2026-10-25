@@ -444,6 +444,41 @@ const allProjects: Project[] = [
     stack: ['Node.js', 'Puppeteer', 'Express', 'React'],
   },
   {
+    slug: 'bci-experience-lighthouse',
+    kind: 'proprietary',
+    period: '2018',
+    end: '2018-12',
+    industry: { es: 'Banca · experiencia de clientes', en: 'Banking · customer experience' },
+    workType: { es: 'Text mining y clasificación', en: 'Text mining & classification' },
+    title: {
+      es: 'Faro de experiencia: text mining para customer success en Bci',
+      en: 'Experience Lighthouse: text mining for customer success at Bci',
+    },
+    summary: {
+      es: 'Emails, llamados y casos de soporte clasificados por servicio, producto y sentimiento con text mining clásico, y cruzados en Power BI.',
+      en: 'Emails, calls and support cases classified by service, product and sentiment with classic text mining, and cross-analyzed in Power BI.',
+    },
+    goal: {
+      es: 'Darle al equipo de customer success una lectura ordenada de lo que decían los clientes en todos los canales: de qué servicio o producto hablaban y con qué tono.',
+      en: 'Give the customer success team an organized read of what customers said across every channel: which service or product they talked about, and in what tone.',
+    },
+    did: {
+      es: [
+        'Juntamos experiencias de distintos canales: emails, llamados transcritos y casos de soporte.',
+        'Usamos text mining clásico: conteo de palabras, TF-IDF y reducción con SVD truncado.',
+        'Clasificamos cada experiencia por servicio, producto y sentimiento.',
+        'Dejamos los resultados en Power BI para que el equipo cruzara canales, productos y tono.',
+      ],
+      en: [
+        'We brought together experiences from several channels: emails, transcribed calls and support cases.',
+        'We used classic text mining: word counts, TF-IDF and truncated SVD.',
+        'We classified each experience by service, product and sentiment.',
+        'We put the results in Power BI so the team could cross channels, products and tone.',
+      ],
+    },
+    stack: ['Python', 'TF-IDF', 'Truncated SVD', 'Power BI'],
+  },
+  {
     slug: 'healthcare-chatbot',
     kind: 'proprietary',
     period: '2018',

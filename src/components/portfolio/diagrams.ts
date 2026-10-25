@@ -273,6 +273,28 @@ const builders: Record<string, Builder> = {
     base: tr('Firma Big Four · 2018 – 2019', 'Big Four firm · 2018 – 2019'),
   }),
 
+  'bci-experience-lighthouse': (tr) => ({
+    label: tr('Flujo del Faro de experiencia', 'Experience Lighthouse flow'),
+    width: 820,
+    height: 270,
+    nodes: [
+      { id: 'mail', x: 16, y: 16, w: 140, title: 'Emails', sub: tr('clientes', 'customers') },
+      { id: 'calls', x: 16, y: 86, w: 140, title: tr('Llamados', 'Calls'), sub: tr('transcritos', 'transcribed') },
+      { id: 'cases', x: 16, y: 156, w: 140, title: tr('Casos de soporte', 'Support cases'), sub: tr('y reclamos', 'and complaints') },
+      { id: 'feat', x: 196, y: 78, w: 160, h: 72, title: tr('Text mining clásico', 'Classic text mining'), sub: tr('conteos, TF-IDF\ny SVD truncado', 'counts, TF-IDF\nand truncated SVD'), accent: true },
+      { id: 'cls', x: 386, y: 78, w: 170, h: 72, title: tr('Clasificación', 'Classification'), sub: tr('servicio, producto\ny sentimiento', 'service, product\nand sentiment') },
+      { id: 'bi', x: 586, y: 78, w: 110, h: 72, title: 'Power BI', sub: tr('cruces', 'cross-analysis') },
+      { id: 'cs', x: 716, y: 78, w: 88, h: 72, title: 'Customer', sub: 'success' },
+    ],
+    edges: [
+      { from: 'mail', to: 'feat' },
+      { from: 'calls', to: 'feat' },
+      { from: 'cases', to: 'feat' },
+      ...chain('feat', 'cls', 'bi', 'cs'),
+    ],
+    base: tr('Bci · 2018 · una vista de todos los canales de experiencia', 'Bci · 2018 · one view across every experience channel'),
+  }),
+
   'healthcare-chatbot': (tr) => ({
     type: 'stack',
     label: tr('Capas de la plataforma de chatbots', 'Chatbot platform layers'),
