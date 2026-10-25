@@ -337,7 +337,7 @@ const allProjects: Project[] = [
         'We compared the incumbent, vCloud Suite, against OpenStack alternatives across availability levels.',
       ],
     },
-    stack: ['Mirantis OpenStack', 'VMware ESXi', 'vCloud Suite', 'TCO'],
+    stack: ['Mirantis OpenStack', 'Fuel', 'Ceph', 'KVM', 'vCloud Suite', 'TCO'],
   },
   {
     slug: 'vcloud-elk-monitoring',

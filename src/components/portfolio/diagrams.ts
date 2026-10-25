@@ -197,29 +197,17 @@ const builders: Record<string, Builder> = {
   }),
 
   'cloud-tco-openstack': (tr) => ({
-    label: tr('Modelo de TCO y laboratorio OpenStack', 'TCO model and OpenStack lab'),
-    width: 820,
-    height: 380,
-    nodes: [
-      { id: 'hw', x: 16, y: 16, w: 150, title: 'Hardware', sub: tr('blades, storage, red', 'blades, storage, network') },
-      { id: 'infra', x: 16, y: 84, w: 150, title: tr('Infraestructura', 'Facilities'), sub: tr('espacio y energía', 'space and power') },
-      { id: 'sw', x: 16, y: 152, w: 150, title: tr('Licencias y soporte', 'Licenses and support'), sub: tr('instalación y operación', 'install and operations') },
-      { id: 'tco', x: 220, y: 76, w: 170, h: 72, title: tr('Modelo TCO', 'TCO model'), sub: tr('Gartner, por zona\ny disponibilidad', 'Gartner, per zone\nand availability'), accent: true },
-      { id: 'cmp', x: 440, y: 76, w: 190, h: 72, title: tr('Comparación', 'Comparison'), sub: tr('vCloud Suite contra\nalternativas OpenStack', 'vCloud Suite against\nOpenStack alternatives') },
-      { id: 'esxi', x: 16, y: 252, w: 150, h: 66, title: tr('50 servidores', '50 servers'), sub: tr('originalmente\ncon ESXi', 'originally\nrunning ESXi') },
-      { id: 'fuel', x: 220, y: 252, w: 170, h: 66, title: 'Mirantis OpenStack', sub: tr('versión 2014', '2014 release') },
-      { id: 'os', x: 440, y: 252, w: 190, h: 66, title: tr('Nube universitaria', 'University cloud'), sub: tr('50 nodos', '50 nodes'), accent: true },
-      { id: 'meas', x: 664, y: 166, w: 140, h: 66, title: tr('Mediciones', 'Measurements'), sub: tr('instalación\ny operación', 'installation\nand operations') },
+    type: 'stack',
+    label: tr('Capas de la nube OpenStack de laboratorio', 'OpenStack lab cloud layers'),
+    layers: [
+      { name: tr('Aprovisionamiento', 'Provisioning'), items: [tr('nodo Fuel', 'Fuel node'), 'PXE + DHCP', 'Puppet'], accent: true },
+      { name: 'Control', items: [tr('controladores OpenStack', 'OpenStack controllers'), tr('identidad', 'identity'), tr('redes', 'networking'), tr('cómputo', 'compute')] },
+      { name: tr('Cómputo', 'Compute'), items: [tr('nodos de cómputo', 'compute nodes'), 'KVM'] },
+      { name: tr('Almacenamiento', 'Storage'), items: ['Ceph', tr('hardware commodity', 'commodity hardware')] },
+      { name: tr('Red', 'Network'), items: [tr('2 NICs por nodo', '2 NICs per node'), 'VLANs 802.1Q', tr('túneles GRE', 'GRE tunnels')] },
+      { name: 'Hardware', items: [tr('50 servidores universitarios', '50 university servers'), tr('antes con ESXi', 'previously on ESXi')], accent: true },
     ],
-    edges: [
-      { from: 'hw', to: 'tco' },
-      { from: 'infra', to: 'tco' },
-      { from: 'sw', to: 'tco' },
-      { from: 'tco', to: 'cmp' },
-      ...chain('esxi', 'fuel', 'os', 'meas'),
-      { from: 'meas', to: 'cmp' },
-    ],
-    base: tr('Memoria de Ingeniería Civil Industrial · UAI · 2014', 'Industrial Engineering thesis · UAI · 2014'),
+    note: tr('Las mediciones de instalación y operación del laboratorio alimentaron el modelo TCO (Gartner), que compara vCloud Suite contra OpenStack por nivel de disponibilidad.', 'Installation and operations measurements from the lab fed the Gartner-based TCO model, which compares vCloud Suite against OpenStack by availability level.'),
   }),
 
   'vcloud-elk-monitoring': (tr) => ({
