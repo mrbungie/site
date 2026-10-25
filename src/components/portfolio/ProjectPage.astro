@@ -46,6 +46,20 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
       </section>
     </div>
 
+    {p.results && (
+      <section class="project__section">
+        <h2 class="project__label">{t.results}</h2>
+        <dl class="project__results">
+          {p.results.map((r) => (
+            <div>
+              <dt>{r.value}</dt>
+              <dd>{r.label[lang]}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    )}
+
     <section class="project__section">
       <h2 class="project__label">{t.stack}</h2>
       <div class="tag-list">{p.stack.map((s) => <span class="tag">{s}</span>)}</div>
@@ -105,6 +119,10 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
   .project__text, .project__list { font-size: var(--text-base); line-height: var(--leading-body); color: var(--ink-muted); margin: 0; }
   .project__list { padding-left: 1.1em; list-style: disc; display: flex; flex-direction: column; gap: var(--space-2); }
   .project__list li::marker { color: var(--accent); }
+  .project__results { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-4); margin: 0; }
+  .project__results div { padding: var(--space-4); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-md); }
+  .project__results dt { font-family: var(--font-serif); font-size: var(--text-2xl); line-height: 1; color: var(--accent); margin-bottom: var(--space-2); }
+  .project__results dd { margin: 0; font-size: var(--text-sm); line-height: 1.5; color: var(--ink-muted); }
   @media (max-width: 760px) {
     .project__body { grid-template-columns: 1fr; }
   }

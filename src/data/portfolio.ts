@@ -14,6 +14,7 @@ export interface Project {
   did: L10n<string[]>;
   stack: string[];
   repo?: string;
+  results?: { value: string; label: L10n<string> }[];
 }
 
 export const projects: Project[] = [
@@ -56,7 +57,7 @@ export const projects: Project[] = [
     kind: 'proprietary',
     period: '2025 – 2026',
     industry: { es: 'Energía solar', en: 'Solar energy' },
-    workType: { es: 'MLOps y forecasting', en: 'MLOps & forecasting' },
+    workType: { es: 'Orquestación y plataforma MLOps', en: 'Orchestration & MLOps platform' },
     title: {
       es: 'Plataforma MLOps para pronosticar generación solar',
       en: 'MLOps platform for solar generation forecasting',
@@ -71,19 +72,25 @@ export const projects: Project[] = [
     },
     did: {
       es: [
-        'Diseñé un lakehouse en S3 con capas bronze, silver y gold en Parquet, replicando la base operacional con dlt.',
-        'Escribí las transformaciones con DuckDB y Polars, cruzando datos de clima y generación.',
-        'Armé el entrenamiento en Dagster comparando XGBoost, LightGBM y CatBoost, con estrategia por niveles configurable en YAML y modelos globales para sitios con pocos datos.',
-        'Llevé todo a EKS con Terraform, Helm y Karpenter, con modelos servidos desde MLflow e inferencia batch diaria.',
+        'Diseñé la orquestación en Dagster: assets por etapa del lakehouse, schedules y sensores, y el linaje completo desde la réplica hasta la inferencia.',
+        'Hice la configuración del pipeline en YAML, con overrides desde la UI de Dagster para ajustar estrategias y umbrales de niveles sin tocar código.',
+        'Integré Dagster con MLflow para registrar cada entrenamiento y promover el modelo campeón.',
+        'Diseñé los ambientes: el mismo código corre en Docker Compose local y en EKS, con Terraform, Helm, Karpenter sobre instancias spot, roles IAM separados y S3 cifrado.',
       ],
       en: [
-        'Designed an S3 lakehouse with bronze, silver and gold Parquet layers, replicating the operational database with dlt.',
-        'Wrote the transformations in DuckDB and Polars, joining weather and generation data.',
-        'Built training in Dagster comparing XGBoost, LightGBM and CatBoost, with YAML-configured tiering and global models for low-data sites.',
-        'Deployed it all to EKS with Terraform, Helm and Karpenter, serving models from MLflow with daily batch inference.',
+        'Designed the Dagster orchestration: one asset per lakehouse stage, schedules and sensors, and full lineage from replication to inference.',
+        'Built YAML pipeline configuration with overrides from the Dagster UI, so strategies and tier thresholds change without code changes.',
+        'Integrated Dagster with MLflow to log every training run and promote the champion model.',
+        'Designed the environments: the same code runs on local Docker Compose and on EKS, with Terraform, Helm, Karpenter on spot instances, separate IAM roles and encrypted S3.',
       ],
     },
-    stack: ['Dagster', 'DuckDB', 'Polars', 'XGBoost', 'MLflow', 'AWS EKS'],
+    results: [
+      { value: '−31,7%', label: { es: 'error (MAE) vs. línea base física', en: 'error (MAE) vs. physics baseline' } },
+      { value: '0,91', label: { es: 'R², contra 0,52 de la línea base', en: 'R², against 0.52 for the baseline' } },
+      { value: '1,9M', label: { es: 'registros diarios desde 11M+ horarios', en: 'daily records from 11M+ hourly' } },
+      { value: '95,4%', label: { es: 'de lotes pasan los controles de calidad', en: 'of batches pass data quality checks' } },
+    ],
+    stack: ['Dagster', 'MLflow', 'AWS EKS', 'Terraform', 'Helm', 'Karpenter'],
   },
   {
     slug: 'optical-data-platform',
