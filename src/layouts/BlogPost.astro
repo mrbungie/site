@@ -65,7 +65,7 @@ const schema = [
 			<p class="post-meta">
 				<FormattedDate date={pubDate} lang={lang} />
 				<span aria-hidden="true">·</span>
-				<span>{minutes} {t('blog.min')}</span>
+				<span>{`${minutes} ${t('blog.min')}`}</span>
 				{updatedDate && (
 					<>
 						<span aria-hidden="true">·</span>

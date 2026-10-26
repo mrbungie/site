@@ -428,6 +428,25 @@ img, svg, video { max-width: 100%; }
 }
 .section-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
 
+/* Section index pages: label, headline, lead */
+.page { padding: clamp(56px, 9vw, 100px) 0 120px; }
+.page-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+.page-lead {
+  max-width: 60ch;
+  font-size: var(--text-lg);
+  line-height: var(--leading-body);
+  color: var(--ink-muted);
+  margin: 0 0 var(--space-7);
+  text-wrap: pretty;
+}
+
 .tag {
   display: inline-block;
   padding: 2px 8px;

@@ -6,7 +6,8 @@ export const labels = {
   es: {
     title: 'Portafolio',
     desc: 'Proyectos de Germán Oviedo: plataformas de datos, ML y GenAI para clientes, y código abierto.',
-    intro: 'Proyectos para clientes y de código abierto. Los propietarios son confidenciales: muestro la arquitectura y lo que hice, sin datos ni nombres.',
+    headline: 'Del SPSS a los LLMs.',
+    intro: 'Hay de todo: el primer recomendador de Bci, fraude con tarjetas detectado en tiempo real, un paper sobre el color del arte en pandemia y una plataforma para los datos de drones que vuelan en Antofagasta. Cada uno con su diagrama y lo que hice yo, sin adornos.',
     proprietary: 'Propietario',
     oss: 'Open source',
     paper: 'Paper',
@@ -37,7 +38,8 @@ export const labels = {
   en: {
     title: 'Portfolio',
     desc: 'Projects by Germán Oviedo: data, ML and GenAI platforms for clients, and open source.',
-    intro: 'Client and open-source projects. Proprietary work is confidential: I show the architecture and what I did, without data or names.',
+    headline: 'From SPSS to LLMs.',
+    intro: "A bit of everything: Bci's first recommender, card fraud caught in real time, a paper on the color of pandemic art, and a platform for the data of drones flying over Antofagasta. Each one with its diagram and what I actually did, no embellishment.",
     proprietary: 'Proprietary',
     oss: 'Open source',
     paper: 'Paper',

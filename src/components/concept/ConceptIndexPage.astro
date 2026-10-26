@@ -31,10 +31,10 @@ const card = (e: (typeof entries)[number]) => ({
 ---
 
 <BaseLayout title={t('concepts.title')} description={t('concepts.subtitle')} lang={lang}>
-	<section class="concepts-index">
-		<div class="section-label">{t('nav.concepts')}</div>
-		<h1 class="concepts-index__title">{t('concepts.title')}</h1>
-		<p class="concepts-index__subtitle">{t('concepts.subtitle')}</p>
+	<section class="concepts-index page">
+		<div class="section-label">{t('nav.mlConcepts')}</div>
+		<h1 class="page-title">{t('concepts.headline')}</h1>
+		<p class="page-lead concepts-index__lead">{t('concepts.lead')}</p>
 		<p class="concepts-index__count">{entries.length} {t('concepts.count')}</p>
 		{fallback && <p class="concepts-index__notice" role="note">{t('concepts.spanishOnly')}</p>}
 
@@ -90,24 +90,7 @@ const card = (e: (typeof entries)[number]) => ({
 </script>
 
 <style>
-	.concepts-index {
-		padding-top: 100px;
-	}
-	.concepts-index__title {
-		margin: 0 0 12px;
-		font-family: var(--font-serif);
-		font-size: clamp(30px, 4vw, 46px);
-		line-height: 1.12;
-		font-weight: 400;
-		color: var(--ink);
-	}
-	.concepts-index__subtitle {
-		margin: 0 0 8px;
-		max-width: 520px;
-		font-size: 16px;
-		line-height: 1.7;
-		color: var(--ink-muted);
-	}
+	.concepts-index__lead { margin-bottom: var(--space-2); }
 	.concepts-index__count {
 		margin: 0 0 40px;
 		font-family: var(--font-mono);

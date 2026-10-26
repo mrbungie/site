@@ -13,8 +13,8 @@ const t = labels[lang];
 <BaseLayout title={`${t.title} · Germán Oviedo`} description={t.desc} lang={lang}>
   <section class="portfolio">
     <div class="section-label">{t.title}</div>
-    <h1 class="portfolio__title">{t.title}</h1>
-    <p class="portfolio__intro">{t.intro}</p>
+    <h1 class="page-title">{t.headline}</h1>
+    <p class="page-lead">{t.intro}</p>
 
     <h2 class="portfolio__heading">{t.featured}</h2>
     <div class="portfolio__grid">
@@ -30,14 +30,6 @@ const t = labels[lang];
 
 <style>
   .portfolio { padding: clamp(56px, 9vw, 100px) 0 120px; }
-  .portfolio__title {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: var(--text-display);
-    line-height: var(--leading-tight);
-    margin: 0 0 var(--space-4);
-  }
-  .portfolio__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-7); }
   .portfolio__heading {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);

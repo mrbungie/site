@@ -31,8 +31,8 @@ const schema = [
 <BaseLayout title={t.indexTitle} description={t.indexDesc} lang={lang} schema={schema}>
   <section class="services">
     <div class="section-label">{t.title}</div>
-    <h1 class="services__title">{t.indexTitle}</h1>
-    <p class="services__intro">{t.indexIntro}</p>
+    <h1 class="page-title">{t.headline}</h1>
+    <p class="page-lead">{t.indexIntro}</p>
 
     <div class="services__grid">
       {services.map((s) => (
@@ -68,15 +68,6 @@ const schema = [
 
 <style>
   .services { padding: clamp(56px, 9vw, 100px) 0 120px; }
-  .services__title {
-    font-family: var(--font-serif);
-    font-weight: 400;
-    font-size: var(--text-display);
-    line-height: var(--leading-tight);
-    margin: 0 0 var(--space-4);
-    text-wrap: balance;
-  }
-  .services__intro { max-width: 62ch; color: var(--ink-muted); line-height: var(--leading-body); margin: 0 0 var(--space-7); }
   .services__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: var(--space-4); margin-bottom: var(--space-8); }
 
   .scard {

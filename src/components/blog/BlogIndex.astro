@@ -15,20 +15,15 @@ const untranslated = lang !== 'es' && (await getPosts(lang)).some((p) => !isTran
 ---
 
 <BaseLayout title={`${t('blog.title')} | Germán Oviedo`} description={t('blog.subtitle')} lang={lang}>
-	<header class="blog-header">
-		<h1>{t('blog.title')}</h1>
-		<p>{t('blog.subtitle')}</p>
+	<section class="page">
+		<div class="section-label">{t('blog.title')}</div>
+		<h1 class="page-title">{t('blog.headline')}</h1>
+		<p class="page-lead">{t('blog.lead')}</p>
 		{untranslated && <p class="note">{t('blog.es-only')}</p>}
-	</header>
-	<PostList lang={lang} />
+		<PostList lang={lang} />
+	</section>
 </BaseLayout>
 
 <style>
-	.blog-header { max-width: 42rem; margin-bottom: 2.5rem; }
-	h1 {
-		margin: 0 0 0.75rem; font-family: var(--font-serif); font-weight: 400;
-		font-size: clamp(2.25rem, 5vw, 3.25rem); line-height: 1.1;
-	}
-	p { margin: 0; color: var(--ink-muted); font-size: 1.05rem; }
-	.note { margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent); }
+	.note { margin: calc(-1 * var(--space-5)) 0 var(--space-6); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--accent); }
 </style>
