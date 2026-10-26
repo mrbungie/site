@@ -19,7 +19,6 @@ export interface OgCard {
   lang: Locale;
   kicker: string;
   title: string;
-  photo?: boolean;
 }
 
 const keyOf = (path: string) => path.replace(/^\/+|\/+$/g, '') || 'home';
@@ -41,13 +40,13 @@ async function buildCards(): Promise<OgCard[]> {
     const home = lang === 'es' ? '/' : `/${lang}/`;
     const h = profile.hero.headline[lang];
     cards.push(
-      { key: keyOf(home), lang, kicker: tr(lang, 'Datos e IA · Docente de ML', 'Data & AI · ML lecturer'), title: `${h.before} ${h.em} ${h.after}`, photo: true },
-      { key: keyOf(routePath(lang, 'about')), lang, kicker: tr(lang, 'Acerca', 'About'), title: tr(lang, 'Trayectoria, docencia y educación', 'Background, teaching and education'), photo: true },
+      { key: keyOf(home), lang, kicker: tr(lang, 'Datos e IA · Docente de ML', 'Data & AI · ML lecturer'), title: `${h.before} ${h.em} ${h.after}`},
+      { key: keyOf(routePath(lang, 'about')), lang, kicker: tr(lang, 'Acerca', 'About'), title: tr(lang, 'Trayectoria, docencia y educación', 'Background, teaching and education')},
       { key: keyOf(routePath(lang, 'portfolio')), lang, kicker: tr(lang, 'Portafolio', 'Portfolio'), title: tr(lang, 'Plataformas de datos, ML y GenAI', 'Data, ML and GenAI platforms') },
       { key: keyOf(routePath(lang, 'concepts')), lang, kicker: tr(lang, 'Conceptos de ML', 'ML Concepts'), title: tr(lang, 'Machine learning explicado con visualizaciones interactivas', 'Machine learning explained with interactive visuals') },
       { key: keyOf(routePath(lang, 'blog')), lang, kicker: 'Blog', title: tr(lang, 'Notas sobre datos, IA y estadística', 'Notes on data, AI and statistics') },
     );
-    cards.push({ key: keyOf(routePath(lang, 'contact')), lang, kicker: tr(lang, 'Contacto', 'Contact'), title: tr(lang, 'Conversemos: un rol o un proyecto', "Let's talk: a role or a project"), photo: true });
+    cards.push({ key: keyOf(routePath(lang, 'contact')), lang, kicker: tr(lang, 'Contacto', 'Contact'), title: tr(lang, 'Conversemos: un rol o un proyecto', "Let's talk: a role or a project")});
     cards.push({ key: keyOf(routePath(lang, 'services')), lang, kicker: tr(lang, 'Servicios', 'Services'), title: tr(lang, 'Datos, IA, cloud y software a medida', 'Data, AI, cloud and custom software') });
     for (const s of services) {
       cards.push({ key: keyOf(routePath(lang, 'services', s.slug)), lang, kicker: tr(lang, 'Servicios · Santiago y Antofagasta', 'Services · Santiago and Antofagasta'), title: s.seoTitle[lang] });
@@ -107,7 +106,7 @@ const el = (type: string, style: Record<string, unknown>, children?: unknown, ex
 
 export async function renderOgPng(card: OgCard): Promise<Uint8Array> {
   const { fonts, photo } = await loadAssets();
-  const titleSize = card.title.length > 70 ? 54 : card.title.length > 40 ? 64 : 76;
+  const titleSize = card.title.length > 70 ? 50 : card.title.length > 40 ? 60 : 72;
 
   const tree = el('div', { width: 1200, height: 630, display: 'flex', background: BG, fontFamily: 'Sans' }, [
     el('div', { width: 14, height: '100%', background: ACCENT }),
@@ -115,15 +114,10 @@ export async function renderOgPng(card: OgCard): Promise<Uint8Array> {
       el('div', { fontFamily: 'Mono', fontSize: 24, letterSpacing: 3, textTransform: 'uppercase', color: ACCENT }, card.kicker),
       el('div', { display: 'flex', alignItems: 'center', gap: 48 }, [
         el('div', { flex: 1, fontFamily: 'Serif', fontSize: titleSize, lineHeight: 1.08, color: INK }, card.title),
-        ...(card.photo
-          ? [el('img', { width: 220, height: 220, borderRadius: 999, objectFit: 'cover' }, undefined, { src: photo, width: 220, height: 220 })]
-          : []),
+        el('img', { width: 240, height: 240, borderRadius: 999, objectFit: 'cover', flexShrink: 0 }, undefined, { src: photo, width: 240, height: 240 }),
       ]),
       el('div', { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `2px solid ${RULE}`, paddingTop: 28 }, [
-        el('div', { display: 'flex', alignItems: 'center', gap: 18 }, [
-          ...(card.photo ? [] : [el('img', { width: 56, height: 56, borderRadius: 999, objectFit: 'cover' }, undefined, { src: photo, width: 56, height: 56 })]),
-          el('div', { fontSize: 30, fontWeight: 600, color: INK }, profile.name),
-        ]),
+        el('div', { fontSize: 30, fontWeight: 600, color: INK }, profile.name),
         el('div', { fontFamily: 'Mono', fontSize: 24, color: MUTED }, 'govieworks.com'),
       ]),
     ]),
