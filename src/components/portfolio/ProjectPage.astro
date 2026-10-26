@@ -23,6 +23,7 @@ const work = {
   description: p.summary[lang],
   url: new URL(projectHref(lang, p), site).href,
   author: personRef(site),
+  ...(p.via && { producer: { '@type': 'Organization', name: p.via.name, ...(p.via.url && { url: p.via.url }) } }),
   keywords: p.stack.join(', '),
   about: p.industry[lang],
 };
@@ -52,6 +53,11 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
         <div><dt>{t.industry}</dt><dd>{p.industry[lang]}</dd></div>
         <div><dt>{t.workType}</dt><dd>{p.workType[lang]}</dd></div>
         <div><dt>{t.period}</dt><dd>{p.period}</dd></div>
+        {p.via && (
+          <div><dt>{t.via}</dt><dd>
+            {p.via.url ? <a href={p.via.url} target="_blank" rel="noopener">{p.via.name} ↗</a> : p.via.name} ({t.founding})
+          </dd></div>
+        )}
       </dl>
       {p.repo
         ? <a class="project__repo" href={p.repo} target="_blank" rel="noopener">{t.repo}</a>
@@ -143,6 +149,8 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
     margin: 0 0 var(--space-2);
   }
   .project__facts dd { margin: 0; font-size: var(--text-sm); color: var(--ink); }
+  .project__facts dd a { color: var(--ink); text-underline-offset: 2px; text-decoration-color: var(--accent); }
+  .project__facts dd a:hover { color: var(--accent); }
   .project__repo {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);

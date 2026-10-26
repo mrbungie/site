@@ -19,11 +19,17 @@ export interface Project {
   paper?: string; // arXiv or publisher link
   results?: { value: string; label: L10n<string> }[];
   featured?: boolean; // shown first, in the large grid
+  via?: Firm; // the firm I delivered the project through
 }
+
+export interface Firm { name: string; url?: string }
+const owl: Firm = { name: 'Owl Tech Labs', url: 'https://owltechlabs.com/' };
+const mlsi: Firm = { name: 'ML Soluciones Informáticas' };
 
 const allProjects: Project[] = [
   {
     slug: 'agency-workflows',
+    via: owl,
     featured: true,
     kind: 'proprietary',
     period: '2026',
@@ -60,6 +66,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'solar-forecasting-mlops',
+    via: owl,
     featured: true,
     kind: 'proprietary',
     period: '2025 – 2026',
@@ -102,6 +109,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'optical-data-platform',
+    via: owl,
     featured: true,
     kind: 'proprietary',
     period: '2024 – 2026',
@@ -412,6 +420,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'datax-tax-data',
+    via: mlsi,
     kind: 'proprietary',
     period: '2018 – 2019',
     end: '2019-12',
@@ -485,6 +494,7 @@ const allProjects: Project[] = [
   },
   {
     slug: 'healthcare-chatbot',
+    via: mlsi,
     kind: 'proprietary',
     period: '2018',
     end: '2018-12',

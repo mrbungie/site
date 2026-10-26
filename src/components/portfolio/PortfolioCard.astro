@@ -17,6 +17,11 @@ const t = labels[lang];
     <a class="pcard__link" href={projectHref(lang, p)}>{p.title[lang]}</a>
   </h3>
   <p class="pcard__meta">{p.industry[lang]} · {p.workType[lang]}</p>
+  {p.via && (
+    <p class="pcard__via">
+      {t.via} {p.via.url ? <a class="pcard__firm" href={p.via.url} target="_blank" rel="noopener">{p.via.name}</a> : p.via.name} ({t.founding})
+    </p>
+  )}
   {!compact && <p class="pcard__summary">{p.summary[lang]}</p>}
   <div class="pcard__foot">
     {!compact && <div class="tag-list">{p.stack.slice(0, 4).map((s) => <span class="tag">{s}</span>)}</div>}
@@ -53,6 +58,9 @@ const t = labels[lang];
     color: var(--accent);
     margin: 0;
   }
+  .pcard__via { font-size: var(--text-xs); color: var(--ink-faint); margin: 0; }
+  .pcard__firm { position: relative; z-index: 1; color: var(--ink-muted); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+  .pcard__firm:hover { color: var(--accent); text-decoration-color: currentColor; }
   .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: 0; flex: 1; }
   .pcard__foot { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
   .pcard__repo {
