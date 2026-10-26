@@ -17,6 +17,7 @@ export interface Project {
   repo?: string;
   site?: string; // public page about the project (non-OSS)
   paper?: string; // arXiv or publisher link
+  pdf?: string; // full document (thesis, report)
   results?: { value: string; label: L10n<string> }[];
   featured?: boolean; // shown first, in the large grid
   via?: Firm; // the firm I delivered the project through
@@ -30,7 +31,6 @@ const allProjects: Project[] = [
   {
     slug: 'agency-workflows',
     via: owl,
-    featured: true,
     kind: 'proprietary',
     period: '2026',
     end: '2026-10',
@@ -312,6 +312,7 @@ const allProjects: Project[] = [
     },
     stack: ['Python', 'Polars', 'DuckDB', 'LLMs', 'Econometría'],
     repo: 'https://github.com/mrbungie/ai_disclosure_analysis',
+    pdf: 'https://github.com/mrbungie/ai_disclosure_analysis/blob/main/thesis_document/GermanOviedo_FinalThesis.pdf',
   },
   {
     slug: 'sales-pipeline-model',

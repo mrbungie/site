@@ -7,7 +7,11 @@ interface Props { project: Project; lang: Locale; compact?: boolean }
 const { project: p, lang, compact = false } = Astro.props;
 const t = labels[lang];
 // The whole card opens the project; only external links get their own button.
-const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: p.paper, label: 'arXiv' } : undefined;
+const external = [
+  p.pdf && { href: p.pdf, label: 'PDF' },
+  p.repo && { href: p.repo, label: 'GitHub' },
+  p.paper && { href: p.paper, label: 'arXiv' },
+].filter((x) => !!x);
 ---
 
 <article class:list={['pcard', { 'pcard--compact': compact }]}>
@@ -24,8 +28,10 @@ const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: 
   {!compact && <p class="pcard__stack">{p.stack.slice(0, 4).join(' · ')}</p>}
   <div class="pcard__foot">
     <span class="pcard__cta" aria-hidden="true">{t.view} <span class="pcard__arrow">→</span></span>
-    {external && (
-      <a class="pcard__ext" href={external.href} target="_blank" rel="noopener">{external.label} ↗</a>
+    {external.length > 0 && (
+      <div class="pcard__exts">
+        {external.map((x) => <a class="pcard__ext" href={x.href} target="_blank" rel="noopener">{x.label} ↗</a>)}
+      </div>
     )}
   </div>
 </article>
@@ -67,6 +73,7 @@ const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: 
   .pcard__stack { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); margin: 0; }
   .pcard__foot {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: var(--space-3);
@@ -75,6 +82,7 @@ const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: 
     border-top: 1px solid var(--rule);
   }
   .pcard__cta {
+    white-space: nowrap;
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     letter-spacing: 0.08em;
@@ -84,6 +92,7 @@ const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: 
   .pcard__arrow { display: inline-block; color: var(--accent); transition: transform var(--dur-fast); }
   .pcard:hover .pcard__arrow { transform: translateX(4px); }
   .pcard:has(.pcard__ext:hover) .pcard__arrow { transform: none; }
+  .pcard__exts { display: flex; gap: var(--space-2); }
   .pcard__ext {
     position: relative;
     z-index: 1;
