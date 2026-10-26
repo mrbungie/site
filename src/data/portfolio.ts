@@ -312,7 +312,7 @@ const allProjects: Project[] = [
     },
     stack: ['Python', 'Polars', 'DuckDB', 'LLMs', 'Econometría'],
     repo: 'https://github.com/mrbungie/ai_disclosure_analysis',
-    pdf: 'https://github.com/mrbungie/ai_disclosure_analysis/blob/main/thesis_document/GermanOviedo_FinalThesis.pdf',
+    pdf: 'https://cdn.jsdelivr.net/gh/mrbungie/ai_disclosure_analysis@main/thesis_document/GermanOviedo_FinalThesis.pdf',
   },
   {
     slug: 'sales-pipeline-model',
