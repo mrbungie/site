@@ -46,6 +46,43 @@ const chain = (...ids: string[]): DiagramEdge[] => ids.slice(1).map((to, i) => (
 
 // One architecture diagram per project slug (see src/data/portfolio.ts).
 const builders: Record<string, Builder> = {
+  'bci-recommender': (tr) => ({
+    type: 'stack',
+    label: tr('Capas del recomendador', 'Recommender layers'),
+    layers: [
+      { name: tr('Consumo', 'Consumers'), items: [tr('asistente', 'assistant'), tr('beneficios', 'benefits'), tr('búsqueda', 'search')] },
+      { name: tr('Servir', 'Serving'), items: [tr('API REST interna', 'internal REST API'), 'top N', 're-ranking', tr('geolocalizador', 'geolocator')], accent: true },
+      { name: tr('Store', 'Store'), items: [tr('recomendaciones precalculadas', 'precomputed recommendations')] },
+      { name: tr('Modelos', 'Models'), items: ['Spark ALS', tr('feedback implícito', 'implicit feedback'), tr('rubros', 'categories'), tr('comercios en el top N de rubros', 'merchants within top N categories'), tr('batch diario', 'daily batch')], accent: true },
+      { name: 'Scoring', items: [tr('compras normalizadas por cliente y rubro', 'purchases normalized by customer and category')] },
+      { name: tr('Datos', 'Data'), items: ['Teradata', tr('compras con tarjeta', 'card purchases')] },
+    ],
+    note: tr('Nadie consulta a Spark en línea: las recomendaciones quedan listas en el store.', 'Nobody queries Spark online: recommendations are ready in the store.'),
+  }),
+
+  'bci-merchant-categorization': (tr) => ({
+    label: tr('Flujo de rubrificación de comercios', 'Merchant categorization flow'),
+    width: 820,
+    height: 330,
+    nodes: [
+      { id: 'sii', x: 16, y: 8, w: 170, title: 'SII', sub: tr('datos tributarios', 'tax data') },
+      { id: 'emp', x: 16, y: 76, w: 170, title: tr('Clientes empresa', 'Business customers'), sub: 'Bci' },
+      { id: 'card', x: 16, y: 144, w: 170, title: tr('Tarjetas', 'Cards'), sub: tr('transacciones', 'transactions') },
+      { id: 'geo', x: 16, y: 212, w: 170, title: 'GeoResearch', sub: tr('hoy XBREIN', 'now XBREIN') },
+      { id: 'fuse', x: 226, y: 102, w: 170, h: 72, title: tr('Fusión', 'Merge'), sub: tr('cruce de fuentes\nsin llave común', 'matching sources\nwith no shared key'), accent: true },
+      { id: 'tier', x: 436, y: 102, w: 170, h: 72, title: tr('Rubro + tier', 'Category + tier'), sub: tr('tier por\nticket promedio', 'tier by\naverage ticket'), accent: true },
+      { id: 'out', x: 646, y: 102, w: 158, h: 72, title: tr('Ficha por comercio', 'Merchant record'), sub: tr('rubro, tier\ny ubicación', 'category, tier\nand location') },
+    ],
+    edges: [
+      { from: 'sii', to: 'fuse' },
+      { from: 'emp', to: 'fuse' },
+      { from: 'card', to: 'fuse' },
+      { from: 'geo', to: 'fuse' },
+      ...chain('fuse', 'tier', 'out'),
+    ],
+    base: tr('Usos: beneficios, recomendaciones a clientes y más · Python · Teradata', 'Uses: benefits, customer recommendations and more · Python · Teradata'),
+  }),
+
   'smartfield-geospatial-platform': (tr) => ({
     type: 'stack',
     label: tr('Capas de SmartField', 'SmartField layers'),

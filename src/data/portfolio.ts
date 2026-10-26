@@ -30,6 +30,80 @@ const mlsi: Firm = { name: 'ML Soluciones Informáticas' };
 
 const allProjects: Project[] = [
   {
+    slug: 'bci-merchant-categorization',
+    kind: 'proprietary',
+    period: '2018',
+    end: '2018-12',
+    industry: { es: 'Banca', en: 'Banking' },
+    workType: { es: 'Datos maestros y clasificación', en: 'Master data and classification' },
+    title: {
+      es: 'Rubrificación de comercios en Bci',
+      en: 'Merchant categorization at Bci',
+    },
+    summary: {
+      es: 'Una ficha por comercio, con rubro, tier por ticket promedio y ubicación, armada cruzando datos tributarios, de empresas, de tarjetas y geográficos.',
+      en: 'One record per merchant, with category, average-ticket tier and location, built by merging tax, business, card and geographic data.',
+    },
+    goal: {
+      es: 'Por Bci pasaban millones de compras con tarjeta, pero los comercios llegaban con rubros incompletos o inconsistentes y sin una ubicación confiable. Hacía falta una ficha única por comercio que sirviera para diseñar beneficios, recomendar comercios a clientes y otros usos comerciales.',
+      en: 'Millions of card purchases went through Bci, but merchants came with incomplete or inconsistent categories and no reliable location. The bank needed one record per merchant to design benefits, recommend merchants to customers and support other commercial uses.',
+    },
+    did: {
+      es: [
+        'Implementé prácticamente todo el proceso, en Python sobre Teradata.',
+        'Fusioné fuentes que no compartían una llave limpia: datos del Servicio de Impuestos Internos, la base de clientes empresa de Bci, las transacciones con tarjeta y otras.',
+        'Asigné un rubro a cada comercio y, dentro de cada rubro, un tier según su ticket promedio.',
+        'Geolocalicé los comercios con datos de GeoResearch (hoy XBREIN).',
+        'Casi todos los comercios quedaron clasificados, con una calidad que dependía de cuánta información había de cada uno.',
+      ],
+      en: [
+        'Built practically the whole process, in Python on Teradata.',
+        "Merged sources with no clean shared key: data from Chile's tax authority (SII), Bci's business customer base, card transactions and others.",
+        'Assigned each merchant a category and, within each category, a tier based on its average ticket.',
+        'Geolocated merchants with GeoResearch data (now XBREIN).',
+        'Almost every merchant ended up classified, with quality depending on how much information each one had.',
+      ],
+    },
+    stack: ['Python', 'Teradata', 'SQL'],
+  },
+  {
+    slug: 'bci-recommender',
+    kind: 'proprietary',
+    period: '2016',
+    end: '2016-12',
+    industry: { es: 'Banca', en: 'Banking' },
+    workType: { es: 'Sistemas de recomendación', en: 'Recommender systems' },
+    title: {
+      es: 'El primer sistema recomendador de Bci',
+      en: "Bci's first recommender system",
+    },
+    summary: {
+      es: 'Piloto que recomendaba rubros y comercios a cada cliente con filtrado colaborativo en Spark, a partir de sus compras con tarjeta.',
+      en: 'Pilot that recommended categories and merchants to each customer with collaborative filtering on Spark, based on their card purchases.',
+    },
+    goal: {
+      es: 'Probar si el historial de compras alcanzaba para recomendarle a cada cliente rubros y comercios relevantes, como base común para varios usos posibles: un asistente para clientes, beneficios y búsqueda.',
+      en: 'Test whether purchase history was enough to recommend relevant categories and merchants to each customer, as a shared base for several possible uses: a customer assistant, benefits and search.',
+    },
+    did: {
+      es: [
+        'Diseñé e implementé todo el sistema. Fue el primer recomendador del banco y llegó a piloto.',
+        'Saqué de Teradata las tuplas cliente-rubro y cliente-comercio, con un puntaje de compras normalizado por la actividad total del cliente y del rubro.',
+        'Entrené filtrado colaborativo con feedback implícito (ALS) en Spark, en un batch diario, ajustando regularización, iteraciones y alpha.',
+        'Recomendé comercios solo dentro de los rubros top de cada cliente, para manejar la alta cardinalidad de tiendas.',
+        'Dejé las recomendaciones precalculadas en un store y las expuse por una API REST interna (top N, re-ranking de una lista y filtro por distancia), sin consultar Spark en línea.',
+      ],
+      en: [
+        "Designed and built the whole system. It was the bank's first recommender and reached pilot.",
+        'Pulled customer-category and customer-merchant tuples from Teradata, scoring purchases normalized by the total activity of the customer and the category.',
+        'Trained implicit-feedback collaborative filtering (ALS) on Spark as a daily batch, tuning regularization, iterations and alpha.',
+        "Recommended merchants only within each customer's top categories, to handle the high cardinality of stores.",
+        'Stored precomputed recommendations and served them through an internal REST API (top N, re-ranking a list and distance filtering), never querying Spark online.',
+      ],
+    },
+    stack: ['Spark', 'PySpark', 'ALS', 'Teradata', 'Python', 'REST'],
+  },
+  {
     slug: 'smartfield-geospatial-platform',
     kind: 'proprietary',
     period: '2026',
