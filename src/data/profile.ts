@@ -167,7 +167,7 @@ export const copy = {
     en: 'Consulting in artificial intelligence, data, cloud architecture and software development for companies in Chile and abroad.',
   },
   downloadCv: { es: 'CV (PDF)', en: 'Résumé (PDF)' },
-  downloadCvFull: { es: 'Descargar CV completo ↓', en: 'Download full résumé ↓' },
+  downloadCvFull: { es: 'Ver CV completo ↗', en: 'View full résumé ↗' },
   emailMe: { es: 'Escríbeme', en: 'Email me' },
   aboutTitle: { es: 'Acerca de Germán Oviedo', en: 'About Germán Oviedo' },
   aboutDesc: {

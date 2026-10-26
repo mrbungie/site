@@ -46,6 +46,44 @@ const chain = (...ids: string[]): DiagramEdge[] => ids.slice(1).map((to, i) => (
 
 // One architecture diagram per project slug (see src/data/portfolio.ts).
 const builders: Record<string, Builder> = {
+  'smartfield-geospatial-platform': (tr) => ({
+    type: 'stack',
+    label: tr('Capas de SmartField', 'SmartField layers'),
+    layers: [
+      { name: tr('Visores', 'Viewers'), items: ['Cesium 3D', '2D', tr('nubes de puntos', 'point clouds'), '@smartfield/viewer'], accent: true },
+      { name: 'Web', items: ['Next.js 15 BFF', tr('sesión', 'session')] },
+      { name: 'API', items: ['NestJS', tr('auth y autorización', 'auth and authorization'), 'multi-tenant', tr('contratos Zod', 'Zod contracts')] },
+      { name: tr('Procesamiento', 'Processing'), items: [tr('transformer en Python', 'Python transformer'), tr('cola en Redis', 'Redis queue'), tr('KEDA por largo de cola', 'KEDA on queue length')], accent: true },
+      { name: tr('Datos', 'Data'), items: ['PostgreSQL (CloudNativePG)', 'Azure Blob · SAS'] },
+      { name: tr('Plataforma', 'Platform'), items: ['AKS', 'Helm', 'ACR', 'OpenTofu + Terragrunt', 'GitHub OIDC'], accent: true },
+    ],
+    note: tr('La infraestructura vive en su propio repo; la app solo es dueña del chart de Helm y de sus pipelines.', 'Infrastructure lives in its own repo; the app only owns its Helm chart and pipelines.'),
+  }),
+
+  'uai-lead-intelligence': (tr) => ({
+    label: tr('Flujo de inteligencia de prospectos', 'Lead intelligence flow'),
+    width: 820,
+    height: 280,
+    nodes: [
+      { id: 'li', x: 16, y: 30, w: 140, title: 'LinkedIn', sub: tr('perfiles públicos', 'public profiles') },
+      { id: 'pb', x: 178, y: 30, w: 140, title: 'PhantomBuster', sub: tr('extracción', 'extraction') },
+      { id: 'db', x: 340, y: 30, w: 140, title: 'SQLite', sub: tr('perfiles + historial', 'profiles + history') },
+      { id: 'crm', x: 178, y: 150, w: 140, title: tr('Contactos', 'Contacts'), sub: tr('base comercial', 'sales base') },
+      { id: 'link', x: 340, y: 142, w: 140, h: 66, title: 'Record linkage', sub: tr('perfil ↔ persona', 'profile ↔ person'), accent: true },
+      { id: 'adv', x: 502, y: 30, w: 140, h: 66, title: tr('Avances', 'Career moves'), sub: tr('ascensos y\ncambios de empresa', 'promotions and\ncompany changes'), accent: true },
+      { id: 'offer', x: 664, y: 86, w: 140, h: 66, title: tr('Qué ofrecer', 'What to offer'), sub: tr('programa por\nprospecto', 'program per\nprospect'), accent: true },
+    ],
+    edges: [
+      ...chain('li', 'pb', 'db'),
+      { from: 'crm', to: 'link' },
+      { from: 'db', to: 'link' },
+      { from: 'db', to: 'adv' },
+      { from: 'adv', to: 'offer' },
+      { from: 'link', to: 'offer' },
+    ],
+    base: tr('Python · SQLite · actualización periódica', 'Python · SQLite · periodic refresh'),
+  }),
+
   'agency-workflows': (tr) => ({
     type: 'stack',
     label: tr('Capas de la plataforma de workflows', 'Workflow platform layers'),

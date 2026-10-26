@@ -53,6 +53,11 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
         <div><dt>{t.industry}</dt><dd>{p.industry[lang]}</dd></div>
         <div><dt>{t.workType}</dt><dd>{p.workType[lang]}</dd></div>
         <div><dt>{t.period}</dt><dd>{p.period}</dd></div>
+        {p.client && (
+          <div><dt>{t.client}</dt><dd>
+            {p.client.url ? <a href={p.client.url} target="_blank" rel="noopener">{p.client.name} ↗</a> : p.client.name}
+          </dd></div>
+        )}
         {p.via && (
           <div><dt>{t.via}</dt><dd>
             {p.via.url ? <a href={p.via.url} target="_blank" rel="noopener">{p.via.name} ↗</a> : p.via.name} ({t.founding})
@@ -67,7 +72,7 @@ const alternates = { es: projectHref('es', p), en: projectHref('en', p) };
             ? <a class="project__repo" href={p.paper} target="_blank" rel="noopener">{t.arxiv}</a>
           : p.site
             ? <a class="project__repo" href={p.site} target="_blank" rel="noopener">{t.site}</a>
-            : <p class="project__note">{t.confidential}</p>}
+            : !p.client && <p class="project__note">{t.confidential}</p>}
       </div>
     </header>
 

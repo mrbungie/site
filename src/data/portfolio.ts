@@ -21,6 +21,7 @@ export interface Project {
   results?: { value: string; label: L10n<string> }[];
   featured?: boolean; // shown first, in the large grid
   via?: Firm; // the firm I delivered the project through
+  client?: Firm; // named client, only when public
 }
 
 export interface Firm { name: string; url?: string }
@@ -28,6 +29,81 @@ const owl: Firm = { name: 'Owl Tech Labs', url: 'https://owltechlabs.com/' };
 const mlsi: Firm = { name: 'ML Soluciones Informáticas' };
 
 const allProjects: Project[] = [
+  {
+    slug: 'smartfield-geospatial-platform',
+    kind: 'proprietary',
+    period: '2026',
+    end: '2026-09',
+    industry: { es: 'Drones e inspección industrial', en: 'Drones & industrial inspection' },
+    workType: { es: 'Arquitectura y plataforma desde cero', en: 'Architecture and platform from scratch' },
+    title: {
+      es: 'SmartField: plataforma geoespacial para AGS Soluciones',
+      en: 'SmartField: geospatial platform for AGS Soluciones',
+    },
+    summary: {
+      es: 'Arquitectura inicial de una plataforma multi-tenant que recibe capturas de dron, las procesa y las muestra en visores 2D y 3D.',
+      en: 'Initial architecture of a multi-tenant platform that ingests drone captures, processes them and shows them in 2D and 3D viewers.',
+    },
+    goal: {
+      es: 'AGS hace topografía, termografía e inspecciones con drones para minería y energía en Antofagasta. Necesitaba un producto propio para entregarle el dato al cliente: ortofotos, planos DWG, mallas, nubes de puntos y modelos IFC, cada uno en su visor y separado por cliente.',
+      en: 'AGS runs drone surveys, thermography and inspections for mining and energy in Antofagasta. It needed its own product to deliver the data to clients: orthophotos, DWG drawings, meshes, point clouds and IFC models, each in its viewer and separated by client.',
+    },
+    did: {
+      es: [
+        'Estuve a cargo de todo el levantamiento inicial: diseñé la arquitectura y armé la base del código y de la infraestructura.',
+        'Monorepo con API en NestJS (módulos verticales, auth y autorización), BFF en Next.js 15 y contratos compartidos en Zod.',
+        'Worker en Python que transforma cada tipo de captura, desacoplado por una cola en Redis y escalado con KEDA según el largo de la cola.',
+        'Paquete de visores propio sobre Cesium para 2D, 3D georreferenciado y nubes de puntos.',
+        'Infraestructura en un repo aparte con OpenTofu y Terragrunt: AKS, Blob Storage, ACR, correo y DNS. Despliegue con Helm y GitHub Actions vía OIDC, sin secretos de larga duración.',
+      ],
+      en: [
+        'Led the whole initial build: designed the architecture and laid down the code and infrastructure foundations.',
+        'Monorepo with a NestJS API (vertical-slice modules, auth and authorization), a Next.js 15 BFF and shared Zod contracts.',
+        'Python worker that transforms each capture type, decoupled through a Redis queue and scaled by KEDA on queue length.',
+        'In-house viewer package on Cesium for 2D, georeferenced 3D and point clouds.',
+        'Infrastructure in a separate repo with OpenTofu and Terragrunt: AKS, Blob Storage, ACR, email and DNS. Deployed with Helm and GitHub Actions over OIDC, with no long-lived secrets.',
+      ],
+    },
+    stack: ['NestJS', 'Next.js', 'Python', 'Cesium', 'PostgreSQL', 'Redis', 'AKS', 'Helm', 'KEDA', 'OpenTofu'],
+    client: { name: 'AGS Soluciones', url: 'https://agssoluciones.cl/' },
+  },
+  {
+    slug: 'uai-lead-intelligence',
+    kind: 'proprietary',
+    period: '2021',
+    end: '2021-12',
+    industry: { es: 'Educación ejecutiva', en: 'Executive education' },
+    workType: { es: 'Datos de prospectos y recomendación', en: 'Lead data and recommendation' },
+    title: {
+      es: 'Inteligencia de prospectos para postgrados en la UAI',
+      en: 'Lead intelligence for graduate programs at UAI',
+    },
+    summary: {
+      es: 'Perfiles profesionales cruzados con la base de contactos para saber qué diplomado o magíster ofrecerle a cada persona, y en qué momento.',
+      en: 'Professional profiles matched to the contact base to know which diploma or master’s to offer each person, and when.',
+    },
+    goal: {
+      es: 'El equipo comercial de diplomados y magísteres tenía miles de contactos, pero sabía poco de ellos. La idea era tener una ficha viva de cada prospecto (cargo, empresa, trayectoria) y usarla para ofrecer el programa adecuado cuando la persona estuviera lista para darlo.',
+      en: 'The sales team for diplomas and master’s programs had thousands of contacts but knew little about them. The goal was a living profile of each prospect (role, company, career path) used to offer the right program when the person was ready for it.',
+    },
+    did: {
+      es: [
+        'Diseñé y construí la plataforma en Python, con SQLite como almacén de perfiles e historial.',
+        'Automaticé la extracción de perfiles públicos de LinkedIn con PhantomBuster.',
+        'Implementé record linkage para unir cada perfil con su persona en la base de contactos, aunque nombres, correos o empresas no calzaran exacto.',
+        'Guardé la evolución de cada profesional (ascensos, cambios de empresa o de área) para detectar el momento de ofrecer algo.',
+        'Crucé cargo y trayectoria con la oferta de programas para sugerir qué ofrecerle a cada prospecto.',
+      ],
+      en: [
+        'Designed and built the platform in Python, with SQLite storing profiles and their history.',
+        'Automated extraction of public LinkedIn profiles with PhantomBuster.',
+        'Implemented record linkage to match each profile to its person in the contact base, even when names, emails or companies did not match exactly.',
+        'Tracked how each professional evolved (promotions, company or area changes) to spot the right moment to reach out.',
+        'Matched role and career path against the program catalog to suggest what to offer each prospect.',
+      ],
+    },
+    stack: ['Python', 'SQLite', 'PhantomBuster', 'recordlinkage', 'pandas'],
+  },
   {
     slug: 'agency-workflows',
     via: owl,

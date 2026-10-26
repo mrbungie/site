@@ -11,7 +11,7 @@ const external = [
   p.pdf && { href: p.pdf, label: 'PDF' },
   p.repo && { href: p.repo, label: 'GitHub' },
   p.paper && { href: p.paper, label: 'arXiv' },
-].filter((x) => !!x);
+].filter((x) => !!x).slice(0, 1); // one button so the footer never wraps; the rest live on the detail page
 ---
 
 <article class:list={['pcard', { 'pcard--compact': compact }]}>
@@ -22,8 +22,8 @@ const external = [
   <h3 class="pcard__title">
     <a class="pcard__link" href={projectHref(lang, p)}>{p.title[lang]}</a>
   </h3>
-  <p class="pcard__meta">{p.industry[lang]} · {p.workType[lang]}</p>
-  {p.via && <p class="pcard__via">{t.via} {p.via.name} · {t.founding}</p>}
+  <p class="pcard__meta" title={`${p.industry[lang]} · ${p.workType[lang]}`}>{p.industry[lang]} · {p.workType[lang]}</p>
+  <p class="pcard__via">{p.via && `${t.via} ${p.via.name} · ${t.founding}`}</p>
   {!compact && <p class="pcard__summary">{p.summary[lang]}</p>}
   {!compact && <p class="pcard__stack">{p.stack.slice(0, 4).join(' · ')}</p>}
   <div class="pcard__foot">
@@ -54,7 +54,13 @@ const external = [
   .pcard:has(.pcard__ext:hover) { transform: none; box-shadow: none; border-color: var(--rule); }
   .pcard__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
   .pcard__period { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); }
-  .pcard__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); line-height: var(--leading-snug); margin: 0; }
+  /* Every section has a fixed number of lines so cards line up regardless of content */
+  .pcard__title, .pcard__meta, .pcard__via, .pcard__summary {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pcard__title { --lines: 3; -webkit-line-clamp: 3; min-height: calc(var(--lines) * 1lh); font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); line-height: var(--leading-snug); margin: 0; }
   .pcard__link { color: var(--ink); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-fast); }
   .pcard__link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
   .pcard__link:focus-visible { outline: none; }
@@ -65,19 +71,23 @@ const external = [
     font-size: var(--text-2xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    line-height: 1.6;
+    -webkit-line-clamp: 2;
+    min-height: 2lh;
     color: var(--accent);
     margin: 0;
   }
-  .pcard__via { font-size: var(--text-xs); color: var(--ink-faint); margin: 0; }
-  .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: var(--space-1) 0 0; flex: 1; }
-  .pcard__stack { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); margin: 0; }
+  .pcard__via { -webkit-line-clamp: 1; min-height: 1lh; font-size: var(--text-xs); line-height: 1.5; color: var(--ink-faint); margin: 0; }
+  .pcard__summary { -webkit-line-clamp: 3; min-height: 3lh; font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: var(--space-1) 0 0; }
+  .pcard__stack { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pcard__foot {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: var(--space-3);
-    margin-top: var(--space-3);
+    gap: var(--space-2);
+    height: calc(28px + var(--space-3));
+    box-sizing: border-box;
+    margin-top: auto;
     padding-top: var(--space-3);
     border-top: 1px solid var(--rule);
   }
@@ -92,17 +102,17 @@ const external = [
   .pcard__arrow { display: inline-block; color: var(--accent); transition: transform var(--dur-fast); }
   .pcard:hover .pcard__arrow { transform: translateX(4px); }
   .pcard:has(.pcard__ext:hover) .pcard__arrow { transform: none; }
-  .pcard__exts { display: flex; gap: var(--space-2); }
+  .pcard__exts { display: flex; gap: 6px; }
   .pcard__ext {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
-    padding: 6px 10px;
+    padding: 4px 7px;
     border: 1px solid var(--rule);
     border-radius: var(--radius-sm, 4px);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--ink-muted);
     text-decoration: none;

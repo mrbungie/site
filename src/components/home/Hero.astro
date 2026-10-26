@@ -19,7 +19,7 @@ const h = hero.headline[lang];
     <div class="hero__cta">
       <a class="hero__btn hero__btn--primary" href={`${routePath(lang, 'contact')}/`}>{copy.emailMe[lang]}</a>
       <a class="hero__link" href={contact.linkedin.url} target="_blank" rel="noopener">LinkedIn ↗</a>
-      <a class="hero__link" href={cvHref[lang]} download>{copy.downloadCv[lang]} ↓</a>
+      <a class="hero__link" href={cvHref[lang]} target="_blank" rel="noopener">{copy.downloadCv[lang]} ↗</a>
     </div>
   </div>
   <figure class="hero__photo">

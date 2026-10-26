@@ -22,8 +22,8 @@ const t = profile.teaching;
         {profile.bio[lang].map(p => <p class="about-body">{p}</p>)}
         <div class="about-actions">
           <a class="cv-download about-talk" href={`${routePath(lang, 'contact')}/`}>{lang === 'es' ? 'Conversemos →' : "Let's talk →"}</a>
-          <a class="cv-download" href={cvHref[lang]} download>{copy.downloadCvFull[lang]}</a>
-          <a class="cv-download" href={cvHref[other]} download>{lang === 'es' ? 'CV in English ↓' : 'CV en español ↓'}</a>
+          <a class="cv-download" href={cvHref[lang]} target="_blank" rel="noopener">{copy.downloadCvFull[lang]}</a>
+          <a class="cv-download" href={cvHref[other]} target="_blank" rel="noopener">{lang === 'es' ? 'CV in English ↗' : 'CV en español ↗'}</a>
         </div>
       </div>
       <Picture
