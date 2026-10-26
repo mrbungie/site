@@ -243,6 +243,7 @@ const allProjects: Project[] = [
     },
     stack: ['Python', 'CNN', 'ArtEmis', 'K-means', 'Apriori'],
     paper: 'https://arxiv.org/abs/2203.13770',
+    pdf: 'https://arxiv.org/pdf/2203.13770',
   },
   {
     slug: 'rental-voucher-platform',
