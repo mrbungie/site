@@ -145,8 +145,8 @@ export const profile = {
   contact: {
     headline: { es: 'Conversemos.', en: 'Get in touch.' } as L10n<string>,
     body: {
-      es: 'Un rol, un proyecto o una idea todavía a medio armar. Escríbeme: estos correos los leo yo.',
-      en: "A role, a project, or an idea that's still half-baked. Write to me: I read these myself.",
+      es: 'Si tienes un rol, un proyecto o solo una idea, escríbeme y lo conversamos.',
+      en: "If you have a role, a project or just an idea, write to me and let's talk.",
     } as L10n<string>,
   },
 };
