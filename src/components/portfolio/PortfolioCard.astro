@@ -6,6 +6,8 @@ import { labels, projectHref } from './labels';
 interface Props { project: Project; lang: Locale; compact?: boolean }
 const { project: p, lang, compact = false } = Astro.props;
 const t = labels[lang];
+// The whole card opens the project; only external links get their own button.
+const external = p.repo ? { href: p.repo, label: 'GitHub' } : p.paper ? { href: p.paper, label: 'arXiv' } : undefined;
 ---
 
 <article class:list={['pcard', { 'pcard--compact': compact }]}>
@@ -17,16 +19,14 @@ const t = labels[lang];
     <a class="pcard__link" href={projectHref(lang, p)}>{p.title[lang]}</a>
   </h3>
   <p class="pcard__meta">{p.industry[lang]} · {p.workType[lang]}</p>
-  {p.via && (
-    <p class="pcard__via">
-      {t.via} {p.via.url ? <a class="pcard__firm" href={p.via.url} target="_blank" rel="noopener">{p.via.name}</a> : p.via.name} ({t.founding})
-    </p>
-  )}
+  {p.via && <p class="pcard__via">{t.via} {p.via.name} · {t.founding}</p>}
   {!compact && <p class="pcard__summary">{p.summary[lang]}</p>}
+  {!compact && <p class="pcard__stack">{p.stack.slice(0, 4).join(' · ')}</p>}
   <div class="pcard__foot">
-    {!compact && <div class="tag-list">{p.stack.slice(0, 4).map((s) => <span class="tag">{s}</span>)}</div>}
-    {p.repo && <a class="pcard__repo" href={p.repo} target="_blank" rel="noopener">GitHub ↗</a>}
-    {p.paper && <a class="pcard__repo" href={p.paper} target="_blank" rel="noopener">arXiv ↗</a>}
+    <span class="pcard__cta" aria-hidden="true">{t.view} <span class="pcard__arrow">→</span></span>
+    {external && (
+      <a class="pcard__ext" href={external.href} target="_blank" rel="noopener">{external.label} ↗</a>
+    )}
   </div>
 </article>
 
@@ -35,21 +35,25 @@ const t = labels[lang];
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
     padding: var(--space-5);
     background: var(--surface);
     border: 1px solid var(--rule);
     border-radius: var(--radius-lg);
     transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
   }
-  .pcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .pcard:focus-within { border-color: var(--accent); }
-  .pcard__top { display: flex; justify-content: space-between; align-items: center; }
+  .pcard:hover, .pcard:focus-within { border-color: var(--accent); }
+  .pcard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  /* Hovering the external button shouldn't look like it opens the card */
+  .pcard:has(.pcard__ext:hover) { transform: none; box-shadow: none; border-color: var(--rule); }
+  .pcard__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
   .pcard__period { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); }
   .pcard__title { font-family: var(--font-serif); font-weight: 400; font-size: var(--text-xl); line-height: var(--leading-snug); margin: 0; }
-  .pcard__link { color: var(--ink); text-decoration: none; }
+  .pcard__link { color: var(--ink); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-fast); }
   .pcard__link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
   .pcard__link:focus-visible { outline: none; }
+  .pcard:hover .pcard__link, .pcard:focus-within .pcard__link { text-decoration-color: var(--accent); }
+  .pcard:has(.pcard__ext:hover) .pcard__link { text-decoration-color: transparent; }
   .pcard__meta {
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
@@ -59,22 +63,43 @@ const t = labels[lang];
     margin: 0;
   }
   .pcard__via { font-size: var(--text-xs); color: var(--ink-faint); margin: 0; }
-  .pcard__firm { position: relative; z-index: 1; color: var(--ink-muted); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
-  .pcard__firm:hover { color: var(--accent); text-decoration-color: currentColor; }
-  .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: 0; flex: 1; }
-  .pcard__foot { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-3); margin-top: var(--space-2); }
-  .pcard__repo {
+  .pcard__summary { font-size: var(--text-sm); line-height: 1.6; color: var(--ink-muted); margin: var(--space-1) 0 0; flex: 1; }
+  .pcard__stack { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); margin: 0; }
+  .pcard__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+  .pcard__cta {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .pcard__arrow { display: inline-block; color: var(--accent); transition: transform var(--dur-fast); }
+  .pcard:hover .pcard__arrow { transform: translateX(4px); }
+  .pcard:has(.pcard__ext:hover) .pcard__arrow { transform: none; }
+  .pcard__ext {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm, 4px);
     font-family: var(--font-mono);
     font-size: var(--text-2xs);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-muted);
     text-decoration: none;
+    transition: border-color var(--dur-fast), color var(--dur-fast);
   }
-  .pcard__repo:hover { color: var(--accent); }
-  .pcard--compact { padding: var(--space-4); gap: var(--space-2); }
+  .pcard__ext:hover, .pcard__ext:focus-visible { border-color: var(--accent); color: var(--accent); }
+  .pcard--compact { padding: var(--space-4); }
   .pcard--compact .pcard__title { font-size: var(--text-lg); }
 </style>
