@@ -55,11 +55,11 @@ export const profile = {
   bio: {
     es: [
       'Llevo más de diez años trabajando con datos en banca y fintech en Chile. Empecé como data scientist en Bci, construyendo modelos de comportamiento y motores de CRM. Después armé el área de datos de Tenpo, dirigí analítica y ciencia de datos en MACH y volví a Bci a liderar IA generativa.',
-      'Desde 2016 hago clases de data mining y machine learning en la UNAB, la UAI y la UDP. En 2026 terminé un MBA en International Business en MIB Trieste y volví a Santiago.',
+      'Desde 2016 hago clases de data mining y machine learning en la UNAB, la UAI y la UDP. En 2026 terminé un MBA en International Business en MIB Trieste y volví temporalmente a Chile.',
     ],
     en: [
       "I've worked with data in Chilean banking and fintech for more than ten years. I started as a data scientist at Bci, building behavioral models and CRM engines. Then I built Tenpo's data team, ran analytics and data science at MACH, and went back to Bci to lead generative AI.",
-      "I've taught data mining and machine learning at UNAB, UAI and UDP since 2016. In 2026 I finished an MBA in International Business at MIB Trieste and moved back to Santiago.",
+      "I've taught data mining and machine learning at UNAB, UAI and UDP since 2016. In 2026 I finished an MBA in International Business at MIB Trieste and moved temporarily back to Chile.",
     ],
   } as L10n<string[]>,
 
