@@ -16,92 +16,33 @@ export interface Service {
 
 export const services: Service[] = [
   {
-    slug: 'inteligencia-artificial',
-    name: { es: 'Inteligencia artificial y GenAI', en: 'AI and GenAI' },
+    slug: 'datos-inteligencia-artificial',
+    name: { es: 'Datos e inteligencia artificial', en: 'Data and AI' },
     seoTitle: {
-      es: 'Consultoría e implementación de inteligencia artificial',
-      en: 'AI consulting and implementation',
+      es: 'Consultoría en datos e inteligencia artificial',
+      en: 'Data and AI consulting',
     },
     description: {
-      es: 'Consultoría e implementación de IA y GenAI para empresas: casos de uso, asistentes con LLMs, automatización y medición de impacto.',
-      en: 'AI and GenAI consulting and implementation for companies: use cases, LLM assistants, automation and impact measurement.',
+      es: 'Plataformas de datos, modelos predictivos, GenAI y asistentes con LLMs para empresas, desde el caso de uso hasta producción. Experiencia en Bci, MACH y Tenpo.',
+      en: 'Data platforms, predictive models, GenAI and LLM assistants for companies, from use case to production. Experience at Bci, MACH and Tenpo.',
     },
     intro: {
-      es: 'Ayudo a empresas a llevar IA y GenAI desde la idea hasta producción: elegir los casos de uso que valen la pena, construirlos y medir si de verdad mueven el negocio. Lo he hecho en banca, fintech, salud y agencias, incluida la adopción de Gemini en una organización de más de 9.000 personas.',
-      en: "I help companies take AI and GenAI from idea to production: picking the use cases worth doing, building them and measuring whether they actually move the business. I've done it in banking, fintech, healthcare and agencies, including rolling out Gemini to an organization of more than 9,000 people.",
-    },
-    problems: {
-      es: [
-        'Tienen muchas ideas de IA y no saben cuáles priorizar ni cuánto cuestan.',
-        'Un piloto de GenAI funcionó en la demo, pero no llega a producción.',
-        'Quieren automatizar atención o procesos internos con LLMs sin perder el control.',
-        'No saben si un modelo o asistente mejoró algo de verdad.',
-      ],
-      en: [
-        "You have plenty of AI ideas but don't know which to prioritize or what they cost.",
-        "A GenAI pilot worked in the demo but never reaches production.",
-        'You want to automate support or internal processes with LLMs without losing control.',
-        "You can't tell whether a model or assistant actually improved anything.",
-      ],
-    },
-    offer: {
-      es: [
-        'Estrategia y priorización de casos de uso, con estimación de valor y costo.',
-        'Asistentes y agentes con LLMs: RAG, flujos con humanos en el loop y evaluación.',
-        'Automatización de procesos con revisión asistida por IA.',
-        'Gobierno, seguridad y medición de impacto.',
-      ],
-      en: [
-        'Use case strategy and prioritization, with value and cost estimates.',
-        'LLM assistants and agents: RAG, human-in-the-loop flows and evaluation.',
-        'Process automation with AI-assisted review.',
-        'Governance, security and impact measurement.',
-      ],
-    },
-    projects: ['agency-workflows', 'healthcare-chatbot', 'ai-disclosure', 'bci-hybrid-crm'],
-    faqs: [
-      {
-        q: { es: '¿Qué modelos de IA usas?', en: 'Which AI models do you use?' },
-        a: {
-          es: 'Depende del caso: OpenAI, Gemini, Claude o modelos abiertos. Elijo según costo, privacidad de los datos y calidad medida con evaluaciones, no por moda.',
-          en: 'It depends on the case: OpenAI, Gemini, Claude or open models. I choose by cost, data privacy and quality measured with evaluations, not by hype.',
-        },
-      },
-      {
-        q: { es: '¿Puedes trabajar con mi equipo interno?', en: 'Can you work with my in-house team?' },
-        a: {
-          es: 'Sí, es lo que prefiero. Construyo junto al equipo y dejo documentación y formación para que no dependan de mí.',
-          en: "Yes, that's what I prefer. I build alongside the team and leave documentation and training so you don't depend on me.",
-        },
-      },
-    ],
-  },
-  {
-    slug: 'datos-analytics',
-    name: { es: 'Datos y ciencia de datos', en: 'Data and data science' },
-    seoTitle: {
-      es: 'Ingeniería de datos y data science para empresas',
-      en: 'Data engineering and data science for companies',
-    },
-    description: {
-      es: 'Plataformas de datos, modelos predictivos, inferencia causal y equipos de datos para empresas. Experiencia en Bci, MACH y Tenpo.',
-      en: 'Data platforms, predictive models, causal inference and data teams for companies. Experience at Bci, MACH and Tenpo.',
-    },
-    intro: {
-      es: 'Armo áreas y plataformas de datos y las conecto con decisiones: pipelines confiables, modelos predictivos, experimentación y dashboards que la gente usa. Armé desde cero el área de datos de Tenpo y dirigí analítica y ciencia de datos en MACH.',
-      en: "I build data functions and platforms and connect them to decisions: reliable pipelines, predictive models, experimentation and dashboards people actually use. I built Tenpo's data team from scratch and ran analytics and data science at MACH.",
+      es: 'Armo plataformas de datos, modelos y asistentes con IA, y los conecto con decisiones del negocio. Armé desde cero el área de datos de Tenpo, dirigí analítica y ciencia de datos en MACH y lideré la adopción de Gemini en una organización de más de 9.000 personas. La IA funciona cuando los datos debajo están bien, así que trabajo las dos cosas juntas.',
+      en: "I build data platforms, models and AI assistants, and connect them to business decisions. I built Tenpo's data team from scratch, ran analytics and data science at MACH and led the rollout of Gemini to an organization of more than 9,000 people. AI works when the data underneath is sound, so I work on both together.",
     },
     problems: {
       es: [
         'Los datos están repartidos en sistemas y planillas, sin una fuente única.',
-        'Hay modelos en notebooks que nunca llegan a usarse.',
-        'No saben si una campaña o táctica funcionó, o solo coincidió con otra cosa.',
+        'Tienen muchas ideas de IA y no saben cuáles priorizar ni cuánto cuestan.',
+        'Un piloto de GenAI o un modelo en un notebook funcionó, pero no llega a producción.',
+        'No saben si una campaña, un modelo o un asistente mejoró algo de verdad.',
         'Necesitan formar o reordenar un equipo de datos.',
       ],
       en: [
         'Data lives across systems and spreadsheets, with no single source of truth.',
-        'There are models in notebooks that never get used.',
-        "You can't tell if a campaign or tactic worked or just coincided with something else.",
+        "You have plenty of AI ideas but don't know which to prioritize or what they cost.",
+        'A GenAI pilot or a notebook model worked, but never reaches production.',
+        "You can't tell whether a campaign, a model or an assistant actually improved anything.",
         'You need to build or reorganize a data team.',
       ],
     },
@@ -109,18 +50,29 @@ export const services: Service[] = [
       es: [
         'Plataformas de datos: lakehouse, Dagster, dbt y calidad de datos.',
         'Modelos predictivos y de propensión que llegan a producción.',
-        'Inferencia causal, experimentos A/B y medición de campañas.',
+        'Asistentes y agentes con LLMs: RAG, flujos con humanos en el loop y evaluación.',
+        'Priorización de casos de uso de IA, con estimación de valor y costo.',
+        'Inferencia causal, experimentos A/B y medición de impacto.',
         'Diseño y formación de equipos de datos.',
       ],
       en: [
         'Data platforms: lakehouse, Dagster, dbt and data quality.',
         'Predictive and propensity models that reach production.',
-        'Causal inference, A/B tests and campaign measurement.',
+        'LLM assistants and agents: RAG, human-in-the-loop flows and evaluation.',
+        'AI use case prioritization, with value and cost estimates.',
+        'Causal inference, A/B tests and impact measurement.',
         'Data team design and training.',
       ],
     },
-    projects: ['optical-data-platform', 'tenpo-realtime-fraud', 'mach-nba-lighthouse', 'bci-propensity-models'],
+    projects: ['optical-data-platform', 'tenpo-realtime-fraud', 'agency-workflows', 'healthcare-chatbot'],
     faqs: [
+      {
+        q: { es: '¿Qué modelos de IA usas?', en: 'Which AI models do you use?' },
+        a: {
+          es: 'Depende del caso: OpenAI, Gemini, Claude o modelos abiertos. Elijo según costo, privacidad de los datos y calidad medida con evaluaciones.',
+          en: 'It depends on the case: OpenAI, Gemini, Claude or open models. I choose by cost, data privacy and quality measured with evaluations.',
+        },
+      },
       {
         q: { es: '¿Trabajas con la nube que ya tenemos?', en: 'Do you work with the cloud we already have?' },
         a: {
@@ -133,6 +85,13 @@ export const services: Service[] = [
         a: {
           es: 'Sí. Uso experimentos cuando se puede e inferencia causal cuando no, para separar el efecto real de la campaña del ruido.',
           en: 'Yes. I use experiments when possible and causal inference when not, to separate the real effect from noise.',
+        },
+      },
+      {
+        q: { es: '¿Puedes trabajar con mi equipo interno?', en: 'Can you work with my in-house team?' },
+        a: {
+          es: 'Sí, es lo que prefiero. Construyo junto al equipo y dejo documentación y formación para que no dependan de mí.',
+          en: "Yes, that's what I prefer. I build alongside the team and leave documentation and training so you don't depend on me.",
         },
       },
     ],

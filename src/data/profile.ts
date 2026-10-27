@@ -163,8 +163,8 @@ export const copy = {
   viewAll: { es: 'Ver todos →', en: 'All posts →' },
   browseServices: { es: 'Ver servicios →', en: 'All services →' },
   servicesLead: {
-    es: 'Consultoría en inteligencia artificial, datos, arquitectura cloud y desarrollo de software para empresas en Chile y el extranjero.',
-    en: 'Consulting in artificial intelligence, data, cloud architecture and software development for companies in Chile and abroad.',
+    es: 'Consultoría en datos e inteligencia artificial, arquitectura cloud y desarrollo de software.',
+    en: 'Consulting in data and AI, cloud architecture and software development.',
   },
   downloadCv: { es: 'CV (PDF)', en: 'Résumé (PDF)' },
   downloadCvFull: { es: 'Ver CV completo ↗', en: 'View full résumé ↗' },
