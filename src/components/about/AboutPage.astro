@@ -6,11 +6,14 @@ import type { Locale } from '../../i18n/ui';
 import { profile, copy, contact, cvHref } from '../../data/profile';
 import { profilePage } from '../../lib/schema';
 import { routePath } from '../../i18n/routes';
+import Career from './Career.astro';
 
 interface Props { lang: Locale }
 const { lang } = Astro.props;
 const other: Locale = lang === 'es' ? 'en' : 'es';
 const t = profile.teaching;
+const pub = profile.publication;
+const cert = profile.certification;
 ---
 
 <BaseLayout title={copy.aboutTitle[lang]} description={copy.aboutDesc[lang]} lang={lang} schema={[profilePage(Astro.site!, Astro.url.pathname)]}>
@@ -39,22 +42,19 @@ const t = profile.teaching;
       />
     </div>
 
-    <div class="resume-section about-block">
-      <div class="resume-section-title">{copy.experience[lang]}</div>
-      {profile.experience.map(e => (
-        <div class="resume-item">
-          <div class="resume-period">{e.period[lang]}</div>
-          <div>
-            <div class="resume-org">{e.org}</div>
-            <div class="resume-title-role">{e.role[lang]}</div>
-            <p class="resume-detail">{e.summary[lang]}</p>
-          </div>
-        </div>
+    <dl class="glance about-block" aria-label={copy.glance[lang]}>
+      {profile.glance.map(g => (
+        <div class="glance__item"><dt>{g.label[lang]}</dt><dd>{g.value[lang]}</dd></div>
       ))}
-    </div>
+    </dl>
 
-    <div class="resume-section">
-      <div class="resume-section-title">{copy.teaching[lang]}</div>
+    <section class="resume-section about-block">
+      <h2 class="resume-section-title">{copy.experience[lang]}</h2>
+      <Career lang={lang} />
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-title">{copy.teaching[lang]}</h2>
       <div class="resume-item">
         <div class="resume-period">{t.period[lang]}</div>
         <div>
@@ -63,10 +63,10 @@ const t = profile.teaching;
           <p class="resume-detail">{t.summary[lang]}</p>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="resume-section">
-      <div class="resume-section-title">{copy.education[lang]}</div>
+    <section class="resume-section">
+      <h2 class="resume-section-title">{copy.education[lang]}</h2>
       {profile.education.map(e => (
         <div class="resume-item">
           <div class="resume-period">{e.period}</div>
@@ -77,16 +77,35 @@ const t = profile.teaching;
           </div>
         </div>
       ))}
-    </div>
+    </section>
 
-    <div class="resume-section">
-      <div class="resume-section-title">{copy.skills[lang]}</div>
+    <section class="resume-section">
+      <h2 class="resume-section-title">{copy.publications[lang]}</h2>
+      <div class="resume-item">
+        <div class="resume-period">{pub.year}</div>
+        <div>
+          <div class="resume-org">{pub.venue}</div>
+          <div class="resume-title-role">{pub.title}</div>
+          <p class="resume-detail">{pub.authors} <a class="about-link" href={pub.url} target="_blank" rel="noopener">{copy.readPaper[lang]}</a></p>
+        </div>
+      </div>
+      <div class="resume-item">
+        <div class="resume-period">{cert.period}</div>
+        <div>
+          <div class="resume-org">{cert.org}</div>
+          <div class="resume-title-role">{cert.name[lang]}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-title">{copy.skills[lang]}</h2>
       <dl class="skills">
         {profile.skills.map(s => (
           <div class="skills__row"><dt>{s.label[lang]}</dt><dd>{s.items[lang]}</dd></div>
         ))}
       </dl>
-    </div>
+    </section>
 
     <p class="about-contact">
       <a href={`mailto:${contact.email}`}>{contact.email}</a> ·
@@ -106,6 +125,10 @@ const t = profile.teaching;
   .about-actions .about-talk { background: var(--ink); color: var(--bg); }
   .about-actions .about-talk:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
   .about-block { margin-top: 64px; }
+  .glance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-6); margin-bottom: 0; }
+  .glance dt { margin-bottom: 4px; font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-faint); }
+  .glance dd { margin: 0; font-size: var(--text-sm); line-height: 1.5; color: var(--ink); text-wrap: pretty; }
+  .about-link { color: var(--accent); white-space: nowrap; }
   .skills { margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 13px; line-height: 1.7; }
   .skills__row { display: grid; grid-template-columns: 160px 1fr; gap: 20px; }
   .skills dt { color: var(--ink); font-weight: 500; }
@@ -113,6 +136,7 @@ const t = profile.teaching;
   .about-contact { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-top: 24px; }
   .about-contact a { color: var(--ink); }
   @media (max-width: 640px) {
+    .glance { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
     .skills__row { grid-template-columns: 1fr; gap: 2px; }
   }
   @media (max-width: 900px) {

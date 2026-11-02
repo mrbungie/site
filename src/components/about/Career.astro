@@ -1,0 +1,314 @@
+---
+import TagList from '../ui/TagList.astro';
+import type { Locale } from '../../i18n/ui';
+import { profile, copy } from '../../data/profile';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+
+// Timeline axis, in decimal years. Each segment is placed as a percentage of it.
+const AXIS_START = 2015;
+const AXIS_END = 2027;
+const years = Array.from({ length: (AXIS_END - AXIS_START) / 2 }, (_, i) => AXIS_START + i * 2);
+const pct = (y: number) => ((y - AXIS_START) / (AXIS_END - AXIS_START)) * 100;
+const place = ([start, end]: [number, number]) => `left:${pct(start)}%;width:${pct(end) - pct(start)}%`;
+
+const studies = profile.education.filter(e => e.span);
+---
+
+<div class="career" data-career>
+  <figure class="gantt">
+    <figcaption class="gantt__head">
+      <span>{copy.timeline[lang]}</span>
+      <button class="gantt__toggle" type="button" data-toggle-all data-expand={copy.expandAll[lang]} data-collapse={copy.collapseAll[lang]}>{copy.expandAll[lang]}</button>
+    </figcaption>
+
+    <div class="gantt__chart">
+      <div class="gantt__grid" aria-hidden="true">
+        {years.map(y => <span class="gantt__year" style={`left:${pct(y)}%`}>{y}</span>)}
+      </div>
+
+      <div class="gantt__lane">
+        <div class="gantt__lane-name">{copy.laneWork[lang]}</div>
+        <div class="gantt__track">
+          {profile.experience.map(e => (
+            <a
+              class="gantt__seg gantt__seg--work"
+              href={`#${e.id}`}
+              style={place(e.span)}
+              data-seg={e.id}
+              aria-label={`${e.org[lang]}, ${e.role[lang]}, ${e.period[lang]}`}
+            >{e.short[lang]}</a>
+          ))}
+        </div>
+      </div>
+
+      <div class="gantt__lane">
+        <div class="gantt__lane-name">{copy.laneTeaching[lang]}</div>
+        <div class="gantt__track">
+          <span class="gantt__seg" style={place([2016, AXIS_END])}>{copy.teachingShort[lang]}</span>
+        </div>
+      </div>
+
+      <div class="gantt__lane">
+        <div class="gantt__lane-name">{copy.laneStudy[lang]}</div>
+        <div class="gantt__track">
+          {studies.map(e => <span class="gantt__seg" style={place(e.span!)}>{e.short[lang]}</span>)}
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <div class="career__list">
+    {profile.experience.map(e => (
+      <details class="job" id={e.id}>
+        <summary class="job__summary">
+          <span class="resume-period">{e.period[lang]}</span>
+          <span class="job__title">
+            <span class="resume-org">{e.org[lang]}</span>
+            <span class="job__role">{e.role[lang]}</span>
+            <span class="job__headline">{e.headline[lang]}</span>
+          </span>
+          <span class="job__icon" aria-hidden="true"></span>
+        </summary>
+        <div class="job__body">
+          <dl class="job__highlights">
+            {e.highlights.map(h => (
+              <div class="job__highlight">
+                <dd>{h.value[lang]}</dd>
+                <dt>{h.label[lang]}</dt>
+              </div>
+            ))}
+          </dl>
+          <ul class="job__bullets">
+            {e.bullets[lang].map(b => <li>{b}</li>)}
+          </ul>
+          <TagList tags={e.stack} />
+        </div>
+      </details>
+    ))}
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-career]');
+  if (root) {
+    const jobs = [...root.querySelectorAll<HTMLDetailsElement>('details.job')];
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle-all]')!;
+
+    // Keep the timeline and the toggle in step with whichever roles are open.
+    const sync = () => {
+      for (const job of jobs) {
+        root.querySelector(`[data-seg="${job.id}"]`)?.classList.toggle('is-open', job.open);
+      }
+      toggle.textContent = jobs.every(j => j.open) ? toggle.dataset.collapse! : toggle.dataset.expand!;
+    };
+
+    const openFromHash = () => {
+      const job = jobs.find(j => `#${j.id}` === location.hash);
+      if (job) job.open = true;
+    };
+
+    jobs.forEach(j => j.addEventListener('toggle', sync));
+    toggle.addEventListener('click', () => {
+      const open = !jobs.every(j => j.open);
+      jobs.forEach(j => { j.open = open; });
+    });
+    window.addEventListener('hashchange', openFromHash);
+    root.querySelectorAll<HTMLAnchorElement>('[data-seg]').forEach(a =>
+      a.addEventListener('click', () => {
+        const job = jobs.find(j => j.id === a.dataset.seg);
+        if (job) job.open = true;
+      }),
+    );
+
+    openFromHash();
+    sync();
+  }
+</script>
+
+<style>
+  /* Timeline */
+  .gantt { margin: 0 0 var(--space-6); }
+  .gantt__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    line-height: var(--leading-tight);
+  }
+  .gantt__toggle {
+    flex: none;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-muted);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .gantt__toggle:hover { color: var(--accent); }
+
+  .gantt__chart { position: relative; padding-top: 24px; }
+  .gantt__grid { position: absolute; inset: 0 0 0 96px; pointer-events: none; }
+  .gantt__year {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    padding-left: 5px;
+    border-left: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    line-height: 1;
+    color: var(--ink-faint);
+  }
+
+  .gantt__lane { position: relative; display: grid; grid-template-columns: 96px 1fr; align-items: center; margin-bottom: 6px; }
+  .gantt__lane-name { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-muted); }
+  .gantt__track { position: relative; height: 34px; }
+  .gantt__seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 7px;
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: inset -2px 0 0 var(--bg);
+    background: var(--surface-sunken);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--ink-muted);
+  }
+  .gantt__seg--work {
+    background: var(--accent-light);
+    color: var(--accent);
+    text-decoration: none;
+    transition: background-color var(--dur-fast), color var(--dur-fast);
+  }
+  .gantt__seg--work:hover,
+  .gantt__seg--work.is-open { background: var(--accent); color: var(--bg); }
+
+  /* Accordion */
+  .career__list { border-top: 1px solid var(--rule); }
+  .job { border-bottom: 1px solid var(--rule); scroll-margin-top: var(--space-5); }
+  .job::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size var(--dur-base) var(--ease-out), content-visibility var(--dur-base) allow-discrete;
+  }
+  .job[open]::details-content { block-size: auto; }
+  @supports (interpolate-size: allow-keywords) {
+    .job { interpolate-size: allow-keywords; }
+  }
+
+  .job__summary {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 20px;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .job__summary::-webkit-details-marker { display: none; }
+  .job__summary .resume-period { text-wrap: balance; }
+  .job__title { display: flex; flex-direction: column; }
+  .job__title .resume-org { margin-bottom: 4px; }
+  .job__role {
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    line-height: 1.2;
+    transition: color var(--dur-fast);
+  }
+  .job__summary:hover .job__role { color: var(--accent); }
+  .job__headline {
+    margin-top: 6px;
+    max-width: 58ch;
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    color: var(--ink-muted);
+    text-wrap: pretty;
+  }
+
+  .job__icon { position: relative; width: 16px; height: 16px; margin-top: 6px; justify-self: end; color: var(--ink-faint); }
+  .job__icon::before,
+  .job__icon::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 0;
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .job__icon::after { transform: rotate(90deg); }
+  .job[open] .job__icon { color: var(--accent); }
+  .job[open] .job__icon::after { transform: rotate(0deg); }
+  .job__summary:hover .job__icon { color: var(--accent); }
+
+  .job__body { padding: 0 36px var(--space-6) calc(120px + var(--space-4)); }
+
+  .job__highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-6);
+    margin: 0 0 var(--space-5);
+  }
+  .job__highlight { display: flex; flex: 1 1 150px; flex-direction: column; max-width: 210px; }
+  .job__highlight dd {
+    order: -1;
+    margin: 0 0 2px;
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    line-height: var(--leading-tight);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .job__highlight dt { font-size: var(--text-xs); line-height: 1.4; color: var(--ink-muted); text-wrap: pretty; }
+
+  .job__bullets { margin: 0 0 var(--space-5); padding: 0; list-style: none; }
+  .job__bullets li {
+    position: relative;
+    margin-bottom: var(--space-2);
+    padding-left: 14px;
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    color: var(--ink-muted);
+    text-wrap: pretty;
+  }
+  .job__bullets li::before {
+    content: '';
+    position: absolute;
+    top: 0.72em;
+    left: 0;
+    width: 5px;
+    height: 1px;
+    background: var(--ink-faint);
+  }
+
+  @media (max-width: 640px) {
+    .gantt__head { font-size: var(--text-lg); }
+    .gantt__grid { left: 0; }
+    .gantt__lane { grid-template-columns: 1fr; gap: 3px; margin-bottom: 10px; }
+    .gantt__seg { padding-left: 2px; font-size: 0.5625rem; }
+    .job__summary { grid-template-columns: minmax(0, 1fr) 20px; gap: 4px var(--space-3); }
+    .job__summary .resume-period { grid-column: 1 / -1; }
+    .job__body { padding: 0 0 var(--space-5); }
+    .job__highlight { flex-basis: 40%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .job::details-content, .job__icon::before, .job__icon::after { transition: none; }
+  }
+  @media print {
+    .job::details-content { block-size: auto; content-visibility: visible; }
+    .gantt__toggle { display: none; }
+  }
+</style>
